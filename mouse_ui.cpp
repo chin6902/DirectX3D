@@ -12,7 +12,6 @@ LastUpdate : 2026/08/28
 #include "texture.h"
 #include "sprite.h"
 #include "input_mouse.h"
-#include "element.h"
 #include "config.h"
 
 using namespace DirectX;
@@ -38,14 +37,6 @@ enum MousePart
 	PART_COUNT,
 };
 
-static constexpr ElementType g_PartElement[PART_COUNT] =
-{
-	ELEMENT_FIRE,      
-	ELEMENT_FIRE,
-	ELEMENT_ICE,
-	ELEMENT_THUNDER,
-};
-
 static constexpr MouseButton g_PartButton[PART_COUNT] =
 {
 	MOUSE_BUTTON_LEFT,   
@@ -56,17 +47,6 @@ static constexpr MouseButton g_PartButton[PART_COUNT] =
 
 static int   g_texture = -1;
 static float g_Lit[PART_COUNT]{};   
-
-static XMFLOAT3 ElementColor(ElementType e)
-{
-	switch (e)
-	{
-	case ELEMENT_FIRE:    return { 1.00f, 0.35f, 0.10f };
-	case ELEMENT_ICE:     return { 0.30f, 0.70f, 1.00f };
-	case ELEMENT_THUNDER: return { 1.00f, 0.90f, 0.20f };
-	default:              return { 1.00f, 1.00f, 1.00f };
-	}
-}
 
 void MouseUI_Initialize()
 {
@@ -108,20 +88,4 @@ static void DrawPart(int part, const XMFLOAT3& color, float alpha)
 
 void MouseUI_Draw()
 {
-	if (g_texture < 0) { return; }
-
-	Sprite_SetFilter(kSpriteFilter_Linear);
-
-	for (int p = PART_LEFT; p < PART_COUNT; p++)
-	{
-		DrawPart(p, ElementColor(g_PartElement[p]), g_Lit[p] * HELD_ALPHA);
-	}
-
-	float any = 0.0f;
-	for (int p = PART_LEFT; p < PART_COUNT; p++) { any = std::max(any, g_Lit[p]); }
-
-	DrawPart(PART_OUTLINE, { 0.85f, 0.88f, 0.95f },
-		IDLE_ALPHA + (0.65f * any));
-
-	Sprite_SetFilter(kSpriteFilter_Point);
 }

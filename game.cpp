@@ -84,6 +84,7 @@ static void EnterEndState(bool cleared)
 
 static bool IsRunCleared()
 {
+	return false;
 }
 
 static void UpdateEndHold(float delta_time)
