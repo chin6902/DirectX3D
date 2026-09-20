@@ -199,8 +199,7 @@ void Result_Draw()
 
 		GameText_DrawCentered(x + BTN_W * 0.5f, BTN_Y + 26.0f,
 			g_ChoiceLabel[i], 0.70f,
-			selected ? XMFLOAT3{ 1.0f, 1.0f, 1.0f }
-		: XMFLOAT3{ 0.62f, 0.65f, 0.72f });
+			selected ? XMFLOAT3{ 1.0f, 1.0f, 1.0f } : XMFLOAT3{ 0.62f, 0.65f, 0.72f });
 	}
 
 	GameText_DrawCentered(cx, BTN_Y + BTN_H + 60.0f,

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{5699b5c5-5990-4896-9561-5d1738d910e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="direct3d.h">
@@ -120,6 +123,18 @@
     <ClInclude Include="debug_text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shader3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="grid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_free.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="draw_primitives.cpp">
@@ -206,14 +221,31 @@
     <ClCompile Include="collision_debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="debug_ostream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="debug_text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="direct3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cube.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shader3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_free.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shader_vertex_3d.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="shader_pixel_3d.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

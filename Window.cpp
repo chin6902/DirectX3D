@@ -15,7 +15,7 @@ LastUpdate : 2026/06/01
 namespace
 {
 	static constexpr char WINDOW_CLASS[] = "GameWindow";
-	static constexpr char TITLE[] = "SpellForge";
+	static constexpr char TITLE[] = "3D Game";
 
 	constexpr DWORD WINDOW_STYLE
 	{

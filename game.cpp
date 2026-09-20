@@ -17,11 +17,17 @@ LastUpdate : 2026/06/24
 #include "camera.h"
 #include "collision.h"
 #include "collision_debug.h"
+#include "shader3d.h"
 #include "scene.h"
 #include "fade.h"
 #include "game_text.h"
 #include "game_audio.h"
 #include "mouse_ui.h"
+#include "cube.h"
+#include "grid.h"
+#include "camera_free.h"
+
+using namespace DirectX;
 
 enum State
 {
@@ -53,6 +59,11 @@ void Game_Initialize()
 	g_RunStarted = false;
 
 	GameText_Initialize();
+	FlipBookAnimation_Initialize();
+
+	CameraFree_Initialize({ 0.0f, 3.0f, -5.0f }, XMConvertToRadians(30.0f), XMConvertToRadians(45.0f));
+	Cube_Initialize();
+	Grid_Initialize();
 
 	// --- UI ---
 	MouseUI_Initialize();
@@ -69,7 +80,14 @@ void Game_Finalize()
 #ifdef _DEBUG
 	Collision_Debug_Finalize();
 #endif
+	// ---UI ---
 	MouseUI_Finalize();
+	
+	Grid_Finalize();
+	Cube_Finalize();
+	CameraFree_Finalize();
+
+	FlipBookAnimation_Finalize();
 	GameText_Finalize();
 }
 
@@ -105,7 +123,6 @@ static void UpdateEndHold(float delta_time)
 	}
 }
 
-
 void Game_Update(float delta_time)
 {
 	if (InputKeyboard_IsTrigger(KK_P))
@@ -114,8 +131,13 @@ void Game_Update(float delta_time)
 		else if (g_gameState == STATE_PAUSE) { g_gameState = STATE_PLAYING; }
 	}
 
-#ifdef _DEBUG
+	CameraFree_Update(delta_time);
 
+	Shader3d_SetViewMatrix(CameraFree_GetViewMatrix());
+	Shader3d_SetProjectionMatrix(CameraFree_GetProjectionMatrix());
+
+#ifdef _DEBUG
+	Cube_Update(delta_time);
 #endif
 
 	switch (g_gameState)
@@ -123,12 +145,10 @@ void Game_Update(float delta_time)
 	case STATE_PLAYING:
 		g_RunTime += delta_time;
 
-		// --- bgm ---
+		// --- Bgm ---
 		GameAudio_UpdateMusic(delta_time);
 
-		// --- game update ---
-		Camera_Update(delta_time);
-
+		// --- Game Update ---
 		FlipBookAnimation_Update(delta_time);
 
 
@@ -136,8 +156,6 @@ void Game_Update(float delta_time)
 		//Collision_CheckPlayerVsEnemies();
 
 		// --- UI ---
-		MouseUI_Update(delta_time);
-
 
 		if (!g_RunStarted)
 		{
@@ -166,10 +184,12 @@ void Game_Update(float delta_time)
 void Game_Draw()
 {
 	Sprite_SetFilter(kSpriteFilter_Linear);
+	Grid_Draw();
+
+	XMMATRIX world = XMMatrixTranslation(-4.5f, 0.5f, 4.5f);
+	Cube_Draw(world);
 
 	// --- UI ---
-	MouseUI_Draw();
-
 	Sprite_SetFilter(kSpriteFilter_Point);
 
 	Sprite_Flush();

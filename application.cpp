@@ -9,9 +9,10 @@ LastUpdate : 2026/06/15
 #include "application.h"
 #include "direct3d.h"
 #include "shader.h"
+#include "shader3d.h"
 #include "texture.h"
 #include "sprite.h"
-#include "flipbook_animation.h"
+
 #include "scene.h"
 #include "fade.h"
 
@@ -40,8 +41,9 @@ bool Application_Initialize(HWND hWnd)
 	InputXInput_Initialize();
 
 	Shader_Initialize(Direct3D_GetDevice(), Direct3D_GetDeviceContext());
+	Shader3d_Initialize();
+
 	Sprite_Initialize();
-	FlipBookAnimation_Initialize();
 
 	Scene_Initialize();
 	Fade_Initialize();
@@ -54,9 +56,9 @@ void Application_Finalize()
 	// 各システムの終了処理
 	Fade_Finalize();
 	Scene_Finalize();
-	FlipBookAnimation_Finalize();
 	Sprite_Finalize();
 	Texture_Finalize();
+	Shader3d_Finalize();
 	Shader_Finalize();
 
 	InputMouse_Finalize();

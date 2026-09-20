@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -136,7 +136,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Manifest>
@@ -147,9 +147,11 @@
     <ClInclude Include="application.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="camera_free.h" />
     <ClInclude Include="collision.h" />
     <ClInclude Include="collision_debug.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="cube.h" />
     <ClInclude Include="debug_ostream.h" />
     <ClInclude Include="debug_text.h" />
     <ClInclude Include="direct3d.h" />
@@ -160,6 +162,7 @@
     <ClInclude Include="game_audio.h" />
     <ClInclude Include="game_text.h" />
     <ClInclude Include="game_time.h" />
+    <ClInclude Include="grid.h" />
     <ClInclude Include="health.h" />
     <ClInclude Include="input_keyboard.h" />
     <ClInclude Include="input_mouse.h" />
@@ -171,6 +174,7 @@
     <ClInclude Include="result.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="shader3d.h" />
     <ClInclude Include="spatial_grid.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="system_timer.h" />
@@ -184,9 +188,10 @@
     <ClCompile Include="application.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="camera_free.cpp" />
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="collision_debug.cpp" />
-    <ClCompile Include="debug_ostream.cpp" />
+    <ClCompile Include="cube.cpp" />
     <ClCompile Include="debug_text.cpp" />
     <ClCompile Include="direct3d.cpp" />
     <ClCompile Include="draw_primitives.cpp" />
@@ -196,6 +201,7 @@
     <ClCompile Include="game_audio.cpp" />
     <ClCompile Include="game_text.cpp" />
     <ClCompile Include="game_time.cpp" />
+    <ClCompile Include="grid.cpp" />
     <ClCompile Include="input_keyboard.cpp" />
     <ClCompile Include="input_mouse.cpp" />
     <ClCompile Include="input_xinput.cpp" />
@@ -206,12 +212,31 @@
     <ClCompile Include="result.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="shader3d.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="system_timer.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="WICTextureLoader11.cpp" />
     <ClCompile Include="Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shader_pixel_3d.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="shader_vertex_3d.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
