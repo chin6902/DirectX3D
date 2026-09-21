@@ -16,6 +16,12 @@
     <Filter Include="Shader Files">
       <UniqueIdentifier>{5699b5c5-5990-4896-9561-5d1738d910e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Imgui Files">
+      <UniqueIdentifier>{ba2d2497-7f4a-4605-a922-1d4e5d014b4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgui Files\Backends">
+      <UniqueIdentifier>{4aabe8d1-2980-4f6c-9453-64b2f70c9b72}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="direct3d.h">
@@ -135,29 +141,29 @@
     <ClInclude Include="camera_free.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imconfig.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="external\imgui\imconfig.h">
+      <Filter>Imgui Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="external\imgui\imgui.h">
+      <Filter>Imgui Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_internal.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="external\imgui\imgui_internal.h">
+      <Filter>Imgui Files</Filter>
     </ClInclude>
-    <ClInclude Include="imstb_rectpack.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="external\imgui\imstb_rectpack.h">
+      <Filter>Imgui Files</Filter>
     </ClInclude>
-    <ClInclude Include="imstb_textedit.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="external\imgui\imstb_textedit.h">
+      <Filter>Imgui Files</Filter>
     </ClInclude>
-    <ClInclude Include="imstb_truetype.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="external\imgui\imstb_truetype.h">
+      <Filter>Imgui Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_impl_dx11.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="external\imgui\backends\imgui_impl_dx11.h">
+      <Filter>Imgui Files\Backends</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_impl_win32.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="external\imgui\backends\imgui_impl_win32.h">
+      <Filter>Imgui Files\Backends</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -263,26 +269,26 @@
     <ClCompile Include="camera_free.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="external\imgui\imgui.cpp">
+      <Filter>Imgui Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_demo.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="external\imgui\imgui_demo.cpp">
+      <Filter>Imgui Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_draw.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="external\imgui\imgui_draw.cpp">
+      <Filter>Imgui Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_tables.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="external\imgui\imgui_tables.cpp">
+      <Filter>Imgui Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_widgets.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="external\imgui\imgui_widgets.cpp">
+      <Filter>Imgui Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_impl_dx11.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="external\imgui\backends\imgui_impl_dx11.cpp">
+      <Filter>Imgui Files\Backends</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_impl_win32.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="external\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>Imgui Files\Backends</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
