@@ -15,6 +15,8 @@ void CameraFree_Initialize(const DirectX::XMFLOAT3& position, float angle_x, flo
 void CameraFree_Finalize();
 void CameraFree_Update(float delta_time);
 
+void CameraFree_DrawDebugUI();
+
 // camera_free.h
 DirectX::XMMATRIX CameraFree_GetViewMatrix();
 DirectX::XMMATRIX CameraFree_GetProjectionMatrix();

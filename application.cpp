@@ -12,6 +12,7 @@ LastUpdate : 2026/06/15
 #include "shader3d.h"
 #include "texture.h"
 #include "sprite.h"
+#include "debug_ui.h"
 
 #include "scene.h"
 #include "fade.h"
@@ -43,7 +44,13 @@ bool Application_Initialize(HWND hWnd)
 	Shader_Initialize(Direct3D_GetDevice(), Direct3D_GetDeviceContext());
 	Shader3d_Initialize();
 
+	if (!DebugUI_Initialize(hWnd))
+	{
+		return false;
+	}
+
 	Sprite_Initialize();
+	Texture_Initialize();
 
 	Scene_Initialize();
 	Fade_Initialize();
@@ -53,6 +60,8 @@ bool Application_Initialize(HWND hWnd)
 
 void Application_Finalize()
 {
+	DebugUI_Finalize();
+
 	// 各システムの終了処理
 	Fade_Finalize();
 	Scene_Finalize();

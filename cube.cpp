@@ -15,18 +15,13 @@ LastUpdate : 2026/09/14
 #include "shader3d.h"
 #include "debug_ostream.h"
 #include "input_keyboard.h"
+#include "texture.h"
 
 using namespace DirectX;
 
 static ID3D11Buffer* g_pVertexBuffer{ nullptr };
 static ID3D11RasterizerState* g_pRasterizerState{ nullptr };
 static ID3D11DepthStencilState* g_pDepthStencilState{ nullptr };
-
-static constexpr float ORBIT_SPEED = 2.0f;   
-static constexpr float ZOOM_SPEED = 4.0f;  
-static constexpr float PITCH_LIMIT = 1.5f;   
-static constexpr float DIST_MIN = 1.6f;
-static constexpr float DIST_MAX = 20.0f;
 
 static XMFLOAT3 g_Target{ 0.0f, 0.0f, 0.0f };
 static float    g_Yaw = 0.6f;
@@ -37,12 +32,17 @@ struct Vertex
 {
 	XMFLOAT3 position;
 	XMFLOAT4 color;
+	XMFLOAT2 uv;
 };
 
 static constexpr int NUM_VERTEX{ 36 }; //36
 
+static int g_TextureID_Cube{ -1 };
+
 void Cube_Initialize()
 {
+	g_TextureID_Cube = Texture_Load(L"assets/textures/stone.png", true);
+
 	D3D11_BUFFER_DESC bd{
 		.ByteWidth = sizeof(Vertex) * NUM_VERTEX,
 		.Usage = D3D11_USAGE_DYNAMIC,
@@ -52,52 +52,52 @@ void Cube_Initialize()
 
 	Vertex v[NUM_VERTEX]{
 		// Front face
-		{ { -0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-		{ { -0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-		{ {  0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-		{ { -0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-		{ {  0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-		{ {  0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f} },
+		{ { -0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },
+		{ { -0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f} },
+		{ {  0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },
+		{ { -0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },
+		{ {  0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },
+		{ {  0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f} },
 
 		// Right face
-		{ { 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-		{ { 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-		{ { 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-		{ { 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-		{ { 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-		{ { 0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 0.0f, 1.0f} },
+		{ { 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },
+		{ { 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f} },
+		{ { 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },
+		{ { 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },
+		{ { 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },
+		{ { 0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f} },
 
 		// Left face
-		{ { -0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-		{ { -0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-		{ { -0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-		{ { -0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-		{ { -0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-		{ { -0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f, 1.0f} },
+		{ { -0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f} },
+		{ { -0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f} },
+		{ { -0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f} },
+		{ { -0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f} },
+		{ { -0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f} },
+		{ { -0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f} },
 
 		// Top face
-		{ { -0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 0.0f, 1.0f} },
-		{ { -0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 0.0f, 1.0f} },
-		{ {  0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 0.0f, 1.0f} },
-		{ { -0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 0.0f, 1.0f} },
-		{ {  0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 0.0f, 1.0f} },
-		{ {  0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 0.0f, 1.0f} },
+		{ { -0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },
+		{ { -0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f} },
+		{ {  0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },
+		{ { -0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },
+		{ {  0.5f,  0.5f,  0.5f}, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },
+		{ {  0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f} },
 
 		// Back face
-		{ {  0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f} },
-		{ {  0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f} },
-		{ { -0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f} },
-		{ {  0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f} },
-		{ { -0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f} },
-		{ { -0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f} },
+		{ {  0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f} },
+		{ {  0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f} },
+		{ { -0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f} },
+		{ {  0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f} },
+		{ { -0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f} },
+		{ { -0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f} },
 
 		// Bottom face
-		{ { -0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 1.0f, 1.0f} },
-		{ { -0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f, 1.0f} },
-		{ {  0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f, 1.0f} },
-		{ { -0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 1.0f, 1.0f} },
-		{ {  0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f, 1.0f} },
-		{ {  0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 1.0f, 1.0f} }
+		{ { -0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f} },
+		{ { -0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f} },
+		{ {  0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f} },
+		{ { -0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f} },
+		{ {  0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f} },
+		{ {  0.5f, -0.5f,  0.5f}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} }
 	};
 
 	D3D11_SUBRESOURCE_DATA sd{
@@ -126,6 +126,7 @@ void Cube_Finalize()
 	SAFE_RELEASE(g_pVertexBuffer);
 	SAFE_RELEASE(g_pDepthStencilState);
 	SAFE_RELEASE(g_pRasterizerState);
+	Texture_Release(g_TextureID_Cube);
 }
 
 void Cube_Update(float delta_time)
@@ -135,6 +136,7 @@ void Cube_Update(float delta_time)
 void Cube_Draw(const XMMATRIX& world)
 {
 	Shader3d_Begin();
+	Texture_SetTexture(g_TextureID_Cube);
 
 	Direct3D_GetDeviceContext()->OMSetDepthStencilState(g_pDepthStencilState, 0);
 	Direct3D_GetDeviceContext()->RSSetState(g_pRasterizerState);

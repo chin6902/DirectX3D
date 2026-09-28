@@ -17,4 +17,6 @@ void Game_Update(float delta_time);
 //void Game_FixedUpdate();
 void Game_Draw();
 
+void Game_DrawDebugUI();
+
 #endif

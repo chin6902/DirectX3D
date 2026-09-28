@@ -22,6 +22,7 @@ Windows program
 #include "system_timer.h"
 #include "keyboard.h"
 #include "mouse.h"
+#include "debug_ui.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -121,10 +122,11 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 				}
 
 				Direct3D_Begin();
+				DebugUI_Begin();
 
 				Application_Update((float)elapsed_time);
-
 				Application_Draw();
+				DebugUI_Draw();
 
 #ifdef _DEBUG
 				debug_text.Clear();
@@ -135,6 +137,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 				debug_text.Draw();
 #endif
 
+				DebugUI_End();
 				Direct3D_Flip();
 			}
 
@@ -149,6 +152,11 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if (DebugUI_ProcessMessage(hWnd, message, wParam, lParam))
+	{
+		return true;
+	}
+
 	switch (message)
 	{
 	case WM_CLOSE: // ウィンドウを閉じるメッセージ

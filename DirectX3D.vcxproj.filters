@@ -165,6 +165,12 @@
     <ClInclude Include="external\imgui\backends\imgui_impl_win32.h">
       <Filter>Imgui Files\Backends</Filter>
     </ClInclude>
+    <ClInclude Include="debug_ui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game_object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="draw_primitives.cpp">
@@ -289,6 +295,12 @@
     </ClCompile>
     <ClCompile Include="external\imgui\backends\imgui_impl_win32.cpp">
       <Filter>Imgui Files\Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="debug_ui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game_object.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

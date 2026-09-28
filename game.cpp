@@ -11,6 +11,7 @@ LastUpdate : 2026/06/24
 #include "sprite.h"
 #include "config.h"
 #include "flipbook_animation.h"
+#include "debug_ui.h"
 
 #include "game.h"
 #include "result.h"
@@ -26,6 +27,7 @@ LastUpdate : 2026/06/24
 #include "cube.h"
 #include "grid.h"
 #include "camera_free.h"
+#include "game_object.h"
 
 using namespace DirectX;
 
@@ -61,8 +63,10 @@ void Game_Initialize()
 	GameText_Initialize();
 	FlipBookAnimation_Initialize();
 
-	CameraFree_Initialize({ 0.0f, 3.0f, -5.0f }, XMConvertToRadians(30.0f), XMConvertToRadians(45.0f));
+	CameraFree_Initialize({ 0.0f, 3.0f, -5.0f }, XMConvertToRadians(30.0f), XMConvertToRadians(0.0f));
 	Cube_Initialize();
+	GameObject_Initialize();
+	GameObject_Spawn("Cube", { 0.0f, 0.5f, 0.0f });
 	Grid_Initialize();
 
 	// --- UI ---
@@ -125,7 +129,7 @@ static void UpdateEndHold(float delta_time)
 
 void Game_Update(float delta_time)
 {
-	if (InputKeyboard_IsTrigger(KK_P))
+	if (!DebugUI_WantsInput() && InputKeyboard_IsTrigger(KK_P))
 	{
 		if (g_gameState == STATE_PLAYING) { g_gameState = STATE_PAUSE; }
 		else if (g_gameState == STATE_PAUSE) { g_gameState = STATE_PLAYING; }
@@ -186,11 +190,18 @@ void Game_Draw()
 	Sprite_SetFilter(kSpriteFilter_Linear);
 	Grid_Draw();
 
-	XMMATRIX world = XMMatrixTranslation(-4.5f, 0.5f, 4.5f);
-	Cube_Draw(world);
+	GameObject_Draw();
 
 	// --- UI ---
 	Sprite_SetFilter(kSpriteFilter_Point);
 
 	Sprite_Flush();
 }
+
+#ifdef _DEBUG
+#include "imgui.h"
+
+void Game_DrawDebugUI()
+{
+}
+#endif
