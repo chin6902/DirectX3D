@@ -6,14 +6,15 @@ LastUpdate : 2026/06/24
 -----------------------------------------------------------------------------
 
 ============================================================================*/
+#include "game.h"
 #include "input_keyboard.h"
 #include "texture.h"
 #include "sprite.h"
 #include "config.h"
 #include "flipbook_animation.h"
 #include "debug_ui.h"
+#include "sampler.h"
 
-#include "game.h"
 #include "result.h"
 #include "camera.h"
 #include "collision.h"
@@ -24,6 +25,7 @@ LastUpdate : 2026/06/24
 #include "game_text.h"
 #include "game_audio.h"
 #include "mouse_ui.h"
+#include "light.h"
 #include "cube.h"
 #include "grid.h"
 #include "camera_free.h"
@@ -68,6 +70,7 @@ void Game_Initialize()
 	GameObject_Initialize();
 	GameObject_Spawn("Cube", { 0.0f, 0.5f, 0.0f });
 	Grid_Initialize();
+	Light_Initialize();
 
 	// --- UI ---
 	MouseUI_Initialize();
@@ -87,6 +90,7 @@ void Game_Finalize()
 	// ---UI ---
 	MouseUI_Finalize();
 	
+	Light_Finalize();
 	Grid_Finalize();
 	Cube_Finalize();
 	CameraFree_Finalize();
@@ -187,13 +191,20 @@ void Game_Update(float delta_time)
 
 void Game_Draw()
 {
-	Sprite_SetFilter(kSpriteFilter_Linear);
+	Sampler_SetFilter(kSamplerFilter_Point);
 	Grid_Draw();
 
+	Light_SetDirectionalLight({ 0.0f, -1.0f, 0.0f });
+
+	// --- 3D texture ---
+	Sampler_SetFilter(kSamplerFilter_Anisotropic);
 	GameObject_Draw();
 
+	// --- 2D texture ---
+	Sampler_SetFilter(kSamplerFilter_Linear);
+
 	// --- UI ---
-	Sprite_SetFilter(kSpriteFilter_Point);
+	Sampler_SetFilter(kSamplerFilter_Point);
 
 	Sprite_Flush();
 }

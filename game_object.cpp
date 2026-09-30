@@ -102,11 +102,9 @@ GameObject* GameObject_Get(int index)
 
 #ifdef _DEBUG
 
-// Editor-only state. Which tabs are open is not game data, so it lives
-// outside GameObject and never exists in a Release build.
 static bool g_InspectorOpen[OBJECT_MAX]{};
-static int  g_FocusRequest = -1;   // tab to select this frame, -1 = none
-static int  g_SpawnCounter = 0;    // keeps auto-generated names unique
+static int  g_FocusRequest = -1;   
+static int  g_SpawnCounter = 0;   
 
 static void DrawHierarchy()
 {

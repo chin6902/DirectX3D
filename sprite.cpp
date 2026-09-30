@@ -1,5 +1,5 @@
 ﻿/*============================================================================
-Contents   :  [sprite.cpp]  -  BATCHED
+Contents   :  [sprite.cpp]
 
 Author     : Chin Qing You
 LastUpdate : 2026/08/20
@@ -15,6 +15,7 @@ LastUpdate : 2026/08/20
 #include "direct3d.h"
 #include "shader.h"
 #include "texture.h"
+#include "sampler.h"
 
 using namespace DirectX;
 
@@ -35,14 +36,11 @@ static constexpr int BATCH_MAX_VERTICES = BATCH_MAX_QUADS * VERTS_PER_QUAD;
 static Vertex g_Vertices[BATCH_MAX_VERTICES];
 static int    g_VertexCount = 0;
 
-// --- what the pending batch is bound to ---
 static int          g_BatchTexture = TEXTURE_INVALID_ID;
 static SpriteFilter g_BatchFilter = kSpriteFilter_Point;
 static SpriteFilter g_PendingFilter = kSpriteFilter_Point;
 
 static ID3D11Buffer* g_pVertexBuffer{ nullptr };
-static ID3D11SamplerState* g_pSamplerState_Point{ nullptr };
-static ID3D11SamplerState* g_pSamplerState_Linear{ nullptr };
 static ID3D11BlendState* g_pBlendState{ nullptr };
 static ID3D11DepthStencilState* g_pDepthStencilState{ nullptr };
 static ID3D11RasterizerState* g_pRasterizerState{ nullptr };
@@ -67,21 +65,6 @@ bool Sprite_Initialize()
 			return false;
 		}
 	}
-
-	// --- Sampler states ---
-	D3D11_SAMPLER_DESC sd{};
-	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sd.MinLOD = 0;
-	sd.MaxLOD = D3D11_FLOAT32_MAX;
-
-	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	Direct3D_GetDevice()->CreateSamplerState(&sd, &g_pSamplerState_Point);
-
-	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	Direct3D_GetDevice()->CreateSamplerState(&sd, &g_pSamplerState_Linear);
 
 	// --- Blend state ---
 	D3D11_BLEND_DESC blend{};
@@ -121,8 +104,6 @@ void Sprite_Finalize()
 	SAFE_RELEASE(g_pRasterizerState);
 	SAFE_RELEASE(g_pDepthStencilState);
 	SAFE_RELEASE(g_pBlendState);
-	SAFE_RELEASE(g_pSamplerState_Linear);
-	SAFE_RELEASE(g_pSamplerState_Point);
 	SAFE_RELEASE(g_pVertexBuffer);
 }
 
@@ -150,8 +131,7 @@ void Sprite_Flush()
 
 	Shader_SetMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
 
-	ID3D11SamplerState* sampler =(g_BatchFilter == kSpriteFilter_Linear) ? g_pSamplerState_Linear : g_pSamplerState_Point;
-	ctx->PSSetSamplers(0, 1, &sampler);
+	Sampler_SetFilter((g_BatchFilter == kSpriteFilter_Linear) ? kSamplerFilter_Linear : kSamplerFilter_Point, kSamplerAddress_Clamp);
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;

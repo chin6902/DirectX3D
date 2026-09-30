@@ -184,10 +184,12 @@
     <ClInclude Include="input_mouse.h" />
     <ClInclude Include="input_xinput.h" />
     <ClInclude Include="keyboard.h" />
+    <ClInclude Include="light.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="mouse_ui.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="result.h" />
+    <ClInclude Include="sampler.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shader3d.h" />
@@ -231,10 +233,12 @@
     <ClCompile Include="input_mouse.cpp" />
     <ClCompile Include="input_xinput.cpp" />
     <ClCompile Include="keyboard.cpp" />
+    <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="mouse_ui.cpp" />
     <ClCompile Include="result.cpp" />
+    <ClCompile Include="sampler.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shader3d.cpp" />

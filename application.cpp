@@ -13,6 +13,7 @@ LastUpdate : 2026/06/15
 #include "texture.h"
 #include "sprite.h"
 #include "debug_ui.h"
+#include "sampler.h"
 
 #include "scene.h"
 #include "fade.h"
@@ -43,6 +44,7 @@ bool Application_Initialize(HWND hWnd)
 
 	Shader_Initialize(Direct3D_GetDevice(), Direct3D_GetDeviceContext());
 	Shader3d_Initialize();
+	Sampler_Initialize();
 
 	if (!DebugUI_Initialize(hWnd))
 	{
@@ -67,6 +69,7 @@ void Application_Finalize()
 	Scene_Finalize();
 	Sprite_Finalize();
 	Texture_Finalize();
+	Sampler_Finalize();
 	Shader3d_Finalize();
 	Shader_Finalize();
 

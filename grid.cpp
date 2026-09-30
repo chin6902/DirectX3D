@@ -14,6 +14,7 @@ LastUpdate : 2026/09/16
 #include "direct3d.h"
 #include "shader3d.h"
 #include "debug_ostream.h"
+#include "texture.h"
 
 using namespace DirectX;
 
@@ -25,15 +26,20 @@ static constexpr int GRID_LINE_COUNT_X{ GRID_COUNT_X + 1 };
 static constexpr int GRID_LINE_COUNT_Z{ GRID_COUNT_Z + 1 };
 static constexpr int NUM_VERTEX{ GRID_LINE_COUNT_X * 2 + GRID_LINE_COUNT_Z * 2 };
 
+static int g_TextureID_Grid{ -1 };
+
 struct Vertex
 {
 	XMFLOAT3 position;
 	XMFLOAT4 color;
+	XMFLOAT2 uv;		// dummy, not used in this grid
 };
 
 
 void Grid_Initialize()
 {
+	g_TextureID_Grid = Texture_Load(L"assets/textures/white.png", true);
+
 	D3D11_BUFFER_DESC bd{
 	.ByteWidth = sizeof(Vertex) * NUM_VERTEX,
 	.Usage = D3D11_USAGE_DYNAMIC,
@@ -73,6 +79,8 @@ void Grid_Initialize()
 void Grid_Finalize()
 {
 	SAFE_RELEASE(g_pVertexBuffer);
+
+	Texture_Release(g_TextureID_Grid);
 }
 
 void Grid_Update(float delta_time)
@@ -83,6 +91,8 @@ void Grid_Update(float delta_time)
 void Grid_Draw()
 {
 	Shader3d_Begin();
+
+	Texture_SetTexture(g_TextureID_Grid);
 
 	Shader3d_SetWorldMatrix(XMMatrixIdentity());
 
