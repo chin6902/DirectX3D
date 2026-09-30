@@ -14,6 +14,6 @@ LastUpdate : 2026/09/30
 void Light_Initialize();
 void Light_Finalize();
 
-void Light_SetDirectionalLight(const DirectX::XMFLOAT3& directionW);
+void Light_SetDirectionalLight(const DirectX::XMFLOAT3& directionW, const DirectX::XMFLOAT4& ambientColor);
 
 #endif

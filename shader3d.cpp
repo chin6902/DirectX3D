@@ -19,7 +19,12 @@ static ID3D11Buffer* g_pVSConstantBuffer0 = nullptr;
 static ID3D11Buffer* g_pVSConstantBuffer1 = nullptr;
 static ID3D11Buffer* g_pVSConstantBuffer2 = nullptr;
 static ID3D11PixelShader* g_pPixelShader = nullptr;
-static ID3D11SamplerState* g_pSamplerState = nullptr;
+
+struct WorldBuffer
+{
+	XMFLOAT4X4 world;
+	XMFLOAT4X4 worldIT;
+};
 
 bool Shader3d_Initialize()
 {
@@ -64,21 +69,14 @@ bool Shader3d_Initialize()
 
 	// 頂点シェーダー用定数バッファの作成
 	D3D11_BUFFER_DESC buffer_desc{};
-	buffer_desc.ByteWidth = sizeof(XMFLOAT4X4); // バッファのサイズ
-	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // バインドフラグ
+	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
+	buffer_desc.ByteWidth = sizeof(WorldBuffer);          // 128 bytes
 	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBuffer0);
+
+	buffer_desc.ByteWidth = sizeof(XMFLOAT4X4);           // 64 bytes
 	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBuffer1);
 	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBuffer2);
-
-	D3D11_SAMPLER_DESC sd{};
-	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sd.MaxLOD = D3D11_FLOAT32_MAX;
-	Direct3D_GetDevice()->CreateSamplerState(&sd, &g_pSamplerState);
 
 	// 事前コンパイル済みピクセルシェーダーの読み込み
 	std::ifstream ifs_ps("assets/shaders/shader_pixel_3d.cso", std::ios::binary);
@@ -100,6 +98,8 @@ bool Shader3d_Initialize()
 	hr = Direct3D_GetDevice()->CreatePixelShader(psbinary_pointer, filesize, nullptr, &g_pPixelShader);
 
 	delete[] psbinary_pointer; // バイナリデータのバッファを解放
+
+	return true;
 }
 
 void Shader3d_Finalize()
@@ -114,16 +114,14 @@ void Shader3d_Finalize()
 
 void Shader3d_SetWorldMatrix(const DirectX::XMMATRIX& matrix)
 {
-	// 定数バッファ格納用行列の構造体を定義
-	XMFLOAT4X4 transpose;
+	WorldBuffer wb{};
 
-	// 行列を転置して定数バッファ格納用行列に変換
-	XMStoreFloat4x4(&transpose, XMMatrixTranspose(matrix));
-
-	XMMATRIX worldIT = XMMatrixTranspose(XMMatrixInverse(nullptr, matrix));
+	// both transposed for HLSL
+	XMStoreFloat4x4(&wb.world, XMMatrixTranspose(matrix));
+	XMStoreFloat4x4(&wb.worldIT, XMMatrixInverse(nullptr, matrix));
 
 	// 定数バッファに行列をセット
-	Direct3D_GetDeviceContext()->UpdateSubresource(g_pVSConstantBuffer0, 0, nullptr, &transpose, 0, 0);
+	Direct3D_GetDeviceContext()->UpdateSubresource(g_pVSConstantBuffer0, 0, nullptr, &wb, 0, 0);
 }
 
 void Shader3d_SetViewMatrix(const DirectX::XMMATRIX& matrix)
@@ -163,6 +161,4 @@ void Shader3d_Begin()
 	Direct3D_GetDeviceContext()->VSSetConstantBuffers(0, 1, &g_pVSConstantBuffer0);
 	Direct3D_GetDeviceContext()->VSSetConstantBuffers(1, 1, &g_pVSConstantBuffer1);
 	Direct3D_GetDeviceContext()->VSSetConstantBuffers(2, 1, &g_pVSConstantBuffer2);
-
-	Direct3D_GetDeviceContext()->PSSetSamplers(0, 1, &g_pSamplerState);
 }
