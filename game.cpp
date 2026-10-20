@@ -27,7 +27,7 @@ LastUpdate : 2026/06/24
 #include "mouse_ui.h"
 #include "light.h"
 #include "cube.h"
-#include "grid.h"
+#include "mesh_field.h"
 #include "camera_free.h"
 #include "game_object.h"
 
@@ -52,6 +52,8 @@ static float g_EndTimer = 0.0f;
 static float g_RunTime = 0.0f;
 static int   g_BgmId = -1;
 
+static int g_TextureID_Ground{ -1 };
+
 //void Collision_CheckPlayerVsEnemies();
 
 void Game_Initialize()
@@ -62,14 +64,18 @@ void Game_Initialize()
 	g_RunTime = 0.0f;
 	g_RunStarted = false;
 
+	g_TextureID_Ground = Texture_Load(L"assets/textures/stone.png", true);
+
 	GameText_Initialize();
 	FlipBookAnimation_Initialize();
 
 	CameraFree_Initialize({ 0.0f, 3.0f, -5.0f }, XMConvertToRadians(30.0f), XMConvertToRadians(0.0f));
 	Cube_Initialize();
 	GameObject_Initialize();
+
 	GameObject_Spawn("Cube", { 0.0f, 0.5f, 0.0f });
-	Grid_Initialize();
+	MeshField_Initialize(1.0f, 1.0f, 50, 50);
+
 	Light_Initialize();
 
 	// --- UI ---
@@ -91,7 +97,7 @@ void Game_Finalize()
 	MouseUI_Finalize();
 	
 	Light_Finalize();
-	Grid_Finalize();
+	MeshField_Finalize();
 	Cube_Finalize();
 	CameraFree_Finalize();
 
@@ -191,15 +197,15 @@ void Game_Update(float delta_time)
 
 void Game_Draw()
 {
-	Sampler_SetFilter(kSamplerFilter_Point);
-	Grid_Draw();
-
-	Light_SetDirectionalLight({ 0.0f, -1.0f, 0.0f }, { 0.3f, 0.3f, 0.3f, 1.0f });
+	Light_SetDirectionalLight({ -0.5f, -0.8f, 1.0f }, { 0.8f, 0.8f, 0.8f, 1.0f }, { 0.4f, 0.4f, 0.4f, 1.0f });
+	Texture_SetTexture(g_TextureID_Ground);
+	MeshField_Draw();
 
 	// --- 3D texture ---
 	Sampler_SetFilter(kSamplerFilter_Anisotropic);
 	GameObject_Draw();
-
+	//set texture
+	
 	// --- 2D texture ---
 	Sampler_SetFilter(kSamplerFilter_Linear);
 

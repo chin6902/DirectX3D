@@ -17,6 +17,7 @@ struct Light
 {
 	XMFLOAT4 directionW;
 	XMFLOAT4 ambientColor;
+	XMFLOAT4 diffuseColor;
 };
 
 void Light_Initialize()
@@ -33,7 +34,7 @@ void Light_Finalize()
 	SAFE_RELEASE(g_pPSConstantBuffer0);
 }
 
-void Light_SetDirectionalLight(const DirectX::XMFLOAT3 & directionW, const DirectX::XMFLOAT4 & ambientColor)
+void Light_SetDirectionalLight(const DirectX::XMFLOAT3 & directionW, const DirectX::XMFLOAT4 & ambientColor, const DirectX::XMFLOAT4& diffuseColor)
 {
 	Light light{};
 	// light vector normalization
@@ -43,6 +44,9 @@ void Light_SetDirectionalLight(const DirectX::XMFLOAT3 & directionW, const Direc
 	
 	// Set the ambient color
 	light.ambientColor = ambientColor;
+
+	// Set the diffuse color
+	light.diffuseColor = diffuseColor;
 
 	Direct3D_GetDeviceContext()->UpdateSubresource(g_pPSConstantBuffer0, 0, nullptr, &light, 0, 0);
 	Direct3D_GetDeviceContext()->PSSetConstantBuffers(0, 1, &g_pPSConstantBuffer0);

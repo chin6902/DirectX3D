@@ -185,6 +185,7 @@
     <ClInclude Include="input_xinput.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="light.h" />
+    <ClInclude Include="mesh_field.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="mouse_ui.h" />
     <ClInclude Include="resource.h" />
@@ -235,6 +236,7 @@
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mesh_field.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="mouse_ui.cpp" />
     <ClCompile Include="result.cpp" />
