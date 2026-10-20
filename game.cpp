@@ -14,6 +14,7 @@ LastUpdate : 2026/06/24
 #include "flipbook_animation.h"
 #include "debug_ui.h"
 #include "sampler.h"
+#include "model.h"
 
 #include "result.h"
 #include "camera.h"
@@ -54,6 +55,8 @@ static int   g_BgmId = -1;
 
 static int g_TextureID_Ground{ -1 };
 
+static MODEL* g_pModel{ nullptr };
+
 //void Collision_CheckPlayerVsEnemies();
 
 void Game_Initialize()
@@ -85,11 +88,15 @@ void Game_Initialize()
 	Collision_Debug_Initialize();
 #endif
 
+	g_pModel = ModelLoad("assets/models/slime.fbx", 1.0f, false);
+
 	Fade_Start(FADE_IN, 1.0f, { 0.0f, 0.0f, 0.0f, 0.0f });
 }
 
 void Game_Finalize()
 {
+	ModelRelease(g_pModel);
+
 #ifdef _DEBUG
 	Collision_Debug_Finalize();
 #endif
@@ -204,6 +211,9 @@ void Game_Draw()
 	// --- 3D texture ---
 	Sampler_SetFilter(kSamplerFilter_Anisotropic);
 	GameObject_Draw();
+
+	ModelDraw(g_pModel, XMMatrixTranslation(0.0f, 1.0f, 0.0f));
+
 	//set texture
 	
 	// --- 2D texture ---

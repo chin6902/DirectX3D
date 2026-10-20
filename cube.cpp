@@ -45,7 +45,7 @@ void Cube_Initialize()
 
 	D3D11_BUFFER_DESC bd{
 		.ByteWidth = sizeof(Vertex) * NUM_VERTEX,
-		.Usage = D3D11_USAGE_DEFAULT,
+		.Usage = D3D11_USAGE_IMMUTABLE,
 		.BindFlags = D3D11_BIND_VERTEX_BUFFER,
 		.CPUAccessFlags = 0
 	};
@@ -103,7 +103,7 @@ void Cube_Initialize()
 	// Create index buffer
 	D3D11_BUFFER_DESC ibd{
 		.ByteWidth = sizeof(unsigned short) * NUM_INDEX,
-		.Usage = D3D11_USAGE_DEFAULT,
+		.Usage = D3D11_USAGE_IMMUTABLE,
 		.BindFlags = D3D11_BIND_INDEX_BUFFER,
 		.CPUAccessFlags = 0
 	};

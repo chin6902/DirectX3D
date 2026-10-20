@@ -46,7 +46,7 @@ void MeshField_Initialize(float grid_width, float grid_depth, int h_count, int v
 
 	D3D11_BUFFER_DESC bd{
 		.ByteWidth = sizeof(Vertex) * NUM_VERTEX,
-		.Usage = D3D11_USAGE_DEFAULT,
+		.Usage = D3D11_USAGE_IMMUTABLE,
 		.BindFlags = D3D11_BIND_VERTEX_BUFFER,
 		.CPUAccessFlags = 0
 	};
@@ -80,7 +80,7 @@ void MeshField_Initialize(float grid_width, float grid_depth, int h_count, int v
 
 	D3D11_BUFFER_DESC ibd{
 		.ByteWidth = sizeof(unsigned short) * g_NumIndex,
-		.Usage = D3D11_USAGE_DEFAULT,
+		.Usage = D3D11_USAGE_IMMUTABLE,
 		.BindFlags = D3D11_BIND_INDEX_BUFFER,
 		.CPUAccessFlags = 0
 	};
