@@ -152,6 +152,9 @@ void Cube_Update(float delta_time)
 void Cube_Draw(const XMMATRIX& world)
 {
 	Shader3d_Begin();
+
+	Shader3d_SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+
 	Texture_SetTexture(g_TextureID_Cube);
 
 	Direct3D_GetDeviceContext()->OMSetDepthStencilState(g_pDepthStencilState, 0);

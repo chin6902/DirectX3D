@@ -12,12 +12,14 @@ using namespace DirectX;
 #include "direct3d.h"
 #include "debug_ostream.h"
 #include <fstream>
+#include "shader3d.h"
 
 static ID3D11VertexShader* g_pVertexShader = nullptr;
 static ID3D11InputLayout* g_pInputLayout = nullptr;
 static ID3D11Buffer* g_pVSConstantBuffer0 = nullptr;
 static ID3D11Buffer* g_pVSConstantBuffer1 = nullptr;
 static ID3D11Buffer* g_pVSConstantBuffer2 = nullptr;
+static ID3D11Buffer* g_pPSConstantBuffer1 = nullptr; // 0 -> used for light
 static ID3D11PixelShader* g_pPixelShader = nullptr;
 
 struct WorldBuffer
@@ -78,6 +80,9 @@ bool Shader3d_Initialize()
 	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBuffer1);
 	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBuffer2);
 
+	buffer_desc.ByteWidth = sizeof(XMFLOAT4);			  // 16 bytes
+	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pPSConstantBuffer1);
+
 	// 事前コンパイル済みピクセルシェーダーの読み込み
 	std::ifstream ifs_ps("assets/shaders/shader_pixel_3d.cso", std::ios::binary);
 
@@ -108,6 +113,7 @@ void Shader3d_Finalize()
 	SAFE_RELEASE(g_pVSConstantBuffer0);
 	SAFE_RELEASE(g_pVSConstantBuffer1);
 	SAFE_RELEASE(g_pVSConstantBuffer2);
+	SAFE_RELEASE(g_pPSConstantBuffer1);
 	SAFE_RELEASE(g_pInputLayout);
 	SAFE_RELEASE(g_pVertexShader);
 }
@@ -148,6 +154,11 @@ void Shader3d_SetProjectionMatrix(const DirectX::XMMATRIX& matrix)
 	Direct3D_GetDeviceContext()->UpdateSubresource(g_pVSConstantBuffer2, 0, nullptr, &transpose, 0, 0);
 }
 
+void Shader3d_SetColor(const DirectX::XMFLOAT4& color)
+{
+	Direct3D_GetDeviceContext()->UpdateSubresource(g_pPSConstantBuffer1, 0, nullptr, &color, 0, 0);
+}
+
 void Shader3d_Begin()
 {
 	// 頂点シェーダーとピクセルシェーダーを描画パイプラインに設定
@@ -161,4 +172,6 @@ void Shader3d_Begin()
 	Direct3D_GetDeviceContext()->VSSetConstantBuffers(0, 1, &g_pVSConstantBuffer0);
 	Direct3D_GetDeviceContext()->VSSetConstantBuffers(1, 1, &g_pVSConstantBuffer1);
 	Direct3D_GetDeviceContext()->VSSetConstantBuffers(2, 1, &g_pVSConstantBuffer2);
+
+	Direct3D_GetDeviceContext()->PSSetConstantBuffers(1, 1, &g_pPSConstantBuffer1);
 }

@@ -8,6 +8,11 @@ cbuffer LightBuffer : register(b0)
     float4 ambient_color;
 };
 
+cbuffer ColorBuffer : register(b1)
+{
+    float4 color;
+}
+
 struct PS_IN
 {
     float4 position : SV_POSITION;
@@ -22,8 +27,8 @@ float4 main(PS_IN input) : SV_TARGET
     //float L = (dot(normalize(input.normalW), -light_directionW) + 1.0f) * 0.5f;
     float3 light_color = diffuse_color.rgb * max(dot(normalize(input.normalW.xyz), -light_directionW.xyz), 0.0f);
     
-    float3 diffuse = major_texture.Sample(major_sampler, input.uv).rgb * input.color.rgb * light_color;
-    float3 ambient = major_texture.Sample(major_sampler, input.uv).rgb * ambient_color.rgb;
+    float3 diffuse = major_texture.Sample(major_sampler, input.uv).rgb * input.color.rgb * color.rgb * light_color;
+    float3 ambient = major_texture.Sample(major_sampler, input.uv).rgb * color.rgb *  ambient_color.rgb;
     float alpha = input.color.a;
     
     return float4(diffuse + ambient, alpha);

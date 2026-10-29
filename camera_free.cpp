@@ -25,9 +25,9 @@ static XMFLOAT4X4 g_View{};
 static XMFLOAT4X4 g_Projection{};
 
 // Camera orientation vectors
-static XMFLOAT3 g_Front{};
-static XMFLOAT3 g_Right{};
-static XMFLOAT3 g_Up{};
+static XMFLOAT3 g_Front{0.0f, 0.0f, 1.0f};
+static XMFLOAT3 g_Right{1.0f, 0.0f, 0.0f};
+static XMFLOAT3 g_Up{ 0.0f, 1.0f, 0.0f };
 
 static float g_Fov{ 1.0f };
 
@@ -39,19 +39,16 @@ void CameraFree_Initialize(const XMFLOAT3& position, float angle_x, float angle_
 	g_Position = position;
 	g_Fov = 60.0f;
 
-	g_Front = { 0.0f, 0.0f, 1.0f };
-	g_Right = { 1.0f, 0.0f, 0.0f };
-	g_Up = { 0.0f, 1.0f, 0.0f };
-	XMVECTOR front = XMLoadFloat3(&g_Front);
-	XMVECTOR right = XMLoadFloat3(&g_Right);
-	XMVECTOR up = XMLoadFloat3(&g_Up);
+	XMVECTOR front = { 0.0f, 0.0f, 1.0f };
+	XMVECTOR right = { 1.0f, 0.0f, 0.0f };
+	XMVECTOR up = { 0.0f, 1.0f, 0.0f };
 
 	// front vector and up vector rotation around the x_angle
 	XMMATRIX rotationX = XMMatrixRotationX(angle_x);
 	front =  XMVector3TransformNormal(front, rotationX);
 	up = XMVector3TransformNormal(up, rotationX);
 
-	// front vector and up vector rotation around the x_angle
+	// front vector and up vector rotation around the y_angle
 	XMMATRIX rotationY = XMMatrixRotationY(angle_y);
 	front =  XMVector3TransformNormal(front, rotationY);
 	up = XMVector3TransformNormal(up, rotationY);
@@ -87,69 +84,70 @@ void CameraFree_Update(float delta_time)
 	constexpr float ROTATION_SPEED_PER_SECOND = XM_PI;
 	constexpr float ZOOM_SPEED_PER_SECOND = 30.0f;
 
-	if (InputKeyboard_IsPress(KK_W))
-	{
-		XMVECTOR direction{ XMVector3Normalize(front * XMVECTOR{1.0f,0.0f,1.0f,1.0f})};
-		position += direction * delta_time * MOVE_SPEED_PER_SECOND;
+	if (InputKeyboard_IsPress(KK_LEFTSHIFT)) {
+		if (InputKeyboard_IsPress(KK_W))
+		{
+			XMVECTOR direction{ XMVector3Normalize(front * XMVECTOR{1.0f,0.0f,1.0f,1.0f}) };
+			position += direction * delta_time * MOVE_SPEED_PER_SECOND;
+		}
+		if (InputKeyboard_IsPress(KK_S))
+		{
+			XMVECTOR direction{ XMVector3Normalize(front * XMVECTOR{1.0f,0.0f,1.0f,1.0f}) };
+			position -= direction * delta_time * MOVE_SPEED_PER_SECOND;
+		}
+		if (InputKeyboard_IsPress(KK_D))
+		{
+			position += right * delta_time * MOVE_SPEED_PER_SECOND;
+		}
+		if (InputKeyboard_IsPress(KK_A))
+		{
+			position -= right * delta_time * MOVE_SPEED_PER_SECOND;
+		}
+		if (InputKeyboard_IsPress(KK_Q))
+		{
+			XMVECTOR direction{ XMVector3Normalize(up * XMVECTOR{0.0f,1.0f,1.0f,1.0f}) };
+			position += up * delta_time * MOVE_SPEED_PER_SECOND;
+		}
+		if (InputKeyboard_IsPress(KK_E))
+		{
+			XMVECTOR direction{ XMVector3Normalize(up * XMVECTOR{0.0f,1.0f,1.0f,1.0f}) };
+			position -= up * delta_time * MOVE_SPEED_PER_SECOND;
+		}
+		if (InputKeyboard_IsPress(KK_RIGHT))
+		{
+			XMMATRIX rotation_y = XMMatrixRotationY(ROTATION_SPEED_PER_SECOND * delta_time);
+			front = XMVector3Normalize(XMVector3TransformNormal(front, rotation_y));
+			up = XMVector3Normalize(XMVector3TransformNormal(up, rotation_y));
+			right = XMVector3Normalize(XMVector3Cross(up, front));
+		}
+		if (InputKeyboard_IsPress(KK_LEFT))
+		{
+			XMMATRIX rotation_y = XMMatrixRotationY(-ROTATION_SPEED_PER_SECOND * delta_time);
+			front = XMVector3Normalize(XMVector3TransformNormal(front, rotation_y));
+			up = XMVector3Normalize(XMVector3TransformNormal(up, rotation_y));
+			right = XMVector3Normalize(XMVector3Cross(up, front));
+		}
+		if (InputKeyboard_IsPress(KK_UP))
+		{
+			XMMATRIX rotation_right = XMMatrixRotationAxis(right, -ROTATION_SPEED_PER_SECOND * delta_time);
+			front = XMVector3Normalize(XMVector3TransformNormal(front, rotation_right));
+			up = XMVector3Normalize(XMVector3TransformNormal(up, rotation_right));
+		}
+		if (InputKeyboard_IsPress(KK_DOWN))
+		{
+			XMMATRIX rotation_right = XMMatrixRotationAxis(right, ROTATION_SPEED_PER_SECOND * delta_time);
+			front = XMVector3Normalize(XMVector3TransformNormal(front, rotation_right));
+			up = XMVector3Normalize(XMVector3TransformNormal(up, rotation_right));
+		}
+		if (InputKeyboard_IsPress(KK_T))
+		{
+			g_Fov -= ZOOM_SPEED_PER_SECOND * delta_time;
+		}
+		if (InputKeyboard_IsPress(KK_Y))
+		{
+			g_Fov += ZOOM_SPEED_PER_SECOND * delta_time;
+		}
 	}
-	if (InputKeyboard_IsPress(KK_S))
-	{
-		XMVECTOR direction{ XMVector3Normalize(front * XMVECTOR{1.0f,0.0f,1.0f,1.0f})};
-		position -= direction * delta_time * MOVE_SPEED_PER_SECOND;
-	}
-	if (InputKeyboard_IsPress(KK_D))
-	{
-		position += right * delta_time * MOVE_SPEED_PER_SECOND;
-	}
-	if (InputKeyboard_IsPress(KK_A))
-	{
-		position -= right * delta_time * MOVE_SPEED_PER_SECOND;
-	}
-	if (InputKeyboard_IsPress(KK_Q))
-	{
-		XMVECTOR direction{ XMVector3Normalize(up * XMVECTOR{0.0f,1.0f,1.0f,1.0f}) };
-		position += up * delta_time * MOVE_SPEED_PER_SECOND;
-	}
-	if (InputKeyboard_IsPress(KK_E))
-	{
-		XMVECTOR direction{ XMVector3Normalize(up * XMVECTOR{0.0f,1.0f,1.0f,1.0f}) };
-		position -= up * delta_time * MOVE_SPEED_PER_SECOND;
-	}
-	if (InputKeyboard_IsPress(KK_RIGHT))
-	{
-		XMMATRIX rotation_y = XMMatrixRotationY(ROTATION_SPEED_PER_SECOND * delta_time);
-		front = XMVector3Normalize(XMVector3TransformNormal(front, rotation_y));
-		up = XMVector3Normalize(XMVector3TransformNormal(up, rotation_y));
-		right = XMVector3Normalize(XMVector3Cross(up, front));
-	}
-	if (InputKeyboard_IsPress(KK_LEFT))
-	{
-		XMMATRIX rotation_y = XMMatrixRotationY(-ROTATION_SPEED_PER_SECOND * delta_time);
-		front = XMVector3Normalize(XMVector3TransformNormal(front, rotation_y));
-		up = XMVector3Normalize(XMVector3TransformNormal(up, rotation_y));
-		right = XMVector3Normalize(XMVector3Cross(up, front));
-	}
-	if (InputKeyboard_IsPress(KK_UP))
-	{
-		XMMATRIX rotation_right = XMMatrixRotationAxis(right, -ROTATION_SPEED_PER_SECOND * delta_time);
-		front = XMVector3Normalize(XMVector3TransformNormal(front, rotation_right));
-		up = XMVector3Normalize(XMVector3TransformNormal(up, rotation_right));
-	}
-	if (InputKeyboard_IsPress(KK_DOWN))
-	{
-		XMMATRIX rotation_right = XMMatrixRotationAxis(right, ROTATION_SPEED_PER_SECOND * delta_time);
-		front = XMVector3Normalize(XMVector3TransformNormal(front, rotation_right));
-		up = XMVector3Normalize(XMVector3TransformNormal(up, rotation_right));
-	}
-	if (InputKeyboard_IsPress(KK_T))
-	{
-		g_Fov -= ZOOM_SPEED_PER_SECOND * delta_time;
-	}
-	if (InputKeyboard_IsPress(KK_Y))
-	{
-		g_Fov += ZOOM_SPEED_PER_SECOND * delta_time;
-	}
-
 	g_Fov = std::clamp(g_Fov, 1.0f, 120.0f);
 
 	XMStoreFloat3(&g_Position, position);
@@ -198,4 +196,14 @@ XMMATRIX CameraFree_GetViewMatrix()
 XMMATRIX CameraFree_GetProjectionMatrix()
 {
 	return XMLoadFloat4x4(&g_Projection);
+}
+
+DirectX::XMVECTOR CameraFree_GetFrontVector()
+{
+	return XMLoadFloat3(&g_Front);
+}
+
+DirectX::XMVECTOR CameraFree_GetRightVector()
+{
+	return XMLoadFloat3(&g_Right);
 }

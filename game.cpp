@@ -14,7 +14,6 @@ LastUpdate : 2026/06/24
 #include "flipbook_animation.h"
 #include "debug_ui.h"
 #include "sampler.h"
-#include "model.h"
 
 #include "result.h"
 #include "camera.h"
@@ -30,7 +29,10 @@ LastUpdate : 2026/06/24
 #include "cube.h"
 #include "mesh_field.h"
 #include "camera_free.h"
+#include "player_camera.h"
 #include "game_object.h"
+
+#include "game_player.h"
 
 using namespace DirectX;
 
@@ -55,8 +57,6 @@ static int   g_BgmId = -1;
 
 static int g_TextureID_Ground{ -1 };
 
-static MODEL* g_pModel{ nullptr };
-
 //void Collision_CheckPlayerVsEnemies();
 
 void Game_Initialize()
@@ -72,7 +72,10 @@ void Game_Initialize()
 	GameText_Initialize();
 	FlipBookAnimation_Initialize();
 
+	GamePlayer_Initialize({ 0.0f, 0.0f, 0.0f }, 0.0f);
+
 	CameraFree_Initialize({ 0.0f, 3.0f, -5.0f }, XMConvertToRadians(30.0f), XMConvertToRadians(0.0f));
+	PlayerCamera_Initialize(GamePlayer_GetPosition(), 9.0f, XMConvertToRadians(25.0f), 0.0f);
 	Cube_Initialize();
 	GameObject_Initialize();
 
@@ -88,15 +91,11 @@ void Game_Initialize()
 	Collision_Debug_Initialize();
 #endif
 
-	g_pModel = ModelLoad("assets/models/slime.fbx", 1.0f, false);
-
 	Fade_Start(FADE_IN, 1.0f, { 0.0f, 0.0f, 0.0f, 0.0f });
 }
 
 void Game_Finalize()
 {
-	ModelRelease(g_pModel);
-
 #ifdef _DEBUG
 	Collision_Debug_Finalize();
 #endif
@@ -107,6 +106,8 @@ void Game_Finalize()
 	MeshField_Finalize();
 	Cube_Finalize();
 	CameraFree_Finalize();
+	PlayerCamera_Finalize();
+	GamePlayer_Finalize();
 
 	FlipBookAnimation_Finalize();
 	GameText_Finalize();
@@ -154,9 +155,6 @@ void Game_Update(float delta_time)
 
 	CameraFree_Update(delta_time);
 
-	Shader3d_SetViewMatrix(CameraFree_GetViewMatrix());
-	Shader3d_SetProjectionMatrix(CameraFree_GetProjectionMatrix());
-
 #ifdef _DEBUG
 	Cube_Update(delta_time);
 #endif
@@ -172,6 +170,26 @@ void Game_Update(float delta_time)
 		// --- Game Update ---
 		FlipBookAnimation_Update(delta_time);
 
+		// --- Player Update ---
+		if (!InputKeyboard_IsPress(KK_LEFTSHIFT))
+		{ 
+			GamePlayer_Update(delta_time);
+		}
+
+		if (InputKeyboard_IsPress(KK_Q))
+		{
+			PlayerCamera_Orbit(-XM_PI * delta_time);
+		}
+		if (InputKeyboard_IsPress(KK_E))
+		{
+			PlayerCamera_Orbit(XM_PI * delta_time);
+		}
+
+		PlayerCamera_SetTargetPosition(GamePlayer_GetPosition());
+		PlayerCamera_Update(delta_time);
+
+		Shader3d_SetViewMatrix(PlayerCamera_GetViewMatrix());
+		Shader3d_SetProjectionMatrix(PlayerCamera_GetProjectionMatrix());
 
 		// --- collision check ---
 		//Collision_CheckPlayerVsEnemies();
@@ -211,10 +229,8 @@ void Game_Draw()
 	// --- 3D texture ---
 	Sampler_SetFilter(kSamplerFilter_Anisotropic);
 	GameObject_Draw();
-
-	ModelDraw(g_pModel, XMMatrixTranslation(0.0f, 1.0f, 0.0f));
-
-	//set texture
+	
+	GamePlayer_Draw();
 	
 	// --- 2D texture ---
 	Sampler_SetFilter(kSamplerFilter_Linear);

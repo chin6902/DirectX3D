@@ -240,13 +240,13 @@ void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 		if( texture.length != 0 ) {
 		// if (texture != aiString("")) {
 			Direct3D_GetDeviceContext()->PSSetShaderResources(0, 1, &model->Texture[texture.data]);
-			//Shader3d_SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+			Shader3d_SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 		}
 		else {
 			Texture_SetTexture(g_TextureWhiteId);
 			aiColor3D diffuse;
 			aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-			//Shader3d_SetColor({ diffuse.r, diffuse.g, diffuse.b, 1.0f });
+			Shader3d_SetColor({ diffuse.r, diffuse.g, diffuse.b, 1.0f });
 		}
 
 		// 頂点バッファを描画パイプラインに設定

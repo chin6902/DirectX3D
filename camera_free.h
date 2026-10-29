@@ -21,4 +21,7 @@ void CameraFree_DrawDebugUI();
 DirectX::XMMATRIX CameraFree_GetViewMatrix();
 DirectX::XMMATRIX CameraFree_GetProjectionMatrix();
 
+DirectX::XMVECTOR CameraFree_GetFrontVector();
+DirectX::XMVECTOR CameraFree_GetRightVector();
+
 #endif

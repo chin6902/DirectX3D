@@ -137,6 +137,8 @@ void MeshField_Draw()
 {
 	Shader3d_Begin();
 
+	Shader3d_SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+
 	Direct3D_GetDeviceContext()->OMSetDepthStencilState(g_pDepthStencilState, 0);
 	Direct3D_GetDeviceContext()->RSSetState(g_pRasterizerState);
 

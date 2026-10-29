@@ -176,6 +176,7 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="game_audio.h" />
     <ClInclude Include="game_object.h" />
+    <ClInclude Include="game_player.h" />
     <ClInclude Include="game_text.h" />
     <ClInclude Include="game_time.h" />
     <ClInclude Include="grid.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="model.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="mouse_ui.h" />
+    <ClInclude Include="player_camera.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="sampler.h" />
@@ -228,6 +230,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_audio.cpp" />
     <ClCompile Include="game_object.cpp" />
+    <ClCompile Include="game_player.cpp" />
     <ClCompile Include="game_text.cpp" />
     <ClCompile Include="game_time.cpp" />
     <ClCompile Include="grid.cpp" />
@@ -241,6 +244,7 @@
     <ClCompile Include="model.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="mouse_ui.cpp" />
+    <ClCompile Include="player_camera.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="sampler.cpp" />
     <ClCompile Include="scene.cpp" />
