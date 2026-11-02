@@ -39,6 +39,7 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 	model->IndexBuffer = new ID3D11Buffer*[model->AiScene->mNumMeshes];
 
 	XMFLOAT3 vmin{}, vmax{};
+	bool first = true;
 
 	for (unsigned int m = 0; m < model->AiScene->mNumMeshes; m++)
 	{
@@ -64,10 +65,11 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 
 				// AABB‚ÌŒvŽZ
 
-				if (v == 0)
+				if (first)
 				{
 					vmin = vertex[v].position;
 					vmax = vertex[v].position;
+					first = false;
 				}
 				else
 				{
@@ -94,15 +96,11 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 			delete[] vertex;
 		}
 
-		model->AABB = { 
+		model->AABB = {
 			(vmax.x - vmin.x) * 0.5f,
 			(vmax.y - vmin.y) * 0.5f,
 			(vmax.z - vmin.z) * 0.5f,
-			{ 
-				(vmax.x + vmin.x) * 0.5f, 
-				(vmax.y + vmin.y) * 0.5f, 
-				(vmax.z + vmin.z) * 0.5f 
-			} 
+			{ (vmax.x + vmin.x) * 0.5f, (vmax.y + vmin.y) * 0.5f, (vmax.z + vmin.z) * 0.5f } 
 		};
 
 
