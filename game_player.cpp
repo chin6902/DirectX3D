@@ -143,4 +143,18 @@ const DirectX::XMFLOAT3& GamePlayer_GetPosition()
 	return g_Position;
 }
 
+CollisionAABB GamePlayer_GetAABB()
+{
+    if (!g_pModel) return {};
+
+    CollisionAABB aabb = g_pModel->AABB;
+
+    // The model's AABB center is relative to the model origin (the feet),
+    // so add the player position instead of overwriting it
+    const XMFLOAT3& local = aabb.GetCenter();
+    aabb.SetcCenterPosition({ g_Position.x + local.x, g_Position.y + local.y, g_Position.z + local.z });
+
+    return aabb;
+}
+
 

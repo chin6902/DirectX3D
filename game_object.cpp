@@ -5,6 +5,8 @@ Author     : Chin Qing You
 -----------------------------------------------------------------------------
 
 ============================================================================*/
+#include <cmath>
+
 #include "game_object.h"
 #include "cube.h"
 
@@ -76,6 +78,26 @@ XMMATRIX GameObject_GetWorldMatrix(const GameObject& object)
 		* XMMatrixRotationRollPitchYaw(object.rotation.x, object.rotation.y, object.rotation.z)
 		* XMMatrixTranslation(object.position.x, object.position.y, object.position.z);
 }
+
+CollisionAABB GameObject_GetAABB(const GameObject& object)
+{
+	// The cube mesh is a unit cube centred on the origin (-0.5 .. 0.5)
+	const XMFLOAT3 half = {
+		object.scale.x * 0.5f,
+		object.scale.y * 0.5f,
+		object.scale.z * 0.5f };
+
+	XMFLOAT3X3 r;
+	XMStoreFloat3x3(&r, XMMatrixRotationRollPitchYaw(object.rotation.x, object.rotation.y, object.rotation.z));
+
+	// Project each rotated half-axis onto world X/Y/Z so the box still contains the rotated cube
+	const float half_width = fabsf(r._11) * half.x + fabsf(r._21) * half.y + fabsf(r._31) * half.z;
+	const float half_height = fabsf(r._12) * half.x + fabsf(r._22) * half.y + fabsf(r._32) * half.z;
+	const float half_depth = fabsf(r._13) * half.x + fabsf(r._23) * half.y + fabsf(r._33) * half.z;
+
+	return CollisionAABB(half_width, half_height, half_depth, object.position);
+}
+
 
 void GameObject_Draw()
 {

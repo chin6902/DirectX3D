@@ -57,6 +57,8 @@ static int   g_BgmId = -1;
 
 static int g_TextureID_Ground{ -1 };
 
+bool player_hit = false;
+
 //void Collision_CheckPlayerVsEnemies();
 
 void Game_Initialize()
@@ -155,6 +157,27 @@ void Game_Update(float delta_time)
 
 	CameraFree_Update(delta_time);
 
+	const CollisionAABB playerAABB = GamePlayer_GetAABB();
+
+	for (int i = 0; i < OBJECT_MAX; i++)
+	{
+		const GameObject* object = GameObject_Get(i);   // nullptr for inactive slots
+
+		if (object == nullptr)
+		{
+			continue;
+		}
+
+		if (playerAABB.IsOverlap(GameObject_GetAABB(*object)))
+		{
+			player_hit = true;
+		}
+		else
+		{
+			player_hit = false;
+		}
+	}
+
 #ifdef _DEBUG
 	Cube_Update(delta_time);
 #endif
@@ -192,7 +215,6 @@ void Game_Update(float delta_time)
 		Shader3d_SetProjectionMatrix(PlayerCamera_GetProjectionMatrix());
 
 		// --- collision check ---
-		//Collision_CheckPlayerVsEnemies();
 
 		// --- UI ---
 
@@ -225,6 +247,15 @@ void Game_Draw()
 	Light_SetDirectionalLight({ -0.5f, -0.8f, 1.0f }, { 0.8f, 0.8f, 0.8f, 1.0f }, { 0.4f, 0.4f, 0.4f, 1.0f });
 	Texture_SetTexture(g_TextureID_Ground);
 	MeshField_Draw();
+
+
+	if (player_hit) {
+		GameText_Draw(10.0f, 10.0f, "Player collided with object!", 1.0f, { 1.0f, 0.0f, 0.0f });
+	}
+	else
+	{
+		GameText_Draw(10.0f, 10.0f, "Player is safe.", 1.0f, { 0.0f, 1.0f, 0.0f });
+	}
 
 	// --- 3D texture ---
 	Sampler_SetFilter(kSamplerFilter_Anisotropic);

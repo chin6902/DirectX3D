@@ -7,6 +7,7 @@ LastUpdate : 2026/04/15
 
 ============================================================================*/
 #include <algorithm>
+#include <cmath>
 
 #include "collision.h"
 
@@ -119,4 +120,31 @@ bool Collision_IsOverlap(const CollisionCapsule& capsule, const CollisionCircle&
 
 	const float reach = capsule.half_thickness + circle.radius;
 	return d_sq < reach * reach;
+}
+
+bool CollisionAABB::IsOverlap(const CollisionAABB& target) const
+{
+	float a_min_x = m_center.x - m_half_width;
+	float a_max_x = m_center.x + m_half_width;
+	float a_min_y = m_center.y - m_half_height;
+	float a_max_y = m_center.y + m_half_height;
+	float a_min_z = m_center.z - m_half_depth;
+	float a_max_z = m_center.z + m_half_depth;
+
+	float b_min_x = target.m_center.x - target.m_half_width;
+	float b_max_x = target.m_center.x + target.m_half_width;
+	float b_min_y = target.m_center.y - target.m_half_height;
+	float b_max_y = target.m_center.y + target.m_half_height;
+	float b_min_z = target.m_center.z - target.m_half_depth;
+	float b_max_z = target.m_center.z + target.m_half_depth;
+
+	return a_max_x >= b_min_x && a_min_x <= b_max_x
+		&& a_max_y >= b_min_y && a_min_y <= b_max_y
+		&& a_max_z >= b_min_z && a_min_z <= b_max_z;
+
+	/*
+	return fabsf(m_center.x - target.m_center.x) <= m_half_width + target.m_half_width
+		&& fabsf(m_center.y - target.m_center.y) <= m_half_height + target.m_half_height
+		&& fabsf(m_center.z - target.m_center.z) <= m_half_depth + target.m_half_depth;
+	*/
 }

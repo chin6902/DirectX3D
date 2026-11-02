@@ -38,6 +38,8 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 	model->VertexBuffer = new ID3D11Buffer*[model->AiScene->mNumMeshes];
 	model->IndexBuffer = new ID3D11Buffer*[model->AiScene->mNumMeshes];
 
+	XMFLOAT3 vmin{}, vmax{};
+
 	for (unsigned int m = 0; m < model->AiScene->mNumMeshes; m++)
 	{
 		aiMesh* mesh = model->AiScene->mMeshes[m];
@@ -59,6 +61,23 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 
 				vertex[v].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 				vertex[v].texcoord = XMFLOAT2( mesh->mTextureCoords[0][v].x, mesh->mTextureCoords[0][v].y);
+
+				// AABBの計算
+
+				if (v == 0)
+				{
+					vmin = vertex[v].position;
+					vmax = vertex[v].position;
+				}
+				else
+				{
+					vmin.x = std::min(vmin.x, vertex[v].position.x);
+					vmin.y = std::min(vmin.y, vertex[v].position.y);
+					vmin.z = std::min(vmin.z, vertex[v].position.z);
+					vmax.x = std::max(vmax.x, vertex[v].position.x);
+					vmax.y = std::max(vmax.y, vertex[v].position.y);
+					vmax.z = std::max(vmax.z, vertex[v].position.z);
+				}
 			}
 
 			D3D11_BUFFER_DESC bd{};
@@ -74,6 +93,17 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 	
 			delete[] vertex;
 		}
+
+		model->AABB = { 
+			(vmax.x - vmin.x) * 0.5f,
+			(vmax.y - vmin.y) * 0.5f,
+			(vmax.z - vmin.z) * 0.5f,
+			{ 
+				(vmax.x + vmin.x) * 0.5f, 
+				(vmax.y + vmin.y) * 0.5f, 
+				(vmax.z + vmin.z) * 0.5f 
+			} 
+		};
 
 
 		// インデックスバッファ生成

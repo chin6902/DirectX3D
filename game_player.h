@@ -11,6 +11,8 @@ LastUpdate : 2026/10/21
 
 #include <DirectXMath.h>
 
+#include "collision.h"
+
 void GamePlayer_Initialize(const DirectX::XMFLOAT3& position, float angle_y);
 void GamePlayer_Finalize();
 
@@ -18,5 +20,6 @@ void GamePlayer_Update(float delta_time);
 void GamePlayer_Draw();
 
 const DirectX::XMFLOAT3& GamePlayer_GetPosition();
+CollisionAABB GamePlayer_GetAABB();
 
 #endif

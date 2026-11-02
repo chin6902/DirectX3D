@@ -50,4 +50,26 @@ float Collision_PointSegmentDistanceSq(
 	const DirectX::XMFLOAT2& seg_start,
 	const DirectX::XMFLOAT2& seg_end);
 
+class CollisionAABB
+{
+private:
+	float m_half_width{};
+	float m_half_height{};
+	float m_half_depth{};
+	DirectX::XMFLOAT3 m_center{};
+
+public:
+	CollisionAABB() = default;
+	CollisionAABB(float half_width, float half_height, float half_depth, const DirectX::XMFLOAT3& center)
+		: m_half_width(half_width), m_half_height(half_height), m_half_depth(half_depth), m_center(center) {};
+
+	void SetcCenterPosition(const DirectX::XMFLOAT3& center) { m_center = center; }
+	const DirectX::XMFLOAT3& GetCenter() const { return m_center; }
+
+	// Checks if a point is inside the AABB.
+	// bool IsOverlap(const XMFLOAT3& point);
+
+	bool IsOverlap(const CollisionAABB& target) const;
+};
+
 #endif

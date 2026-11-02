@@ -9,6 +9,7 @@ Author     : Chin Qing You
 #define GAME_OBJECT_H
 
 #include <DirectXMath.h>
+#include "collision.h"
 
 static constexpr int OBJECT_MAX = 128;
 static constexpr int OBJECT_NAME_MAX = 32;
@@ -35,6 +36,8 @@ void GameObject_Draw();
 GameObject* GameObject_Get(int index);
 
 DirectX::XMMATRIX GameObject_GetWorldMatrix(const GameObject& object);
+
+CollisionAABB GameObject_GetAABB(const GameObject& object);
 
 #ifdef _DEBUG
 void GameObject_DrawDebugUI();
