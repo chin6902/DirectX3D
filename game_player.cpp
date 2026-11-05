@@ -6,6 +6,7 @@ LastUpdate : 2026/10/21
 -----------------------------------------------------------------------------
 
 ============================================================================*/
+#include <algorithm>
 #include <DirectXMath.h>
 
 #include "game_player.h"
@@ -177,17 +178,27 @@ const DirectX::XMFLOAT3& GamePlayer_GetPosition()
 	return g_Position;
 }
 
+#include <algorithm>
+
 static CollisionAABB MakePlayerAABB(FXMVECTOR position)
 {
     if (!g_pModel) return {};
 
-    CollisionAABB aabb = g_pModel->AABB;
-    const XMFLOAT3& local = aabb.GetCenter();
+    const CollisionAABB& model_aabb = g_pModel->AABB;
+    const XMFLOAT3& local = model_aabb.GetCenter();
+
+    // Square footprint so the box is the same at every facing.
+    // Uses the smaller side (the body), so the arms don't count.
+    const float half_xz = std::min(model_aabb.GetHalfWidth(), model_aabb.GetHalfDepth());
 
     XMFLOAT3 p;
     XMStoreFloat3(&p, position);
-    aabb.SetCenterPosition({ p.x + local.x, p.y + local.y, p.z + local.z });
-    return aabb;
+
+    return CollisionAABB(
+        half_xz,
+        model_aabb.GetHalfHeight(),
+        half_xz,
+        { p.x + local.x, p.y + local.y, p.z + local.z });
 }
 
 CollisionAABB GamePlayer_GetAABB()
