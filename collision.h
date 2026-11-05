@@ -50,26 +50,53 @@ float Collision_PointSegmentDistanceSq(
 	const DirectX::XMFLOAT2& seg_start,
 	const DirectX::XMFLOAT2& seg_end);
 
+class HitData3D;
+
 class CollisionAABB
 {
+public:
+	CollisionAABB() = default;
+	CollisionAABB(float half_width, float half_height, float half_depth, const DirectX::XMFLOAT3& center)
+		: m_half_width(half_width), m_half_height(half_height), m_half_depth(half_depth), m_center(center) {};
+
+	void SetCenterPosition(const DirectX::XMFLOAT3& center) { m_center = center; }
+	const DirectX::XMFLOAT3& GetCenter() const { return m_center; }
+
+	float GetHalfWidth() const { return m_half_width; }
+	float GetHalfHeight() const { return m_half_height; }
+	float GetHalfDepth() const { return m_half_depth; }
+
+	bool IsOverlap(const CollisionAABB& target) const;
+	HitData3D IsHit(const CollisionAABB& target) const;
+
 private:
 	float m_half_width{};
 	float m_half_height{};
 	float m_half_depth{};
 	DirectX::XMFLOAT3 m_center{};
 
+};
+
+class HitData3D
+{
 public:
-	CollisionAABB() = default;
-	CollisionAABB(float half_width, float half_height, float half_depth, const DirectX::XMFLOAT3& center)
-		: m_half_width(half_width), m_half_height(half_height), m_half_depth(half_depth), m_center(center) {};
+	HitData3D() = default;
+	HitData3D(bool isHit) : isHit(isHit) {};
 
-	void SetcCenterPosition(const DirectX::XMFLOAT3& center) { m_center = center; }
-	const DirectX::XMFLOAT3& GetCenter() const { return m_center; }
+	bool IsHit() const { return isHit; };
+	void SetNormal(const DirectX::XMFLOAT3& normal) { m_normal = normal; };
+	const DirectX::XMFLOAT3& GetNormal() const { return m_normal; };
+	void SetAABB(const CollisionAABB& aabb) { m_aabb = aabb; };
+	const CollisionAABB& GetAABB() const { return m_aabb; };
+	void  SetDepth(float depth) { m_depth = depth; }
+	float GetDepth() const { return m_depth; }
 
-	// Checks if a point is inside the AABB.
-	// bool IsOverlap(const XMFLOAT3& point);
+private:
+	bool isHit{ false };
+	float m_depth{};
+	DirectX::XMFLOAT3 m_normal{};
+	CollisionAABB m_aabb{};
 
-	bool IsOverlap(const CollisionAABB& target) const;
 };
 
 #endif

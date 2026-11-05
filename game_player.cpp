@@ -14,6 +14,8 @@ LastUpdate : 2026/10/21
 #include "input_keyboard.h"
 #include "model.h"
 
+#include "game_object.h"
+
 using namespace DirectX;
 
 static XMFLOAT3 g_Position{};
@@ -37,6 +39,8 @@ static XMFLOAT3 g_TargetDirection{};
 static float g_Angle{};
 
 static MODEL* g_pModel{ nullptr };
+
+static CollisionAABB MakePlayerAABB(FXMVECTOR position);
 
 void GamePlayer_Initialize(const DirectX::XMFLOAT3& position, float angle_y)
 {
@@ -95,7 +99,7 @@ void GamePlayer_Update(float delta_time)
     float diff = XMScalarModAngle(targetAngle - g_Angle);
     float maxStep = PLAYER_ROTATION_SPEED_PER_SEC * delta_time;
 
-    if (fabsf(diff) <= maxStep) 
+    if (std::abs(diff) <= maxStep) 
     {
         g_Angle = targetAngle;
     }
@@ -116,6 +120,36 @@ void GamePlayer_Update(float delta_time)
 
     // --- Integrate position ---
     position += velocity * delta_time;
+
+    // --- Object collision ---
+    g_IsGrounded = false;
+
+    for (int i = 0; i < OBJECT_MAX; i++)
+    {
+        const GameObject* object = GameObject_Get(i);
+        if (object == nullptr) continue;
+
+        // Rebuild every iteration: earlier objects may have moved us
+        HitData3D hit = MakePlayerAABB(position).IsHit(GameObject_GetAABB(*object));
+        if (!hit.IsHit()) continue;
+
+        XMVECTOR normal = XMLoadFloat3(&hit.GetNormal());
+
+        // Push out of the object
+        position += normal * hit.GetDepth();
+
+        // Remove only the velocity going into the surface (keeps sliding along walls)
+        float intoSurface = XMVectorGetX(XMVector3Dot(velocity, normal));
+        if (intoSurface < 0.0f)
+        {
+            velocity -= normal * intoSurface;
+        }
+
+        if (hit.GetNormal().y > 0.0f)
+        {
+            g_IsGrounded = true;
+        }
+    }
 
     // --- Ground collision ---
     if (XMVectorGetY(position) < 0.0f)
@@ -143,18 +177,22 @@ const DirectX::XMFLOAT3& GamePlayer_GetPosition()
 	return g_Position;
 }
 
-CollisionAABB GamePlayer_GetAABB()
+static CollisionAABB MakePlayerAABB(FXMVECTOR position)
 {
     if (!g_pModel) return {};
 
     CollisionAABB aabb = g_pModel->AABB;
-
-    // The model's AABB center is relative to the model origin (the feet),
-    // so add the player position instead of overwriting it
     const XMFLOAT3& local = aabb.GetCenter();
-    aabb.SetcCenterPosition({ g_Position.x + local.x, g_Position.y + local.y, g_Position.z + local.z });
 
+    XMFLOAT3 p;
+    XMStoreFloat3(&p, position);
+    aabb.SetCenterPosition({ p.x + local.x, p.y + local.y, p.z + local.z });
     return aabb;
+}
+
+CollisionAABB GamePlayer_GetAABB()
+{
+    return MakePlayerAABB(XMLoadFloat3(&g_Position));
 }
 
 

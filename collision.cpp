@@ -4,7 +4,7 @@ Contents   :  [collision.cpp]
 Author     : Chin Qing You
 LastUpdate : 2026/04/15
 -----------------------------------------------------------------------------
-
+ccd (high speed collision detection)
 ============================================================================*/
 #include <algorithm>
 #include <cmath>
@@ -12,6 +12,10 @@ LastUpdate : 2026/04/15
 #include "collision.h"
 
 using namespace DirectX;
+
+// ============================================================================
+// 2D Collision
+// ============================================================================
 
 bool Collision_IsOverlap(const CollisionCircle& a, const CollisionCircle& b)
 {
@@ -122,6 +126,10 @@ bool Collision_IsOverlap(const CollisionCapsule& capsule, const CollisionCircle&
 	return d_sq < reach * reach;
 }
 
+// ============================================================================
+// 3D AABB
+// ============================================================================
+
 bool CollisionAABB::IsOverlap(const CollisionAABB& target) const
 {
 	float a_min_x = m_center.x - m_half_width;
@@ -147,4 +155,85 @@ bool CollisionAABB::IsOverlap(const CollisionAABB& target) const
 		&& fabsf(m_center.y - target.m_center.y) <= m_half_height + target.m_half_height
 		&& fabsf(m_center.z - target.m_center.z) <= m_half_depth + target.m_half_depth;
 	*/
+}
+
+HitData3D CollisionAABB::IsHit(const CollisionAABB& target) const
+{
+	if(!IsOverlap(target))
+	{
+		return {};
+	}
+
+	float xdepth = (m_half_width + target.m_half_width) - std::abs(m_center.x - target.m_center.x);
+	float ydepth = (m_half_height + target.m_half_height) - std::abs(m_center.y - target.m_center.y);
+	float zdepth = (m_half_depth + target.m_half_depth) - std::abs(m_center.z - target.m_center.z);
+
+	char shallow_axis{};
+
+	if (xdepth > ydepth)
+	{
+		if(ydepth > zdepth)
+		{
+			shallow_axis = 'z';
+		}
+		else
+		{
+			shallow_axis = 'y';
+		}
+	}
+	else
+	{
+		if (zdepth > xdepth)
+		{
+			shallow_axis = 'x';
+		}
+		else
+		{
+			shallow_axis = 'z';
+		}
+	}
+
+	HitData3D result{ true };
+	result.SetAABB(target);
+
+	switch (shallow_axis)
+	{
+	case 'x':
+		result.SetDepth(xdepth);
+		if (m_center.x < target.m_center.x)
+		{
+			result.SetNormal({ -1.0f, 0.0f, 0.0f });
+		}
+		else
+		{
+			result.SetNormal({ 1.0f, 0.0f, 0.0f });
+		}
+		break;
+	case 'y':
+		result.SetDepth(ydepth);
+		if (m_center.y < target.m_center.y)
+		{
+			result.SetNormal({ 0.0f, -1.0f, 0.0f });
+		}
+		else
+		{
+			result.SetNormal({ 0.0f, 1.0f, 0.0f });
+		}
+		break;
+	case 'z':
+		result.SetDepth(zdepth);
+		if (m_center.z < target.m_center.z)
+		{
+			result.SetNormal({ 0.0f, 0.0f, -1.0f });
+		}
+		else
+		{
+			result.SetNormal({ 0.0f, 0.0f, 1.0f });
+		}
+		break;
+	default:
+		break;
+	}
+
+	return result;
 }
