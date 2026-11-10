@@ -14,12 +14,14 @@ LastUpdate : 2026/06/24
 #include "flipbook_animation.h"
 #include "debug_ui.h"
 #include "sampler.h"
+#include "shader_vertex.h"
+#include "shader_pixel.h"
+#include "shader_constant.h"
 
 #include "result.h"
 #include "camera.h"
 #include "collision.h"
 #include "collision_debug.h"
-#include "shader3d.h"
 #include "scene.h"
 #include "fade.h"
 #include "game_text.h"
@@ -49,7 +51,7 @@ static constexpr float END_HOLD_GAMEOVER = 1.40f;
 static constexpr float END_HOLD_CLEAR = 2.00f;
 static bool g_RunStarted = false;
 
-static State g_gameState = STATE_PLAYING;
+static State g_GameState = STATE_PLAYING;
 static bool  g_IsChangeScene = false;
 static float g_EndTimer = 0.0f;
 static float g_RunTime = 0.0f;
@@ -59,11 +61,28 @@ static int g_TextureID_Ground{ -1 };
 
 bool player_hit = false;
 
+static VertexShader g_VertexShader3D;
+static PixelShader g_PixelShader3D;
+static ShaderConstant g_ShaderConstant3D;	
+
 //void Collision_CheckPlayerVsEnemies();
 
 void Game_Initialize()
 {
-	g_gameState = STATE_PLAYING;
+	//==========  later make a manager for the layout ===============
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT	,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL"	, 0, DXGI_FORMAT_R32G32B32_FLOAT	,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR"	, 0, DXGI_FORMAT_R32G32B32A32_FLOAT	,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT		,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+
+	g_VertexShader3D.Load("assets/shaders/shader_vertex_3d.cso", layout, ARRAYSIZE(layout));
+	g_PixelShader3D.Load("assets/shaders/shader_pixel_3d.cso");
+	g_ShaderConstant3D.Initialize();
+	//==============================================================
+
+	g_GameState = STATE_PLAYING;
 	g_IsChangeScene = false;  
 	g_EndTimer = 0.0f;
 	g_RunTime = 0.0f;
@@ -117,7 +136,7 @@ void Game_Finalize()
 
 static void EnterEndState(bool cleared)
 {
-	g_gameState = cleared ? STATE_GAMECLEAR : STATE_GAMEOVER;
+	g_GameState = cleared ? STATE_GAMECLEAR : STATE_GAMEOVER;
 	g_EndTimer = cleared ? END_HOLD_CLEAR : END_HOLD_GAMEOVER;
 
 	GameAudio_StopMusic();
@@ -151,8 +170,8 @@ void Game_Update(float delta_time)
 {
 	if (!DebugUI_WantsInput() && InputKeyboard_IsTrigger(KK_P))
 	{
-		if (g_gameState == STATE_PLAYING) { g_gameState = STATE_PAUSE; }
-		else if (g_gameState == STATE_PAUSE) { g_gameState = STATE_PLAYING; }
+		if (g_GameState == STATE_PLAYING) { g_GameState = STATE_PAUSE; }
+		else if (g_GameState == STATE_PAUSE) { g_GameState = STATE_PLAYING; }
 	}
 
 	CameraFree_Update(delta_time);
@@ -182,7 +201,7 @@ void Game_Update(float delta_time)
 	Cube_Update(delta_time);
 #endif
 
-	switch (g_gameState)
+	switch (g_GameState)
 	{
 	case STATE_PLAYING:
 		g_RunTime += delta_time;
@@ -211,8 +230,8 @@ void Game_Update(float delta_time)
 		PlayerCamera_SetTargetPosition(GamePlayer_GetPosition());
 		PlayerCamera_Update(delta_time);
 
-		Shader3d_SetViewMatrix(PlayerCamera_GetViewMatrix());
-		Shader3d_SetProjectionMatrix(PlayerCamera_GetProjectionMatrix());
+		g_ShaderConstant3D.SetViewMatrix(PlayerCamera_GetViewMatrix());
+		g_ShaderConstant3D.SetProjectionMatrix(PlayerCamera_GetProjectionMatrix());
 
 		// --- collision check ---
 
@@ -244,6 +263,13 @@ void Game_Update(float delta_time)
 
 void Game_Draw()
 {
+	ShaderConstant_Get3D().Initialize();
+
+	g_PixelShader3D.Begin();
+	g_VertexShader3D.Begin();
+	ShaderConstant_Get3D().Bind();
+	//g_ShaderConstant3D.Bind();// need to change for better usage
+
 	Light_SetDirectionalLight({ -0.5f, -0.8f, 1.0f }, { 0.8f, 0.8f, 0.8f, 1.0f }, { 0.4f, 0.4f, 0.4f, 1.0f });
 	Texture_SetTexture(g_TextureID_Ground);
 	MeshField_Draw();

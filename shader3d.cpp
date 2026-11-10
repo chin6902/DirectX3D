@@ -9,10 +9,10 @@ separate shader for different objects(D3D11_INPUT_ELEMENT_DESC layout) use class
 #include <d3d11.h>
 #include <DirectXMath.h>
 using namespace DirectX;
+#include "shader3d.h"
 #include "direct3d.h"
 #include "debug_ostream.h"
 #include <fstream>
-#include "shader3d.h"
 
 static ID3D11VertexShader* g_pVertexShader = nullptr;
 static ID3D11InputLayout* g_pInputLayout = nullptr;

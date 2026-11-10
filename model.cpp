@@ -13,7 +13,7 @@ LastUpdate : 2026/10/20
 #include "WICTextureLoader11.h"
 #include "direct3d.h"
 #include "texture.h"
-#include "shader3d.h"
+#include "shader_constant.h"
 
 using namespace DirectX;
 
@@ -27,6 +27,13 @@ struct Vertex3d
 };
 
 static int g_TextureWhiteId{ -1 };
+
+static ShaderConstant* g_pShaderConstant{ nullptr };
+
+void ModelInit(ShaderConstant* pShaderConstant)
+{
+	g_pShaderConstant = pShaderConstant;	
+}
 
 MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 {
@@ -250,14 +257,11 @@ void ModelRelease(MODEL* model)
 
 void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 {
-	// シェーダーを描画パイプラインに設定
-	Shader3d_Begin();
-
 	// プリミティブトポロジ設定
 	Direct3D_GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// 頂点シェーダーにワールド座標変換行列を設定
-	Shader3d_SetWorldMatrix(mtxWorld);
+	ShaderConstant_Get3D().SetWorldMatrix(mtxWorld);
 
 	for (unsigned int m = 0; m < model->AiScene->mNumMeshes; m++)
 	{
@@ -268,13 +272,13 @@ void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 		if( texture.length != 0 ) {
 		// if (texture != aiString("")) {
 			Direct3D_GetDeviceContext()->PSSetShaderResources(0, 1, &model->Texture[texture.data]);
-			Shader3d_SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+			ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 		}
 		else {
 			Texture_SetTexture(g_TextureWhiteId);
 			aiColor3D diffuse;
 			aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-			Shader3d_SetColor({ diffuse.r, diffuse.g, diffuse.b, 1.0f });
+			ShaderConstant_Get3D().SetColor({ diffuse.r, diffuse.g, diffuse.b, 1.0f });
 		}
 
 		// 頂点バッファを描画パイプラインに設定

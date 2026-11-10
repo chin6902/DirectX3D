@@ -189,6 +189,15 @@
     <ClInclude Include="player_camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shader_vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shader_pixel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shader_constant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="draw_primitives.cpp">
@@ -336,6 +345,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="player_camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shader_vertex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shader_pixel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shader_constant.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

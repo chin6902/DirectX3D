@@ -18,6 +18,7 @@ LastUpdate : 2026/10/20
 #include "assimp/postprocess.h"
 #include "assimp/matrix4x4.h"
 #include "collision.h"
+#include "shader_constant.h"
 #pragma comment (lib, "assimp/assimp-vc143-mt.lib")
 
 
@@ -33,6 +34,7 @@ struct MODEL
 	CollisionAABB AABB{};
 };
 
+void ModelInit(ShaderConstant* pShaderConstant);
 MODEL* ModelLoad(const char* FileName, float scale = 1.0f, bool bBlender = false);
 void ModelRelease(MODEL* model);
 

@@ -12,9 +12,9 @@ LastUpdate : 2026/09/14
 #include "cube.h"
 #include "config.h"
 #include "direct3d.h"
-#include "shader3d.h"
 #include "debug_ostream.h"
 #include "texture.h"
+#include "shader_constant.h"
 
 using namespace DirectX;
 
@@ -24,6 +24,8 @@ static ID3D11Buffer* g_pIndexBuffer{ nullptr };
 
 static ID3D11RasterizerState*	g_pRasterizerState{ nullptr };
 static ID3D11DepthStencilState* g_pDepthStencilState{ nullptr };
+
+static ShaderConstant* g_pShaderConstant{ nullptr };
 
 struct Vertex
 {
@@ -39,9 +41,10 @@ static constexpr int NUM_INDEX { 6 * 6 };
 static int g_TextureID_Cube{ -1 };
 static int g_TextureID_Stone{ -1 };
 
-void Cube_Initialize()
+void Cube_Initialize(ShaderConstant* pShaderConstant)
 {
 	g_TextureID_Cube = Texture_Load(L"assets/textures/cube.png", true);
+	g_pShaderConstant = pShaderConstant;
 
 	D3D11_BUFFER_DESC bd{
 		.ByteWidth = sizeof(Vertex) * NUM_VERTEX,
@@ -151,9 +154,7 @@ void Cube_Update(float delta_time)
 
 void Cube_Draw(const XMMATRIX& world)
 {
-	Shader3d_Begin();
-
-	Shader3d_SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
 	Texture_SetTexture(g_TextureID_Cube);
 
@@ -163,7 +164,7 @@ void Cube_Draw(const XMMATRIX& world)
 	// practice (scale * rotation * translation)
 	// XMMATRIX world = XMMatrixScaling(s, s, s) * XMMatrixRotationY(g_Angle) * XMMatrixTranslation(x, y, z);
 
-	Shader3d_SetWorldMatrix(world);
+	ShaderConstant_Get3D().SetWorldMatrix(world);
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;

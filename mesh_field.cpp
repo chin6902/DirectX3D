@@ -12,7 +12,7 @@ LastUpdate : 2026/10/20
 #include "mesh_field.h"
 #include "config.h"
 #include "direct3d.h"
-#include "shader3d.h"
+#include "shader_constant.h"
 #include "debug_ostream.h"
 #include "texture.h"
 
@@ -135,14 +135,12 @@ void MeshField_Finalize()
 
 void MeshField_Draw()
 {
-	Shader3d_Begin();
-
-	Shader3d_SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
 	Direct3D_GetDeviceContext()->OMSetDepthStencilState(g_pDepthStencilState, 0);
 	Direct3D_GetDeviceContext()->RSSetState(g_pRasterizerState);
 
-	Shader3d_SetWorldMatrix(XMMatrixIdentity());
+	ShaderConstant_Get3D().SetWorldMatrix(XMMatrixIdentity());
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
