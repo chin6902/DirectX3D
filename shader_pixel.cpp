@@ -1,4 +1,4 @@
-/*============================================================================
+﻿/*============================================================================
 Contents   : [shader_pixel.cpp]
 
 Author     : Chin Qing You
@@ -14,11 +14,18 @@ LastUpdate : 2026/11/09
 
 PixelShader::~PixelShader()
 {
-	SAFE_RELEASE(g_pPixelShader);
+	Release();
+}
+
+void PixelShader::Release()
+{
+	SAFE_RELEASE(m_pPixelShader);
 }
 
 bool PixelShader::Load(const char* filename)
 {
+	Release();
+
 	HRESULT hr; // 戻り値格納用
 
 	// 事前コンパイル済み頂点シェーダーの読み込み
@@ -42,7 +49,7 @@ bool PixelShader::Load(const char* filename)
 	ifs_vs.close(); // ファイルを閉じる
 
 	// ピクセルシェーダーの作成
-	hr = Direct3D_GetDevice()->CreatePixelShader(vsbinary_pointer, filesize, nullptr, &g_pPixelShader);
+	hr = Direct3D_GetDevice()->CreatePixelShader(vsbinary_pointer, filesize, nullptr, &m_pPixelShader);
 
 	delete[] vsbinary_pointer; // バイナリデータのバッファを解放
 
@@ -57,5 +64,5 @@ bool PixelShader::Load(const char* filename)
 
 void PixelShader::Begin()
 {
-	Direct3D_GetDeviceContext()->PSSetShader(g_pPixelShader, nullptr, 0);
+	Direct3D_GetDeviceContext()->PSSetShader(m_pPixelShader, nullptr, 0);
 }

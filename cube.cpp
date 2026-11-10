@@ -25,8 +25,6 @@ static ID3D11Buffer* g_pIndexBuffer{ nullptr };
 static ID3D11RasterizerState*	g_pRasterizerState{ nullptr };
 static ID3D11DepthStencilState* g_pDepthStencilState{ nullptr };
 
-static ShaderConstant* g_pShaderConstant{ nullptr };
-
 struct Vertex
 {
 	XMFLOAT3 position;
@@ -41,10 +39,9 @@ static constexpr int NUM_INDEX { 6 * 6 };
 static int g_TextureID_Cube{ -1 };
 static int g_TextureID_Stone{ -1 };
 
-void Cube_Initialize(ShaderConstant* pShaderConstant)
+void Cube_Initialize()
 {
 	g_TextureID_Cube = Texture_Load(L"assets/textures/cube.png", true);
-	g_pShaderConstant = pShaderConstant;
 
 	D3D11_BUFFER_DESC bd{
 		.ByteWidth = sizeof(Vertex) * NUM_VERTEX,

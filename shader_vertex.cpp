@@ -1,4 +1,4 @@
-/*============================================================================
+﻿/*============================================================================
 Contents   : [shader_vertex.cpp]
 
 Author     : Chin Qing You
@@ -12,14 +12,18 @@ LastUpdate : 2026/11/09
 #include <fstream>
 #include <string>
 
-VertexShader::~VertexShader()
+VertexShader::~VertexShader() { Release(); }
+
+void VertexShader::Release()
 {
-	SAFE_RELEASE(g_pInputLayout);
-	SAFE_RELEASE(g_pVertexShader);
+	SAFE_RELEASE(m_pInputLayout);
+	SAFE_RELEASE(m_pVertexShader);
 }
 
 bool VertexShader::Load(const char* filename, const D3D11_INPUT_ELEMENT_DESC * layout, int num_elements)
 {
+	Release();
+
 	HRESULT hr; // 戻り値格納用
 
 	// 事前コンパイル済み頂点シェーダーの読み込み
@@ -43,7 +47,7 @@ bool VertexShader::Load(const char* filename, const D3D11_INPUT_ELEMENT_DESC * l
 	ifs_vs.close(); // ファイルを閉じる
 
 	// 頂点シェーダーの作成
-	hr = Direct3D_GetDevice()->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &g_pVertexShader);
+	hr = Direct3D_GetDevice()->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &m_pVertexShader);
 	if (FAILED(hr))
 	{
 		delete[] vsbinary_pointer;
@@ -52,7 +56,7 @@ bool VertexShader::Load(const char* filename, const D3D11_INPUT_ELEMENT_DESC * l
 	}
 
 	// 頂点レイアウトの作成
-	hr = Direct3D_GetDevice()->CreateInputLayout(layout, num_elements, vsbinary_pointer, filesize, &g_pInputLayout);
+	hr = Direct3D_GetDevice()->CreateInputLayout(layout, num_elements, vsbinary_pointer, filesize, &m_pInputLayout);
 
 	delete[] vsbinary_pointer; // バイナリデータのバッファを解放
 
@@ -67,7 +71,7 @@ bool VertexShader::Load(const char* filename, const D3D11_INPUT_ELEMENT_DESC * l
 
 void VertexShader::Begin()
 {
-	Direct3D_GetDeviceContext()->VSSetShader(g_pVertexShader, nullptr, 0);
+	Direct3D_GetDeviceContext()->VSSetShader(m_pVertexShader, nullptr, 0);
 
-	Direct3D_GetDeviceContext()->IASetInputLayout(g_pInputLayout);
+	Direct3D_GetDeviceContext()->IASetInputLayout(m_pInputLayout);
 }

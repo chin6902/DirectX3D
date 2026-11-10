@@ -20,8 +20,10 @@ public:
 	bool Load(const char* filename);
 	void Begin();
 
+	void Release();
+
 private:
-	ID3D11PixelShader* g_pPixelShader = nullptr;
+	ID3D11PixelShader* m_pPixelShader = nullptr;
 
 };
 

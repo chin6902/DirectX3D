@@ -11,7 +11,7 @@ LastUpdate : 2026/09/16
 
 void Grid_Initialize();
 void Grid_Finalize();
-void Grid_Update(float delta_time);
+
 void Grid_Draw();
 
 #endif

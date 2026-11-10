@@ -34,7 +34,6 @@ struct MODEL
 	CollisionAABB AABB{};
 };
 
-void ModelInit(ShaderConstant* pShaderConstant);
 MODEL* ModelLoad(const char* FileName, float scale = 1.0f, bool bBlender = false);
 void ModelRelease(MODEL* model);
 

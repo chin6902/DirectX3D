@@ -1,4 +1,4 @@
-/*============================================================================
+﻿/*============================================================================
 Contents   : [shader_constant.cpp]
 
 Author     : Chin Qing You
@@ -19,8 +19,15 @@ struct WorldBuffer
 	XMFLOAT4X4 worldIT;
 };
 
+ShaderConstant::~ShaderConstant()
+{
+	Finalize();
+}
+
 void ShaderConstant::Initialize()
 {
+	Finalize();
+
 	D3D11_BUFFER_DESC buffer_desc{};
 	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
@@ -42,10 +49,8 @@ void ShaderConstant::Initialize()
 
 void ShaderConstant::Finalize()
 {
-	SAFE_RELEASE(m_pVSConstantBuffer[0]);
-	SAFE_RELEASE(m_pVSConstantBuffer[1]);
-	SAFE_RELEASE(m_pVSConstantBuffer[2]);
-	SAFE_RELEASE(m_pPSConstantBuffer[0]);
+	for (auto& buffer : m_pVSConstantBuffer) { SAFE_RELEASE(buffer); }
+	for (auto& buffer : m_pPSConstantBuffer) { SAFE_RELEASE(buffer); }
 }
 
 void ShaderConstant::SetWorldMatrix(const DirectX::XMMATRIX & matrix)

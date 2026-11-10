@@ -14,15 +14,18 @@ LastUpdate : 2026/11/09
 class VertexShader
 {
 public:
-	VertexShader() = default;
-	~VertexShader();
+    VertexShader() = default;
+    ~VertexShader();
+    VertexShader(const VertexShader&) = delete;
+    VertexShader& operator=(const VertexShader&) = delete;
 
-	bool Load(const char* filename, const D3D11_INPUT_ELEMENT_DESC* layout, int num_elements);
-	void Begin();
+    bool Load(const char* filename, const D3D11_INPUT_ELEMENT_DESC* layout, int num_elements);
+    void Begin();
+    void Release();
 
 private:
-	ID3D11VertexShader* g_pVertexShader = nullptr;
-	ID3D11InputLayout* g_pInputLayout = nullptr;
+    ID3D11VertexShader* m_pVertexShader = nullptr;
+    ID3D11InputLayout* m_pInputLayout = nullptr;
 
 };
 

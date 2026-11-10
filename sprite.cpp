@@ -36,7 +36,7 @@ static constexpr int BATCH_MAX_VERTICES = BATCH_MAX_QUADS * VERTS_PER_QUAD;
 static Vertex g_Vertices[BATCH_MAX_VERTICES];
 static int    g_VertexCount = 0;
 
-static int          g_BatchTexture = TEXTURE_INVALID_ID;
+static int g_BatchTexture = TEXTURE_INVALID_ID;
 static SpriteFilter g_BatchFilter = kSpriteFilter_Point;
 static SpriteFilter g_PendingFilter = kSpriteFilter_Point;
 

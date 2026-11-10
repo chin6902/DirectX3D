@@ -22,6 +22,7 @@ LastUpdate : 2026/06/24
 #include "camera.h"
 #include "collision.h"
 #include "collision_debug.h"
+#include "collision3d_debug.h"
 #include "scene.h"
 #include "fade.h"
 #include "game_text.h"
@@ -29,6 +30,7 @@ LastUpdate : 2026/06/24
 #include "mouse_ui.h"
 #include "light.h"
 #include "cube.h"
+#include "grid.h"
 #include "mesh_field.h"
 #include "camera_free.h"
 #include "player_camera.h"
@@ -63,7 +65,8 @@ bool player_hit = false;
 
 static VertexShader g_VertexShader3D;
 static PixelShader g_PixelShader3D;
-static ShaderConstant g_ShaderConstant3D;	
+static VertexShader g_VertexShaderPrimitive3D;
+static PixelShader g_PixelShaderPrimitive3D;
 
 //void Collision_CheckPlayerVsEnemies();
 
@@ -79,7 +82,13 @@ void Game_Initialize()
 
 	g_VertexShader3D.Load("assets/shaders/shader_vertex_3d.cso", layout, ARRAYSIZE(layout));
 	g_PixelShader3D.Load("assets/shaders/shader_pixel_3d.cso");
-	g_ShaderConstant3D.Initialize();
+	ShaderConstant_Get3D().Initialize();
+
+	D3D11_INPUT_ELEMENT_DESC layoutPrimitive[] = {
+	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	g_VertexShaderPrimitive3D.Load("assets/shaders/shader_vertex_primitive3d.cso", layoutPrimitive, ARRAYSIZE(layoutPrimitive));
+	g_PixelShaderPrimitive3D.Load("assets/shaders/shader_pixel_primitive3d.cso");
 	//==============================================================
 
 	g_GameState = STATE_PLAYING;
@@ -102,6 +111,7 @@ void Game_Initialize()
 
 	GameObject_Spawn("Cube", { 0.0f, 0.5f, 0.0f });
 	MeshField_Initialize(1.0f, 1.0f, 50, 50);
+	Grid_Initialize();
 
 	Light_Initialize();
 
@@ -110,6 +120,7 @@ void Game_Initialize()
 
 #ifdef _DEBUG
 	Collision_Debug_Initialize();
+	Collision3D_Debug_Initialize();
 #endif
 
 	Fade_Start(FADE_IN, 1.0f, { 0.0f, 0.0f, 0.0f, 0.0f });
@@ -118,12 +129,14 @@ void Game_Initialize()
 void Game_Finalize()
 {
 #ifdef _DEBUG
+	Collision3D_Debug_Finalize();
 	Collision_Debug_Finalize();
 #endif
 	// ---UI ---
 	MouseUI_Finalize();
 	
 	Light_Finalize();
+	Grid_Finalize();	
 	MeshField_Finalize();
 	Cube_Finalize();
 	CameraFree_Finalize();
@@ -132,6 +145,12 @@ void Game_Finalize()
 
 	FlipBookAnimation_Finalize();
 	GameText_Finalize();
+
+	ShaderConstant_Get3D().Finalize();
+	g_PixelShader3D.Release();
+	g_VertexShader3D.Release();
+	g_VertexShaderPrimitive3D.Release();
+	g_PixelShaderPrimitive3D.Release();
 }
 
 static void EnterEndState(bool cleared)
@@ -230,8 +249,8 @@ void Game_Update(float delta_time)
 		PlayerCamera_SetTargetPosition(GamePlayer_GetPosition());
 		PlayerCamera_Update(delta_time);
 
-		g_ShaderConstant3D.SetViewMatrix(PlayerCamera_GetViewMatrix());
-		g_ShaderConstant3D.SetProjectionMatrix(PlayerCamera_GetProjectionMatrix());
+		ShaderConstant_Get3D().SetViewMatrix(PlayerCamera_GetViewMatrix());
+		ShaderConstant_Get3D().SetProjectionMatrix(PlayerCamera_GetProjectionMatrix());
 
 		// --- collision check ---
 
@@ -263,38 +282,33 @@ void Game_Update(float delta_time)
 
 void Game_Draw()
 {
-	ShaderConstant_Get3D().Initialize();
-
-	g_PixelShader3D.Begin();
-	g_VertexShader3D.Begin();
 	ShaderConstant_Get3D().Bind();
-	//g_ShaderConstant3D.Bind();// need to change for better usage
 
+	// --- lit 3D meshes ---
+	g_VertexShader3D.Begin();
+	g_PixelShader3D.Begin();
 	Light_SetDirectionalLight({ -0.5f, -0.8f, 1.0f }, { 0.8f, 0.8f, 0.8f, 1.0f }, { 0.4f, 0.4f, 0.4f, 1.0f });
+
+	Sampler_SetFilter(kSamplerFilter_Anisotropic);
 	Texture_SetTexture(g_TextureID_Ground);
 	MeshField_Draw();
-
-
-	if (player_hit) {
-		GameText_Draw(10.0f, 10.0f, "Player collided with object!", 1.0f, { 1.0f, 0.0f, 0.0f });
-	}
-	else
-	{
-		GameText_Draw(10.0f, 10.0f, "Player is safe.", 1.0f, { 0.0f, 1.0f, 0.0f });
-	}
-
-	// --- 3D texture ---
-	Sampler_SetFilter(kSamplerFilter_Anisotropic);
 	GameObject_Draw();
-	
 	GamePlayer_Draw();
-	
-	// --- 2D texture ---
-	Sampler_SetFilter(kSamplerFilter_Linear);
 
-	// --- UI ---
+	// --- primitives (world-space lines) ---
+	g_VertexShaderPrimitive3D.Begin();
+	g_PixelShaderPrimitive3D.Begin();
+	ShaderConstant_Get3D().SetColor({ 0.5f, 1.0f, 0.1f, 1.0f });
+	Grid_Draw();
+
+	ShaderConstant_Get3D().SetColor({ 1.0f, 0.2f, 0.2f, 1.0f });
+	Collision3D_Debug_Draw();
+
+	// --- text / sprites ---
+	if (player_hit) { GameText_Draw(10.0f, 10.0f, "Player collided with object!", 1.0f, { 1.0f, 0.0f, 0.0f }); }
+	else { GameText_Draw(10.0f, 10.0f, "Player is safe.", 1.0f, { 0.0f, 1.0f, 0.0f }); }
+
 	Sampler_SetFilter(kSamplerFilter_Point);
-
 	Sprite_Flush();
 }
 

@@ -28,13 +28,6 @@ struct Vertex3d
 
 static int g_TextureWhiteId{ -1 };
 
-static ShaderConstant* g_pShaderConstant{ nullptr };
-
-void ModelInit(ShaderConstant* pShaderConstant)
-{
-	g_pShaderConstant = pShaderConstant;	
-}
-
 MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 {
 	MODEL* model = new MODEL;

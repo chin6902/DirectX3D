@@ -15,6 +15,7 @@ using namespace DirectX;
 #ifdef _DEBUG
 #include <cstdio>
 #include "imgui.h"
+#include "collision3d_debug.h"
 #endif
 
 static GameObject g_Objects[OBJECT_MAX]{};
@@ -108,6 +109,7 @@ void GameObject_Draw()
 			continue;
 		}
 
+		Collision3D_Debug_Add(GameObject_GetAABB(object));
 		Cube_Draw(GameObject_GetWorldMatrix(object));
 	}
 }

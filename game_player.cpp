@@ -14,6 +14,7 @@ LastUpdate : 2026/10/21
 #include "player_camera.h"
 #include "input_keyboard.h"
 #include "model.h"
+#include "collision3d_debug.h"
 
 #include "game_object.h"
 
@@ -171,6 +172,10 @@ void GamePlayer_Draw()
 	XMMATRIX r = XMMatrixRotationY(g_Angle - XM_PIDIV2);
 
 	ModelDraw(g_pModel, r * t);
+
+#ifdef _DEBUG
+    Collision3D_Debug_Add(GamePlayer_GetAABB());
+#endif
 }
 
 const DirectX::XMFLOAT3& GamePlayer_GetPosition()

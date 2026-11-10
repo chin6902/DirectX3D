@@ -15,6 +15,10 @@ LastUpdate : 2026/11/09
 class ShaderConstant
 {
 public:
+	ShaderConstant() = default;
+	~ShaderConstant();
+	ShaderConstant(const ShaderConstant&) = delete;
+	ShaderConstant& operator=(const ShaderConstant&) = delete;
 	void Initialize();
 	void Finalize();
 
