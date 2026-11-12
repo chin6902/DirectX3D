@@ -165,13 +165,15 @@ void GamePlayer_Update(float delta_time)
     XMStoreFloat3(&g_Velocity, velocity);
 }
 
+static XMMATRIX GetPlayerRotation()
+{
+    return XMMatrixRotationY(g_Angle - XM_PIDIV2);
+}
+
 void GamePlayer_Draw()
 {
-	XMMATRIX t = XMMatrixTranslationFromVector(XMLoadFloat3(&g_Position));
-
-	XMMATRIX r = XMMatrixRotationY(g_Angle - XM_PIDIV2);
-
-	ModelDraw(g_pModel, r * t);
+    XMMATRIX t = XMMatrixTranslationFromVector(XMLoadFloat3(&g_Position));
+    ModelDraw(g_pModel, GetPlayerRotation() * t);
 
 #ifdef _DEBUG
     Collision3D_Debug_Add(GamePlayer_GetAABB());
@@ -183,27 +185,25 @@ const DirectX::XMFLOAT3& GamePlayer_GetPosition()
 	return g_Position;
 }
 
-#include <algorithm>
-
 static CollisionAABB MakePlayerAABB(FXMVECTOR position)
 {
     if (!g_pModel) return {};
 
     const CollisionAABB& model_aabb = g_pModel->AABB;
-    const XMFLOAT3& local = model_aabb.GetCenter();
 
     // Square footprint so the box is the same at every facing.
     // Uses the smaller side (the body), so the arms don't count.
     const float half_xz = std::min(model_aabb.GetHalfWidth(), model_aabb.GetHalfDepth());
 
-    XMFLOAT3 p;
-    XMStoreFloat3(&p, position);
+    // Model-space center offset, rotated the same way the model is drawn
+    XMVECTOR offset = XMVector3TransformNormal(
+        XMLoadFloat3(&model_aabb.GetCenter()),
+        GetPlayerRotation());
 
-    return CollisionAABB(
-        half_xz,
-        model_aabb.GetHalfHeight(),
-        half_xz,
-        { p.x + local.x, p.y + local.y, p.z + local.z });
+    XMFLOAT3 center;
+    XMStoreFloat3(&center, position + offset);
+
+    return CollisionAABB(half_xz, model_aabb.GetHalfHeight(), half_xz, center);
 }
 
 CollisionAABB GamePlayer_GetAABB()

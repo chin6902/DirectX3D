@@ -18,7 +18,7 @@ public:
 	~PixelShader();
 
 	bool Load(const char* filename);
-	void Begin();
+	void Bind();
 
 	void Release();
 

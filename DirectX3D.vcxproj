@@ -135,7 +135,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -148,6 +148,9 @@
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
+    <PostBuildEvent>
+      <Command>xcopy /D /Y "$(TargetDir)*.cso" "$(ProjectDir)assets\shaders"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
@@ -176,6 +179,7 @@
     <ClInclude Include="flipbook_animation.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_audio.h" />
+    <ClInclude Include="game_map.h" />
     <ClInclude Include="game_object.h" />
     <ClInclude Include="game_player.h" />
     <ClInclude Include="game_text.h" />
@@ -187,6 +191,9 @@
     <ClInclude Include="input_xinput.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="light.h" />
+    <ClInclude Include="map_block.h" />
+    <ClInclude Include="map_model.h" />
+    <ClInclude Include="map_object.h" />
     <ClInclude Include="mesh_field.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="mouse.h" />
@@ -233,6 +240,7 @@
     <ClCompile Include="flipbook_animation.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_audio.cpp" />
+    <ClCompile Include="game_map.cpp" />
     <ClCompile Include="game_object.cpp" />
     <ClCompile Include="game_player.cpp" />
     <ClCompile Include="game_text.cpp" />
@@ -244,6 +252,8 @@
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="map_block.cpp" />
+    <ClCompile Include="map_model.cpp" />
     <ClCompile Include="mesh_field.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="mouse.cpp" />

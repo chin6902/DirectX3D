@@ -198,6 +198,18 @@
     <ClInclude Include="collision3d_debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="map_object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="map_block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="map_model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game_map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="draw_primitives.cpp">
@@ -354,6 +366,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="collision3d_debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="map_block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="map_model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game_map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -20,7 +20,7 @@ public:
     VertexShader& operator=(const VertexShader&) = delete;
 
     bool Load(const char* filename, const D3D11_INPUT_ELEMENT_DESC* layout, int num_elements);
-    void Begin();
+    void Bind();
     void Release();
 
 private:

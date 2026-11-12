@@ -109,7 +109,9 @@ void GameObject_Draw()
 			continue;
 		}
 
+#ifdef _DEBUG
 		Collision3D_Debug_Add(GameObject_GetAABB(object));
+#endif
 		Cube_Draw(GameObject_GetWorldMatrix(object));
 	}
 }

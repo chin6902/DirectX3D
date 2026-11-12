@@ -69,7 +69,7 @@ bool VertexShader::Load(const char* filename, const D3D11_INPUT_ELEMENT_DESC * l
 	return true;
 }
 
-void VertexShader::Begin()
+void VertexShader::Bind()
 {
 	Direct3D_GetDeviceContext()->VSSetShader(m_pVertexShader, nullptr, 0);
 

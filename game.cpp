@@ -14,6 +14,7 @@ LastUpdate : 2026/06/24
 #include "flipbook_animation.h"
 #include "debug_ui.h"
 #include "sampler.h"
+
 #include "shader_vertex.h"
 #include "shader_pixel.h"
 #include "shader_constant.h"
@@ -29,12 +30,13 @@ LastUpdate : 2026/06/24
 #include "game_audio.h"
 #include "mouse_ui.h"
 #include "light.h"
-#include "cube.h"
 #include "grid.h"
 #include "mesh_field.h"
 #include "camera_free.h"
 #include "player_camera.h"
 #include "game_object.h"
+#include "game_map.h"
+#include "cube.h"
 
 #include "game_player.h"
 
@@ -107,6 +109,7 @@ void Game_Initialize()
 	CameraFree_Initialize({ 0.0f, 3.0f, -5.0f }, XMConvertToRadians(30.0f), XMConvertToRadians(0.0f));
 	PlayerCamera_Initialize(GamePlayer_GetPosition(), 9.0f, XMConvertToRadians(25.0f), 0.0f);
 	Cube_Initialize();
+	GameMap_Initialize();
 	GameObject_Initialize();
 
 	GameObject_Spawn("Cube", { 0.0f, 0.5f, 0.0f });
@@ -119,7 +122,7 @@ void Game_Initialize()
 	MouseUI_Initialize();
 
 #ifdef _DEBUG
-	Collision_Debug_Initialize();
+	//Collision_Debug_Initialize();
 	Collision3D_Debug_Initialize();
 #endif
 
@@ -130,7 +133,7 @@ void Game_Finalize()
 {
 #ifdef _DEBUG
 	Collision3D_Debug_Finalize();
-	Collision_Debug_Finalize();
+	//Collision_Debug_Finalize();
 #endif
 	// ---UI ---
 	MouseUI_Finalize();
@@ -138,6 +141,7 @@ void Game_Finalize()
 	Light_Finalize();
 	Grid_Finalize();	
 	MeshField_Finalize();
+	GameMap_Finalize();
 	Cube_Finalize();
 	CameraFree_Finalize();
 	PlayerCamera_Finalize();
@@ -169,7 +173,6 @@ static bool IsRunCleared()
 
 static void UpdateEndHold(float delta_time)
 {
-	Camera_Update(delta_time);
 	FlipBookAnimation_Update(delta_time);
 
 	if (g_EndTimer > 0.0f)
@@ -199,16 +202,18 @@ void Game_Update(float delta_time)
 
 	for (int i = 0; i < OBJECT_MAX; i++)
 	{
-		const GameObject* object = GameObject_Get(i);   // nullptr for inactive slots
+		const GameObject* object = GameObject_Get(i);   
 
 		if (object == nullptr)
 		{
 			continue;
 		}
 
+		player_hit = false;
 		if (playerAABB.IsOverlap(GameObject_GetAABB(*object)))
 		{
 			player_hit = true;
+			break;
 		}
 		else
 		{
@@ -217,7 +222,6 @@ void Game_Update(float delta_time)
 	}
 
 #ifdef _DEBUG
-	Cube_Update(delta_time);
 #endif
 
 	switch (g_GameState)
@@ -230,6 +234,7 @@ void Game_Update(float delta_time)
 
 		// --- Game Update ---
 		FlipBookAnimation_Update(delta_time);
+		GameMap_Update(delta_time);
 
 		// --- Player Update ---
 		if (!InputKeyboard_IsPress(KK_LEFTSHIFT))
@@ -253,6 +258,7 @@ void Game_Update(float delta_time)
 		ShaderConstant_Get3D().SetProjectionMatrix(PlayerCamera_GetProjectionMatrix());
 
 		// --- collision check ---
+		GameMap_CheckCollision(playerAABB);
 
 		// --- UI ---
 
@@ -284,29 +290,31 @@ void Game_Draw()
 {
 	ShaderConstant_Get3D().Bind();
 
-	// --- lit 3D meshes ---
-	g_VertexShader3D.Begin();
-	g_PixelShader3D.Begin();
+	g_VertexShader3D.Bind();
+	g_PixelShader3D.Bind();
 	Light_SetDirectionalLight({ -0.5f, -0.8f, 1.0f }, { 0.8f, 0.8f, 0.8f, 1.0f }, { 0.4f, 0.4f, 0.4f, 1.0f });
 
 	Sampler_SetFilter(kSamplerFilter_Anisotropic);
 	Texture_SetTexture(g_TextureID_Ground);
 	MeshField_Draw();
+	GameMap_Draw();
 	GameObject_Draw();
 	GamePlayer_Draw();
 
 	// --- primitives (world-space lines) ---
-	g_VertexShaderPrimitive3D.Begin();
-	g_PixelShaderPrimitive3D.Begin();
+	g_VertexShaderPrimitive3D.Bind();
+	g_PixelShaderPrimitive3D.Bind();
 	ShaderConstant_Get3D().SetColor({ 0.5f, 1.0f, 0.1f, 1.0f });
 	Grid_Draw();
 
+#ifdef _DEBUG
 	ShaderConstant_Get3D().SetColor({ 1.0f, 0.2f, 0.2f, 1.0f });
 	Collision3D_Debug_Draw();
+#endif 
 
 	// --- text / sprites ---
-	if (player_hit) { GameText_Draw(10.0f, 10.0f, "Player collided with object!", 1.0f, { 1.0f, 0.0f, 0.0f }); }
-	else { GameText_Draw(10.0f, 10.0f, "Player is safe.", 1.0f, { 0.0f, 1.0f, 0.0f }); }
+	if (player_hit) { GameText_Draw(10.0f, 20.0f, "Player collided with object!", 1.0f, { 1.0f, 0.0f, 0.0f }); }
+	else { GameText_Draw(10.0f, 20.0f, "Player is safe.", 1.0f, { 0.0f, 1.0f, 0.0f }); }
 
 	Sampler_SetFilter(kSamplerFilter_Point);
 	Sprite_Flush();

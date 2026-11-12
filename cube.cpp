@@ -145,10 +145,6 @@ void Cube_Finalize()
 	Texture_Release(g_TextureID_Cube);
 }
 
-void Cube_Update(float delta_time)
-{
-}
-
 void Cube_Draw(const XMMATRIX& world)
 {
 	ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });

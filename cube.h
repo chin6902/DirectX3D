@@ -13,7 +13,7 @@ LastUpdate : 2026/09/14
 
 void Cube_Initialize();
 void Cube_Finalize();
-void Cube_Update(float delta_time);
+
 void Cube_Draw(const DirectX::XMMATRIX& world);
 
 #endif

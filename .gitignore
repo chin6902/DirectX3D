@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# secrets and generated data
+api_key.txt
+foods_cache*.json
+cache/

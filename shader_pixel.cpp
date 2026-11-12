@@ -62,7 +62,7 @@ bool PixelShader::Load(const char* filename)
 	return true;
 }
 
-void PixelShader::Begin()
+void PixelShader::Bind()
 {
 	Direct3D_GetDeviceContext()->PSSetShader(m_pPixelShader, nullptr, 0);
 }
