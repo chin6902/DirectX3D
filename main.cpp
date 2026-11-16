@@ -1,4 +1,4 @@
-/*============================================================================
+ï»¿/*============================================================================
 Contents   :  [main.cpp]
               
 Author     : Chin Qing You
@@ -31,7 +31,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 	(void)CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
-	// ƒEƒBƒ“ƒhƒE‚Ìì¬
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
 	HWND hWnd{ CreateGameWindow(hInstance, WndProc) };
 
 	if (hWnd == nullptr)
@@ -48,16 +48,16 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 	
 	MSG msg{};
 
-	// FPS•\¦ ‚©‚ç‚Ì’Ç‰Á: Œv‘ª—p•Ï”
-	double elapsed_time = 0.0;     // 1ƒtƒŒ[ƒ€‚ÌŒo‰ßŠÔi•bj
-	double time_accumulator = 0.0; // Œo‰ßŠÔ‚Ì—İÏ’l
-	int frame_counter = 0;         // ƒtƒŒ[ƒ€”‚Ì—İÏƒJƒEƒ“ƒg
-	double fps = 0.0;              // Zo‚³‚ê‚½FPS’l
+	// FPSè¡¨ç¤º ã‹ã‚‰ã®è¿½åŠ : è¨ˆæ¸¬ç”¨å¤‰æ•°
+	double elapsed_time = 0.0;     // 1ãƒ•ãƒ¬ãƒ¼ãƒ ã®çµŒéæ™‚é–“ï¼ˆç§’ï¼‰
+	double time_accumulator = 0.0; // çµŒéæ™‚é–“ã®ç´¯ç©å€¤
+	int frame_counter = 0;         // ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã®ç´¯ç©ã‚«ã‚¦ãƒ³ãƒˆ
+	double fps = 0.0;              // ç®—å‡ºã•ã‚ŒãŸFPSå€¤
 
 	double fixed_time_accumulator = 0.0;
 	static constexpr double FIXED_DELTA_TIME = 1.0 / 60.0;
 
-	// ŠeƒVƒXƒeƒ€‚Ì‰Šú‰»
+	// å„ã‚·ã‚¹ãƒ†ãƒ ã®åˆæœŸåŒ–
 	if (Application_Initialize(hWnd))
 	{
 #ifdef _DEBUG
@@ -69,9 +69,9 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 		);
 #endif
 
-		// FPS•\¦ ‚©‚ç‚Ì’Ç‰Á: ƒ^ƒCƒ}[‚Ì‰Šú‰»‚ÆƒXƒŒƒbƒhƒAƒtƒBƒjƒeƒBİ’è
+		// FPSè¡¨ç¤º ã‹ã‚‰ã®è¿½åŠ : ã‚¿ã‚¤ãƒãƒ¼ã®åˆæœŸåŒ–ã¨ã‚¹ãƒ¬ãƒƒãƒ‰ã‚¢ãƒ•ã‚£ãƒ‹ãƒ†ã‚£è¨­å®š
 		SystemTimer_Initialize();
-		LimitThreadAffinityToCurrentProc(); // ÀsƒXƒŒƒbƒh‚ğŒÅ’è‚µ‚Äƒ^ƒCƒ}[‚ÌŒë·‚ğ–h‚®
+		LimitThreadAffinityToCurrentProc(); // å®Ÿè¡Œã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å›ºå®šã—ã¦ã‚¿ã‚¤ãƒãƒ¼ã®èª¤å·®ã‚’é˜²ã
 		SystemTimer_Start();
 
 		ShowWindow(hWnd, nCmdShow);
@@ -88,10 +88,10 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 			// Game loop
 			else
 			{
-				// FPS•\¦ ‚©‚ç‚Ì’Ç‰Á: ‘O‰ñ‚ÌƒtƒŒ[ƒ€‚©‚ç‚ÌŒo‰ßŠÔi•bj‚ğæ“¾
+				// FPSè¡¨ç¤º ã‹ã‚‰ã®è¿½åŠ : å‰å›ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®çµŒéæ™‚é–“ï¼ˆç§’ï¼‰ã‚’å–å¾—
 				elapsed_time = SystemTimer_GetElapsedTime(); 
 
-				// 1ƒtƒŒ[ƒ€“–‚½‚è‚ÌÅ‘åŒo‰ßŠÔ‚ğ0.1•b(100ms)‚É§ŒÀ‚·‚é
+				// 1ãƒ•ãƒ¬ãƒ¼ãƒ å½“ãŸã‚Šã®æœ€å¤§çµŒéæ™‚é–“ã‚’0.1ç§’(100ms)ã«åˆ¶é™ã™ã‚‹
 				if (elapsed_time > 0.1)
 				{
 					elapsed_time = 0.1;
@@ -100,7 +100,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 				time_accumulator += elapsed_time;
 				frame_counter++;
 
-				// 1.0•bŒo‰ß‚µ‚½‚çA‚»‚ÌŠÔ‚ÌƒtƒŒ[ƒ€”‚©‚çFPS‚ğŠm’è‚µ‚Ä—İÏ‚ğƒŠƒZƒbƒg
+				// 1.0ç§’çµŒéã—ãŸã‚‰ã€ãã®é–“ã®ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã‹ã‚‰FPSã‚’ç¢ºå®šã—ã¦ç´¯ç©ã‚’ãƒªã‚»ãƒƒãƒˆ
 				if (time_accumulator >= 1.0)
 				{ 
 					fps = frame_counter / time_accumulator; 
@@ -108,12 +108,12 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 					time_accumulator = 0.0; 
 				}
 
-				// ŒÅ’èƒtƒŒ[ƒ€‚Ì‚½‚ß‚ÌŒo‰ßŠÔ‚Ì—İÏ
+				// å›ºå®šãƒ•ãƒ¬ãƒ¼ãƒ ã®ãŸã‚ã®çµŒéæ™‚é–“ã®ç´¯ç©
 				fixed_time_accumulator += elapsed_time;
 
 				int update_count = 0;
 
-				// 1/60•bŒo‚Á‚½‚çÀs‚·‚é
+				// 1/60ç§’çµŒã£ãŸã‚‰å®Ÿè¡Œã™ã‚‹
 				while (fixed_time_accumulator >= FIXED_DELTA_TIME && update_count < 5)
 				{
 					Application_FixedUpdate();
@@ -130,7 +130,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 
 #ifdef _DEBUG
 				debug_text.Clear();
-				// FPS•\¦ ‚©‚ç‚Ì’Ç‰Á: Œv‘ª‚³‚ê‚½FPS‚ÆƒtƒŒ[ƒ€Œo‰ßŠÔ(ms)‚ğstd::stringstream‚Å®Œ`
+				// FPSè¡¨ç¤º ã‹ã‚‰ã®è¿½åŠ : è¨ˆæ¸¬ã•ã‚ŒãŸFPSã¨ãƒ•ãƒ¬ãƒ¼ãƒ çµŒéæ™‚é–“(ms)ã‚’std::stringstreamã§æ•´å½¢
 				std::stringstream ss; ss << "FPS: " << std::fixed << std::setprecision(2) << fps << " (" << std::fixed << std::setprecision(2) << (elapsed_time * 1000.0) << " ms)";
 				debug_text.SetText(ss.str().c_str());
 				
@@ -144,7 +144,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 		} while (msg.message != WM_QUIT);
 	}
 
-	// ŠeƒVƒXƒeƒ€‚ÌI—¹ˆ—
+	// å„ã‚·ã‚¹ãƒ†ãƒ ã®çµ‚äº†å‡¦ç†
 	Application_Finalize();
 
 	return static_cast<int>(msg.wParam);
@@ -159,15 +159,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
-	case WM_CLOSE: // ƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚éƒƒbƒZ[ƒW
-		if (MessageBox(hWnd, "–{“–‚ÉI—¹‚µ‚Ä‚æ‚ë‚µ‚¢‚Å‚·‚©H",
-			"Šm”F", MB_ICONEXCLAMATION | MB_OKCANCEL | MB_DEFBUTTON2) == IDOK) 
+	case WM_CLOSE: // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ã‚‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+		if (MessageBoxW(hWnd, L"æœ¬å½“ã«çµ‚äº†ã—ã¦ã‚ˆã‚ã—ã„ã§ã™ã‹ï¼Ÿ",
+			L"ç¢ºèª", MB_ICONEXCLAMATION | MB_OKCANCEL | MB_DEFBUTTON2) == IDOK) 
 		{
-			DestroyWindow(hWnd); // w’è‚ÌƒEƒBƒ“ƒhƒE‚ÉWM_DESTROYƒƒbƒZ[ƒW‚ğ‘—‚é
+			DestroyWindow(hWnd); // æŒ‡å®šã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«WM_DESTROYãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ã‚‹
 		}
 		break;
-	case WM_DESTROY: // ƒEƒBƒ“ƒhƒE‚Ì”jŠüƒƒbƒZ[ƒW
-		PostQuitMessage(0); // WM_QUITƒƒbƒZ[ƒW‚Ì‘—M
+	case WM_DESTROY: // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç ´æ£„ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+		PostQuitMessage(0); // WM_QUITãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®é€ä¿¡
 		break;
     case WM_ACTIVATEAPP:
 		Keyboard_ProcessMessage(message, wParam, lParam);
@@ -176,7 +176,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
 		{
-			SendMessage(hWnd, WM_CLOSE, 0, 0); // WM_CLOSEƒƒbƒZ[ƒW‚Ì‘—M
+			SendMessage(hWnd, WM_CLOSE, 0, 0); // WM_CLOSEãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®é€ä¿¡
 		}
 		[[fallthrough]];
     case WM_SYSKEYDOWN:
@@ -199,7 +199,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         Mouse_ProcessMessage(message, wParam, lParam);
         break; 
 	default:
-		// ’Êí‚ÌƒƒbƒZ[ƒWˆ—‚Í‚±‚ÌŠÖ”‚É”C‚¹‚é
+		// é€šå¸¸ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†ã¯ã“ã®é–¢æ•°ã«ä»»ã›ã‚‹
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;

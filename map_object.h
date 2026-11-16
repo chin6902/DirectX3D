@@ -25,6 +25,7 @@ public:
 
 protected :
 	const DirectX::XMFLOAT3& GetPosition() const { return m_position; };
+	void SetPosition(const DirectX::XMFLOAT3& position) { m_position = position; };
 
 private:
     DirectX::XMFLOAT3 m_position{};

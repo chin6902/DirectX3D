@@ -20,6 +20,7 @@ public:
 	void Draw() const override;
 
 	HitData3D IsHit(const CollisionAABB& aabb) const override;
+	CollisionAABB GetAABB() const { return CollisionAABB{ 0.5f, 0.5f, 0.5f, GetPosition() }; };
 
 private:
 	int m_texture_id{ -1 };

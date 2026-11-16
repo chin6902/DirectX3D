@@ -1,22 +1,22 @@
-/*==============================================================================
+ï»¿/*==============================================================================
 
-   ƒ}ƒEƒX“ü—Íƒ‰ƒbƒp[ [input_mouse.h]
+   ãƒã‚¦ã‚¹å…¥åŠ›ãƒ©ãƒƒãƒ‘ãƒ¼ [input_mouse.h]
                                                          Author : Youhei Sato
 --------------------------------------------------------------------------------
-   mouse.h ‚ğƒ‰ƒbƒv‚µAˆÈ‰º‚Ì“ü—Íó‘Ô‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
-     - Press   : ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‘±‚¯‚Ä‚¢‚éŠÔ true
-     - Trigger : ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½uŠÔ‚¾‚¯ true
-     - Release : ƒ{ƒ^ƒ“‚ğ—£‚µ‚½uŠÔ‚¾‚¯ true
+   mouse.h ã‚’ãƒ©ãƒƒãƒ—ã—ã€ä»¥ä¸‹ã®å…¥åŠ›çŠ¶æ…‹ã‚’æä¾›ã—ã¾ã™ã€‚
+     - Press   : ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ç¶šã‘ã¦ã„ã‚‹é–“ true
+     - Trigger : ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸç¬é–“ã ã‘ true
+     - Release : ãƒœã‚¿ãƒ³ã‚’é›¢ã—ãŸç¬é–“ã ã‘ true
 ==============================================================================*/
 #ifndef INPUT_MOUSE_H
 #define INPUT_MOUSE_H
 
 #include <Windows.h>
-#include "mouse.h" // Mouse_PositionMode “™‚ÌŒ^‚ğg—p‚·‚é‚½‚ß
+#include "mouse.h" // Mouse_PositionMode ç­‰ã®å‹ã‚’ä½¿ç”¨ã™ã‚‹ãŸã‚
 
 const int MOUSE_BUTTON_MAX = 5;
 
-// ƒ}ƒEƒXƒ{ƒ^ƒ“”Ô†
+// ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ç•ªå·
 enum MouseButton
 {
     MOUSE_BUTTON_LEFT   = 0,
@@ -26,35 +26,35 @@ enum MouseButton
 	MOUSE_BUTTON_X2 = 4,
 };
 
-// ƒ}ƒEƒXƒ‰ƒbƒp[‚Ì‰Šú‰»
+// ãƒã‚¦ã‚¹ãƒ©ãƒƒãƒ‘ãƒ¼ã®åˆæœŸåŒ–
 void InputMouse_Initialize(HWND hWnd);
 
-// ƒ}ƒEƒXƒ‰ƒbƒp[‚ÌXVi–ˆƒtƒŒ[ƒ€ Application_Update ‚Ìæ“ª‚ÅŒÄ‚Ôj
+// ãƒã‚¦ã‚¹ãƒ©ãƒƒãƒ‘ãƒ¼ã®æ›´æ–°ï¼ˆæ¯ãƒ•ãƒ¬ãƒ¼ãƒ  Application_Update ã®å…ˆé ­ã§å‘¼ã¶ï¼‰
 void InputMouse_Update(void);
 
-// ƒ}ƒEƒXƒ‰ƒbƒp[‚ÌI—¹ˆ—
+// ãƒã‚¦ã‚¹ãƒ©ãƒƒãƒ‘ãƒ¼ã®çµ‚äº†å‡¦ç†
 void InputMouse_Finalize(void);
 
-// ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‘±‚¯‚Ä‚¢‚éŠÔ true
+// ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ç¶šã‘ã¦ã„ã‚‹é–“ true
 bool InputMouse_IsPress(MouseButton button);
 
-// ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½uŠÔ‚¾‚¯ true
+// ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸç¬é–“ã ã‘ true
 bool InputMouse_IsTrigger(MouseButton button);
 
-// ƒ{ƒ^ƒ“‚ğ—£‚µ‚½uŠÔ‚¾‚¯ true
+// ãƒœã‚¿ãƒ³ã‚’é›¢ã—ãŸç¬é–“ã ã‘ true
 bool InputMouse_IsRelease(MouseButton button);
 
-// ƒ}ƒEƒX‚ÌŒ»İÀ•Wi‚Ü‚½‚Í‘Š‘ÎˆÚ“®—Êj‚ğæ“¾
+// ãƒã‚¦ã‚¹ã®ç¾åœ¨åº§æ¨™ï¼ˆã¾ãŸã¯ç›¸å¯¾ç§»å‹•é‡ï¼‰ã‚’å–å¾—
 int InputMouse_GetX(void);
 int InputMouse_GetY(void);
 
-// ƒXƒNƒ[ƒ‹ƒzƒC[ƒ‹‚Ì’l‚ğæ“¾
+// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ›ã‚¤ãƒ¼ãƒ«ã®å€¤ã‚’å–å¾—
 int InputMouse_GetScrollWheel(void);
 
-// ƒ}ƒEƒX‚Ì“®ìƒ‚[ƒh‚ğİ’è (â‘Î / ‘Š‘Î)
+// ãƒã‚¦ã‚¹ã®å‹•ä½œãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®š (çµ¶å¯¾ / ç›¸å¯¾)
 void InputMouse_SetMode(Mouse_PositionMode mode);
 
-// ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚Ì•\¦ / ”ñ•\¦‚ğİ’è
+// ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®è¡¨ç¤º / éè¡¨ç¤ºã‚’è¨­å®š
 void InputMouse_SetVisible(bool visible);
 
 #endif // INPUT_MOUSE_H

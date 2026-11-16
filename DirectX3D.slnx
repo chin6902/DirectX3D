@@ -3,5 +3,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="../food_console/food_console.vcxproj" Id="c3c5f3c9-43ee-4486-8278-0c666e5cd0e5" />
   <Project Path="DirectX3D.vcxproj" Id="c1a07399-2b56-460c-9c86-f718b5a13463" />
 </Solution>

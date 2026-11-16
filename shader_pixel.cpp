@@ -32,8 +32,8 @@ bool PixelShader::Load(const char* filename)
 	std::ifstream ifs_vs(filename, std::ios::binary);
 
 	if (!ifs_vs) {
-		const std::string errorMessage = "ピクセルシェーダーの読み込みに失敗しました\n\n" + std::string(filename);
-		MessageBoxA(nullptr, errorMessage.c_str(), "エラー", MB_OK);
+		const std::string errorMessage = "Pixel shader file load error\n\n" + std::string(filename);
+		MessageBoxA(nullptr, errorMessage.c_str(), "Error", MB_OK);
 		return false;
 	}
 

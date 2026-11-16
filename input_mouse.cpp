@@ -1,6 +1,6 @@
-/*==============================================================================
+ï»¿/*==============================================================================
 
-   ƒ}ƒEƒX“ü—Íƒ‰ƒbƒp[ [input_mouse.cpp]
+   ãƒã‚¦ã‚¹å…¥åŠ›ãƒ©ãƒƒãƒ‘ãƒ¼ [input_mouse.cpp]
                                                          Author : Youhei Sato
 --------------------------------------------------------------------------------
 
@@ -8,14 +8,14 @@
 #include "input_mouse.h"
 #include <cstring>
 
-// ‘OƒtƒŒ[ƒ€‚Ìƒ}ƒEƒXƒ{ƒ^ƒ“ó‘Ô
+// å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³çŠ¶æ…‹
 static bool gPrevMouseButton[MOUSE_BUTTON_MAX] = {};
 
-// Œ»İƒtƒŒ[ƒ€‚Ìƒ}ƒEƒXó‘Ô
+// ç¾åœ¨ãƒ•ãƒ¬ãƒ¼ãƒ ã®ãƒã‚¦ã‚¹çŠ¶æ…‹
 static Mouse_State gMouseState = {};
 
 
-// ========== ‰Šú‰» / XV / I—¹ ==========
+// ========== åˆæœŸåŒ– / æ›´æ–° / çµ‚äº† ==========
 
 void InputMouse_Initialize(HWND hWnd)
 {
@@ -26,17 +26,17 @@ void InputMouse_Initialize(HWND hWnd)
 
 void InputMouse_Update(void)
 {
-    // ‘OƒtƒŒ[ƒ€‚Ìƒ{ƒ^ƒ“ó‘Ô‚ğ•Û‘¶
+    // å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®ãƒœã‚¿ãƒ³çŠ¶æ…‹ã‚’ä¿å­˜
     gPrevMouseButton[MOUSE_BUTTON_LEFT]   = gMouseState.leftButton;
     gPrevMouseButton[MOUSE_BUTTON_RIGHT]  = gMouseState.rightButton;
     gPrevMouseButton[MOUSE_BUTTON_MIDDLE] = gMouseState.middleButton;
 	gPrevMouseButton[MOUSE_BUTTON_X1] = gMouseState.xButton1;
 	gPrevMouseButton[MOUSE_BUTTON_X2] = gMouseState.xButton2; 
 
-    // Œ»İ‚Ìƒ}ƒEƒXó‘Ô‚ğæ“¾
+    // ç¾åœ¨ã®ãƒã‚¦ã‚¹çŠ¶æ…‹ã‚’å–å¾—
     Mouse_GetState(&gMouseState);
 
-    // ƒXƒNƒ[ƒ‹ƒzƒC[ƒ‹’l‚ÌƒŠƒZƒbƒg‚ğ©“®‰»
+    // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ›ã‚¤ãƒ¼ãƒ«å€¤ã®ãƒªã‚»ãƒƒãƒˆã‚’è‡ªå‹•åŒ–
     Mouse_ResetScrollWheelValue();
 }
 
@@ -46,7 +46,7 @@ void InputMouse_Finalize(void)
 }
 
 
-// ========== ”»’èˆ— ==========
+// ========== åˆ¤å®šå‡¦ç† ==========
 
 bool InputMouse_IsPress(MouseButton button)
 {

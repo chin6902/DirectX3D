@@ -1,10 +1,10 @@
-/*==============================================================================
+ï»¿/*==============================================================================
 
-   XInput ƒQ[ƒ€ƒpƒbƒh“ü—Íƒ‰ƒbƒp[ [input_xinput.h]
+   XInput ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰å…¥åŠ›ãƒ©ãƒƒãƒ‘ãƒ¼ [input_xinput.h]
                                                          Author : Youhei Sato
 --------------------------------------------------------------------------------
-   XInput ‚ğƒ‰ƒbƒv‚µAƒQ[ƒ€ƒpƒbƒh‚ÌÚ‘±ó‘ÔAƒ{ƒ^ƒ““ü—Íó‘ÔA
-   ‚¨‚æ‚Ñƒfƒbƒhƒ][ƒ“ˆ—Ï‚İ‚Ì³‹K‰»ƒXƒeƒBƒbƒN/ƒgƒŠƒK[’lAU“®§Œä‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
+   XInput ã‚’ãƒ©ãƒƒãƒ—ã—ã€ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ã®æ¥ç¶šçŠ¶æ…‹ã€ãƒœã‚¿ãƒ³å…¥åŠ›çŠ¶æ…‹ã€
+   ãŠã‚ˆã³ãƒ‡ãƒƒãƒ‰ã‚¾ãƒ¼ãƒ³å‡¦ç†æ¸ˆã¿ã®æ­£è¦åŒ–ã‚¹ãƒ†ã‚£ãƒƒã‚¯/ãƒˆãƒªã‚¬ãƒ¼å€¤ã€æŒ¯å‹•åˆ¶å¾¡ã‚’æä¾›ã—ã¾ã™ã€‚
 ==============================================================================*/
 #ifndef INPUT_XINPUT_H
 #define INPUT_XINPUT_H
@@ -12,41 +12,41 @@
 #include <Windows.h>
 #include <Xinput.h>
 
-// XInputƒ‰ƒbƒp[‚Ì‰Šú‰»
+// XInputãƒ©ãƒƒãƒ‘ãƒ¼ã®åˆæœŸåŒ–
 void InputXInput_Initialize(void);
 
-// XInputƒ‰ƒbƒp[‚ÌXVi–ˆƒtƒŒ[ƒ€ Application_Update ‚Ìæ“ª‚ÅŒÄ‚ÔBdelta_time ‚Í•b’PˆÊj
+// XInputãƒ©ãƒƒãƒ‘ãƒ¼ã®æ›´æ–°ï¼ˆæ¯ãƒ•ãƒ¬ãƒ¼ãƒ  Application_Update ã®å…ˆé ­ã§å‘¼ã¶ã€‚delta_time ã¯ç§’å˜ä½ï¼‰
 void InputXInput_Update(float delta_time);
 
-// ƒRƒ“ƒgƒ[ƒ‰[‚ªÚ‘±‚³‚ê‚Ä‚¢‚é‚©
+// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ãŒæ¥ç¶šã•ã‚Œã¦ã„ã‚‹ã‹
 bool InputXInput_IsConnected(int userIndex);
 
-// ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‘±‚¯‚Ä‚¢‚éŠÔ true
-// buttonBitMask: XINPUT_GAMEPAD_A, XINPUT_GAMEPAD_DPAD_UP ‚È‚Ç‚Ìƒ}ƒXƒN’l
+// ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ç¶šã‘ã¦ã„ã‚‹é–“ true
+// buttonBitMask: XINPUT_GAMEPAD_A, XINPUT_GAMEPAD_DPAD_UP ãªã©ã®ãƒã‚¹ã‚¯å€¤
 bool InputXInput_IsPress(int userIndex, WORD buttonBitMask);
 
-// ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½uŠÔ‚¾‚¯ true
+// ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸç¬é–“ã ã‘ true
 bool InputXInput_IsTrigger(int userIndex, WORD buttonBitMask);
 
-// ƒ{ƒ^ƒ“‚ğ—£‚µ‚½uŠÔ‚¾‚¯ true
+// ãƒœã‚¿ãƒ³ã‚’é›¢ã—ãŸç¬é–“ã ã‘ true
 bool InputXInput_IsRelease(int userIndex, WORD buttonBitMask);
 
-// ƒ{ƒ^ƒ“ƒŠƒs[ƒgiŠÔw’èF•bj
+// ãƒœã‚¿ãƒ³ãƒªãƒ”ãƒ¼ãƒˆï¼ˆæ™‚é–“æŒ‡å®šï¼šç§’ï¼‰
 bool InputXInput_IsRepeat(int userIndex, WORD buttonBitMask, float delaySeconds = 0.3f, float intervalSeconds = 0.08f);
 
-// ¶‰EƒAƒiƒƒOƒXƒeƒBƒbƒN‚Ì²w’èæ“¾ (ƒfƒbƒhƒ][ƒ“ˆ—Ï‚İ‚Ì -1.0f - 1.0f ‚Ì³‹K‰»’l)
+// å·¦å³ã‚¢ãƒŠãƒ­ã‚°ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®è»¸æŒ‡å®šå–å¾— (ãƒ‡ãƒƒãƒ‰ã‚¾ãƒ¼ãƒ³å‡¦ç†æ¸ˆã¿ã® -1.0f - 1.0f ã®æ­£è¦åŒ–å€¤)
 float InputXInput_GetLeftStickX(int userIndex);
 float InputXInput_GetLeftStickY(int userIndex);
 float InputXInput_GetRightStickX(int userIndex);
 float InputXInput_GetRightStickY(int userIndex);
 
-// ¶ƒgƒŠƒK[‚ÌƒAƒiƒƒO’l‚ğæ“¾ (0.0f - 1.0f ‚Ì”ÍˆÍ‚É³‹K‰»)
+// å·¦ãƒˆãƒªã‚¬ãƒ¼ã®ã‚¢ãƒŠãƒ­ã‚°å€¤ã‚’å–å¾— (0.0f - 1.0f ã®ç¯„å›²ã«æ­£è¦åŒ–)
 float InputXInput_GetLeftTrigger(int userIndex);
 
-// ‰EƒgƒŠƒK[‚ÌƒAƒiƒƒO’l‚ğæ“¾ (0.0f - 1.0f ‚Ì”ÍˆÍ‚É³‹K‰»)
+// å³ãƒˆãƒªã‚¬ãƒ¼ã®ã‚¢ãƒŠãƒ­ã‚°å€¤ã‚’å–å¾— (0.0f - 1.0f ã®ç¯„å›²ã«æ­£è¦åŒ–)
 float InputXInput_GetRightTrigger(int userIndex);
 
-// ƒ‚[ƒ^[U“®‚Ìİ’è (ƒ‚[ƒ^[o—ÍƒŒƒxƒ‹: 0.0f - 1.0fAUpdate‚É©“®‚ÅƒRƒ“ƒgƒ[ƒ‰[‚Ö“K—p)
+// ãƒ¢ãƒ¼ã‚¿ãƒ¼æŒ¯å‹•ã®è¨­å®š (ãƒ¢ãƒ¼ã‚¿ãƒ¼å‡ºåŠ›ãƒ¬ãƒ™ãƒ«: 0.0f - 1.0fã€Updateæ™‚ã«è‡ªå‹•ã§ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã¸é©ç”¨)
 void InputXInput_SetLeftVibration(int userIndex, float level);
 void InputXInput_SetRightVibration(int userIndex, float level);
 

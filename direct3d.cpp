@@ -1,4 +1,4 @@
-/*============================================================================
+ï»¿/*============================================================================
 Contents   :  [direct3d.cpp]
               
 Author     : Chin Qing You
@@ -84,7 +84,7 @@ bool Direct3DInitialize(HWND window_handle)
 	}
 
     static D3D11_VIEWPORT viewport{};
-    // ƒrƒ…[ƒ|[ƒg‚ÌÝ’è
+    // ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®è¨­å®š
     viewport.TopLeftX = 0.0f;
     viewport.TopLeftY = 0.0f;
     viewport.Width = (float)(SCREEN_WIDTH);
@@ -111,7 +111,7 @@ void Direct3D_Begin()
     g_pDeviceContext->ClearRenderTargetView(g_pRenderTargetView, clear_color);
     g_pDeviceContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    //ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgƒrƒ…[‚ÆƒfƒvƒXƒXƒeƒ“ƒVƒ‹ƒrƒ…[‚ÌÝ’è
+    //ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ“ãƒ¥ãƒ¼ã¨ãƒ‡ãƒ—ã‚¹ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒ“ãƒ¥ãƒ¼ã®è¨­å®š
     g_pDeviceContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
 }
 

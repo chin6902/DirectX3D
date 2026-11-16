@@ -1,6 +1,6 @@
-/*==============================================================================
+ï»¿/*==============================================================================
 
-   XInput ƒQ[ƒ€ƒpƒbƒh“ü—Íƒ‰ƒbƒp[ [input_xinput.cpp]
+   XInput ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰å…¥åŠ›ãƒ©ãƒƒãƒ‘ãƒ¼ [input_xinput.cpp]
                                                          Author : Youhei Sato
 --------------------------------------------------------------------------------
 
@@ -9,28 +9,28 @@
 #include <cstring>
 #include <algorithm>
 
-// XInputƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒŠƒ“ƒNw’è
+// XInputãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ãƒªãƒ³ã‚¯æŒ‡å®š
 #pragma comment(lib, "Xinput.lib")
 
-// Å‘åƒRƒ“ƒgƒ[ƒ‰[” (XInput‚Ìd—l‚ÅÅ‘å4‘ä)
+// æœ€å¤§ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼æ•° (XInputã®ä»•æ§˜ã§æœ€å¤§4å°)
 static const int PAD_MAX = 4;
-// ƒfƒWƒ^ƒ‹ƒ{ƒ^ƒ“” (16ƒrƒbƒg‚Ìƒtƒ‰ƒO)
+// ãƒ‡ã‚¸ã‚¿ãƒ«ãƒœã‚¿ãƒ³æ•° (16ãƒ“ãƒƒãƒˆã®ãƒ•ãƒ©ã‚°)
 static const int BUTTON_MAX = 16;
 
-// ƒRƒ“ƒgƒ[ƒ‰[‚ÌÚ‘±ó‘Ô‚Æó‘Ôƒf[ƒ^
+// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®æ¥ç¶šçŠ¶æ…‹ã¨çŠ¶æ…‹ãƒ‡ãƒ¼ã‚¿
 static bool gIsConnected[PAD_MAX] = {};
 static XINPUT_STATE gCurrState[PAD_MAX] = {};
 static XINPUT_STATE gPrevState[PAD_MAX] = {};
 
-// ƒ{ƒ^ƒ“ƒŠƒs[ƒg—p‚Ìƒ^ƒCƒ}[‚Æ”­‰Î‰ñ”
+// ãƒœã‚¿ãƒ³ãƒªãƒ”ãƒ¼ãƒˆç”¨ã®ã‚¿ã‚¤ãƒãƒ¼ã¨ç™ºç«å›æ•°
 static float gRepeatTimer[PAD_MAX][BUTTON_MAX] = {};
 static int gRepeatTriggerCount[PAD_MAX][BUTTON_MAX] = {};
 
-// ŠeƒRƒ“ƒgƒ[ƒ‰[‚ÌU“®İ’è’liUpdate ‚ÌÅŒã‚É“K—pj
+// å„ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®æŒ¯å‹•è¨­å®šå€¤ï¼ˆUpdate ã®æœ€å¾Œã«é©ç”¨ï¼‰
 static XINPUT_VIBRATION gVibration[PAD_MAX] = {};
 
 
-// ƒrƒbƒgƒtƒ‰ƒO‚©‚çƒCƒ“ƒfƒbƒNƒX (0 ` 15) ‚Ö‚Ì•ÏŠ·
+// ãƒ“ãƒƒãƒˆãƒ•ãƒ©ã‚°ã‹ã‚‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ (0 ï½ 15) ã¸ã®å¤‰æ›
 static int ButtonBitToIndex(WORD buttonBitMask)
 {
     for (int i = 0; i < BUTTON_MAX; ++i)
@@ -43,7 +43,7 @@ static int ButtonBitToIndex(WORD buttonBitMask)
     return -1;
 }
 
-// ========== ‰Šú‰» / XV ==========
+// ========== åˆæœŸåŒ– / æ›´æ–° ==========
 
 void InputXInput_Initialize(void)
 {
@@ -61,7 +61,7 @@ void InputXInput_Update(float delta_time)
     {
         gPrevState[pad] = gCurrState[pad];
 
-        // ó‘Ôæ“¾
+        // çŠ¶æ…‹å–å¾—
         XINPUT_STATE state = {};
         DWORD result = XInputGetState(pad, &state);
 
@@ -70,7 +70,7 @@ void InputXInput_Update(float delta_time)
             gIsConnected[pad] = true;
             gCurrState[pad] = state;
 
-            // ƒ{ƒ^ƒ“ƒŠƒs[ƒgƒ^ƒCƒ}[‚ÌXV
+            // ãƒœã‚¿ãƒ³ãƒªãƒ”ãƒ¼ãƒˆã‚¿ã‚¤ãƒãƒ¼ã®æ›´æ–°
             for (int btn = 0; btn < BUTTON_MAX; ++btn)
             {
                 WORD mask = static_cast<WORD>(1 << btn);
@@ -87,7 +87,7 @@ void InputXInput_Update(float delta_time)
         }
         else
         {
-            // Ø’f‚³‚ê‚½ê‡‚ÍƒNƒŠƒA
+            // åˆ‡æ–­ã•ã‚ŒãŸå ´åˆã¯ã‚¯ãƒªã‚¢
             gIsConnected[pad] = false;
             std::memset(&gCurrState[pad], 0, sizeof(XINPUT_STATE));
             std::memset(gRepeatTimer[pad], 0, sizeof(gRepeatTimer[pad]));
@@ -95,13 +95,13 @@ void InputXInput_Update(float delta_time)
             std::memset(&gVibration[pad], 0, sizeof(XINPUT_VIBRATION));
         }
 
-        // U“®‚ğ“K—p
+        // æŒ¯å‹•ã‚’é©ç”¨
         XInputSetState(pad, &gVibration[pad]);
     }
 }
 
 
-// ========== Ú‘±Šm”F / ƒ{ƒ^ƒ“”»’è ==========
+// ========== æ¥ç¶šç¢ºèª / ãƒœã‚¿ãƒ³åˆ¤å®š ==========
 
 bool InputXInput_IsConnected(int userIndex)
 {
@@ -140,14 +140,14 @@ bool InputXInput_IsRepeat(int userIndex, WORD buttonBitMask, float delaySeconds,
     float elapsed = gRepeatTimer[userIndex][btnIdx];
     if (elapsed <= 0.0f) return false;
 
-    // ‰Ÿ‚µ‚½uŠÔ
+    // æŠ¼ã—ãŸç¬é–“
     if (gRepeatTriggerCount[userIndex][btnIdx] == 0)
     {
         gRepeatTriggerCount[userIndex][btnIdx] = 1;
         return true;
     }
 
-    // ƒfƒBƒŒƒCŠÔ’´‰ßŒã‚ÌƒCƒ“ƒ^[ƒoƒ‹”»’è
+    // ãƒ‡ã‚£ãƒ¬ã‚¤æ™‚é–“è¶…éå¾Œã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«åˆ¤å®š
     if (elapsed >= delaySeconds)
     {
         float repeatTime = elapsed - delaySeconds;
@@ -164,7 +164,7 @@ bool InputXInput_IsRepeat(int userIndex, WORD buttonBitMask, float delaySeconds,
 }
 
 
-// ========== ƒAƒiƒƒOƒXƒeƒBƒbƒN (ƒXƒ€[ƒY‚Èƒfƒbƒhƒ][ƒ“ƒXƒP[ƒŠƒ“ƒO) ==========
+// ========== ã‚¢ãƒŠãƒ­ã‚°ã‚¹ãƒ†ã‚£ãƒƒã‚¯ (ã‚¹ãƒ ãƒ¼ã‚ºãªãƒ‡ãƒƒãƒ‰ã‚¾ãƒ¼ãƒ³ã‚¹ã‚±ãƒ¼ãƒªãƒ³ã‚°) ==========
 
 static void ApplyDeadzoneScaling(short rawVal, short deadzone, float& outNormalized)
 {
@@ -220,7 +220,7 @@ float InputXInput_GetRightStickY(int userIndex)
 }
 
 
-// ========== ƒgƒŠƒK[“ü—Í ==========
+// ========== ãƒˆãƒªã‚¬ãƒ¼å…¥åŠ› ==========
 
 float InputXInput_GetLeftTrigger(int userIndex)
 {
@@ -239,7 +239,7 @@ float InputXInput_GetRightTrigger(int userIndex)
 }
 
 
-// ========== U“®§Œä ==========
+// ========== æŒ¯å‹•åˆ¶å¾¡ ==========
 
 void InputXInput_SetLeftVibration(int userIndex, float level)
 {

@@ -1,37 +1,37 @@
-/*==============================================================================
+ï»¿/*==============================================================================
 
-   ƒL[ƒ{[ƒh“ü—Íƒ‰ƒbƒp[ [input_keyboard.h]
+   ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ãƒ©ãƒƒãƒ‘ãƒ¼ [input_keyboard.h]
                                                          Author : Youhei Sato
 --------------------------------------------------------------------------------
-   keyboard.h ‚ğƒ‰ƒbƒv‚µAˆÈ‰º‚Ì“ü—Íó‘Ô‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
-     - Press   : ƒL[‚ğ‰Ÿ‚µ‘±‚¯‚Ä‚¢‚éŠÔ true
-     - Trigger : ƒL[‚ğ‰Ÿ‚µ‚½uŠÔ‚¾‚¯ true
-     - Release : ƒL[‚ğ—£‚µ‚½uŠÔ‚¾‚¯ true
-     - Repeat  : ‰Ÿ‚µ‘±‚¯‚é‚Æ delaySeconds •bŒã‚©‚ç intervalSeconds •b‚²‚Æ‚É true
+   keyboard.h ã‚’ãƒ©ãƒƒãƒ—ã—ã€ä»¥ä¸‹ã®å…¥åŠ›çŠ¶æ…‹ã‚’æä¾›ã—ã¾ã™ã€‚
+     - Press   : ã‚­ãƒ¼ã‚’æŠ¼ã—ç¶šã‘ã¦ã„ã‚‹é–“ true
+     - Trigger : ã‚­ãƒ¼ã‚’æŠ¼ã—ãŸç¬é–“ã ã‘ true
+     - Release : ã‚­ãƒ¼ã‚’é›¢ã—ãŸç¬é–“ã ã‘ true
+     - Repeat  : æŠ¼ã—ç¶šã‘ã‚‹ã¨ delaySeconds ç§’å¾Œã‹ã‚‰ intervalSeconds ç§’ã”ã¨ã« true
 ==============================================================================*/
 #ifndef INPUT_KEYBOARD_H
 #define INPUT_KEYBOARD_H
 
 #include "keyboard.h"
 
-// ƒL[ƒ{[ƒhƒ‰ƒbƒp[‚Ì‰Šú‰»
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ©ãƒƒãƒ‘ãƒ¼ã®åˆæœŸåŒ–
 void InputKeyboard_Initialize(void);
 
-// ƒL[ƒ{[ƒhƒ‰ƒbƒp[‚ÌXVi–ˆƒtƒŒ[ƒ€ Application_Update ‚ÅŒÄ‚ÔBdelta_time ‚Í•b’PˆÊj
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ©ãƒƒãƒ‘ãƒ¼ã®æ›´æ–°ï¼ˆæ¯ãƒ•ãƒ¬ãƒ¼ãƒ  Application_Update ã§å‘¼ã¶ã€‚delta_time ã¯ç§’å˜ä½ï¼‰
 void InputKeyboard_Update(float delta_time);
 
-// ƒL[‚ğ‰Ÿ‚µ‘±‚¯‚Ä‚¢‚éŠÔ true
+// ã‚­ãƒ¼ã‚’æŠ¼ã—ç¶šã‘ã¦ã„ã‚‹é–“ true
 bool InputKeyboard_IsPress(Keyboard_Keys key);
 
-// ƒL[‚ğ‰Ÿ‚µ‚½uŠÔ‚¾‚¯ true
+// ã‚­ãƒ¼ã‚’æŠ¼ã—ãŸç¬é–“ã ã‘ true
 bool InputKeyboard_IsTrigger(Keyboard_Keys key);
 
-// ƒL[‚ğ—£‚µ‚½uŠÔ‚¾‚¯ true
+// ã‚­ãƒ¼ã‚’é›¢ã—ãŸç¬é–“ã ã‘ true
 bool InputKeyboard_IsRelease(Keyboard_Keys key);
 
-// ƒL[ƒŠƒs[ƒgiŠÔw’èF•bj
-//   Å‰‚É delaySeconds •b‰Ÿ‚µ‘±‚¯‚é‚Æ”½‰‚µA
-//   ‚»‚ÌŒã intervalSeconds •b‚²‚Æ‚É true ‚ğ•Ô‚·
+// ã‚­ãƒ¼ãƒªãƒ”ãƒ¼ãƒˆï¼ˆæ™‚é–“æŒ‡å®šï¼šç§’ï¼‰
+//   æœ€åˆã« delaySeconds ç§’æŠ¼ã—ç¶šã‘ã‚‹ã¨åå¿œã—ã€
+//   ãã®å¾Œ intervalSeconds ç§’ã”ã¨ã« true ã‚’è¿”ã™
 bool InputKeyboard_IsRepeat(Keyboard_Keys key, float delaySeconds = 0.3f, float intervalSeconds = 0.08f);
 
 #endif // INPUT_KEYBOARD_H

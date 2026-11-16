@@ -1,4 +1,4 @@
-/*============================================================================
+ï»¿/*============================================================================
 Contents   :  [texture.cpp]
               
 Author     : Chin Qing You
@@ -49,7 +49,7 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 	for (int i = 0; i < TEXTURE_MAX; i++) {
 		if (!g_Textures[i].pTexture) continue; 
 
-		// “¯‚¶ƒtƒ@ƒCƒ‹–¼‚ªŒ©‚Â‚©‚Á‚½‚çA‚»‚ÌID‚ð•Ô‚·iV‚µ‚­ì‚ç‚È‚¢j
+		// åŒã˜ãƒ•ã‚¡ã‚¤ãƒ«åãŒè¦‹ã¤ã‹ã£ãŸã‚‰ã€ãã®IDã‚’è¿”ã™ï¼ˆæ–°ã—ãä½œã‚‰ãªã„ï¼‰
 		if (g_Textures[i].filename == pFileName)
 		{ 
 			g_Textures[i].ref_count++;
@@ -58,10 +58,10 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 	}
 
 	for (int i = 0; i < TEXTURE_MAX; i++)
-	{ // ‹ó‚¢‚Ä‚¢‚éêŠ‚ð’T‚·
+	{ // ç©ºã„ã¦ã„ã‚‹å ´æ‰€ã‚’æŽ¢ã™
 		if (g_Textures[i].pTexture) continue;
 
-		HRESULT hr; // ƒ~ƒbƒvƒ}ƒbƒv‚Ì—L–³‚Å“Ç‚Ýž‚ÝŠÖ”‚ð•ª‚¯‚é
+		HRESULT hr; // ãƒŸãƒƒãƒ—ãƒžãƒƒãƒ—ã®æœ‰ç„¡ã§èª­ã¿è¾¼ã¿é–¢æ•°ã‚’åˆ†ã‘ã‚‹
 
 		if (bMipMap)
 		{
@@ -74,7 +74,7 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 
 		if (FAILED(hr))
 		{
-			MessageBoxW(nullptr, L"ƒeƒNƒXƒ`ƒƒ‚Ì“Ç‚Ýž‚Ý‚ÉŽ¸”s‚µ‚Ü‚µ‚½", pFileName, MB_OK | MB_ICONERROR);
+			MessageBoxW(nullptr, L"ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸ", pFileName, MB_OK | MB_ICONERROR);
 			break;
 		}
 

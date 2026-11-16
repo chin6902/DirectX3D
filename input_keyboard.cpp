@@ -1,6 +1,6 @@
-/*==============================================================================
+ï»¿/*==============================================================================
 
-   ƒL[ƒ{[ƒh“ü—Íƒ‰ƒbƒp[ [input_keyboard.cpp]
+   ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ãƒ©ãƒƒãƒ‘ãƒ¼ [input_keyboard.cpp]
                                                          Author : Youhei Sato
 --------------------------------------------------------------------------------
 
@@ -8,23 +8,23 @@
 #include "input_keyboard.h"
 #include <cstring>
 
-// ƒL[ƒŠƒs[ƒgŠÇ——p‚ÌÅ‘åƒL[”
+// ã‚­ãƒ¼ãƒªãƒ”ãƒ¼ãƒˆç®¡ç†ç”¨ã®æœ€å¤§ã‚­ãƒ¼æ•°
 static const int KEY_MAX = 0xFF;
 
-// Œ»İƒtƒŒ[ƒ€‚ÌƒL[ƒ{[ƒhó‘Ô
+// ç¾åœ¨ãƒ•ãƒ¬ãƒ¼ãƒ ã®ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰çŠ¶æ…‹
 static Keyboard_State gCurrKeyState = {};
 
-// ‘OƒtƒŒ[ƒ€‚ÌƒL[ƒ{[ƒhó‘Ô
+// å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰çŠ¶æ…‹
 static Keyboard_State gPrevKeyState = {};
 
-// ŠeƒL[‚Ì‰Ÿ‰ºŠÔi•bAƒŠƒs[ƒg—pj
+// å„ã‚­ãƒ¼ã®æŠ¼ä¸‹æ™‚é–“ï¼ˆç§’ã€ãƒªãƒ”ãƒ¼ãƒˆç”¨ï¼‰
 static float gKeyRepeatTimer[KEY_MAX] = {};
 
-// ƒŠƒs[ƒgƒgƒŠƒK[‚ª”­‰Î‚µ‚½‰ñ”iƒCƒ“ƒ^[ƒoƒ‹§Œä—pj
+// ãƒªãƒ”ãƒ¼ãƒˆãƒˆãƒªã‚¬ãƒ¼ãŒç™ºç«ã—ãŸå›æ•°ï¼ˆã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«åˆ¶å¾¡ç”¨ï¼‰
 static int gKeyRepeatTriggerCount[KEY_MAX] = {};
 
 
-// ========== ‰Šú‰» / XV ==========
+// ========== åˆæœŸåŒ– / æ›´æ–° ==========
 
 void InputKeyboard_Initialize(void)
 {
@@ -37,13 +37,13 @@ void InputKeyboard_Initialize(void)
 
 void InputKeyboard_Update(float delta_time)
 {
-    // ‘OƒtƒŒ[ƒ€‚Ìó‘Ô‚ğ•Û‘¶
+    // å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®çŠ¶æ…‹ã‚’ä¿å­˜
     gPrevKeyState = gCurrKeyState;
 
-    // Œ»İ‚Ìó‘Ô‚ğæ“¾
+    // ç¾åœ¨ã®çŠ¶æ…‹ã‚’å–å¾—
     gCurrKeyState = *Keyboard_GetState();
 
-    // --- ƒL[ƒŠƒs[ƒgƒ^ƒCƒ}[‚ÌXV ---
+    // --- ã‚­ãƒ¼ãƒªãƒ”ãƒ¼ãƒˆã‚¿ã‚¤ãƒãƒ¼ã®æ›´æ–° ---
     for (int i = 0; i < KEY_MAX; ++i)
     {
         Keyboard_Keys k = static_cast<Keyboard_Keys>(i);
@@ -60,7 +60,7 @@ void InputKeyboard_Update(float delta_time)
 }
 
 
-// ========== ”»’èˆ— ==========
+// ========== åˆ¤å®šå‡¦ç† ==========
 
 bool InputKeyboard_IsPress(Keyboard_Keys key)
 {
@@ -89,14 +89,14 @@ bool InputKeyboard_IsRepeat(Keyboard_Keys key, float delaySeconds, float interva
     float elapsed = gKeyRepeatTimer[idx];
     if (elapsed <= 0.0f) { return false; }
 
-    // ‰Ÿ‚µ‚½uŠÔ (ƒ^ƒCƒ}[‚ÌÅ‰‚ÌXV)
+    // æŠ¼ã—ãŸç¬é–“ (ã‚¿ã‚¤ãƒãƒ¼ã®æœ€åˆã®æ›´æ–°)
     if (gKeyRepeatTriggerCount[idx] == 0)
     {
         gKeyRepeatTriggerCount[idx] = 1;
         return true;
     }
 
-    // ƒfƒBƒŒƒCŠÔ‚ğ’´‚¦‚Ä‚¢‚é‚©
+    // ãƒ‡ã‚£ãƒ¬ã‚¤æ™‚é–“ã‚’è¶…ãˆã¦ã„ã‚‹ã‹
     if (elapsed >= delaySeconds)
     {
         float repeatTime = elapsed - delaySeconds;

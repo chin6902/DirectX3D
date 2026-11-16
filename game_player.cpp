@@ -16,6 +16,7 @@ LastUpdate : 2026/10/21
 #include "model.h"
 #include "collision3d_debug.h"
 
+#include "game_map.h"
 #include "game_object.h"
 
 using namespace DirectX;
@@ -43,6 +44,8 @@ static float g_Angle{};
 static MODEL* g_pModel{ nullptr };
 
 static CollisionAABB MakePlayerAABB(FXMVECTOR position);
+static void ResolveHit(XMVECTOR& position, XMVECTOR& velocity, const HitData3D& hit);
+static bool HitMap(const XMFLOAT3& p);
 
 void GamePlayer_Initialize(const DirectX::XMFLOAT3& position, float angle_y)
 {
@@ -68,6 +71,29 @@ void GamePlayer_Finalize()
 
 void GamePlayer_Update(float delta_time)
 {
+    HitData3D push_hit = GameMap_CheckCollision(MakePlayerAABB(XMLoadFloat3(&g_Position)));
+
+    if (g_IsGrounded)
+    {
+        XMFLOAT3 feet = g_Position;
+        feet.y -= 0.1f;
+
+        const XMFLOAT3 move = GameMap_GetFloorMove(MakePlayerAABB(XMLoadFloat3(&feet)));
+
+        XMFLOAT3 carried = { g_Position.x + move.x, g_Position.y + move.y, g_Position.z + move.z };
+        if (!HitMap(carried))   // don't carry the player into a wall
+        {
+            g_Position = carried;
+        }
+    }
+
+    if (push_hit.IsHit())
+    {
+        XMVECTOR p = XMLoadFloat3(&g_Position);
+        p += XMLoadFloat3(&push_hit.GetNormal()) * (push_hit.GetDepth() + 0.001f);
+        XMStoreFloat3(&g_Position, p);
+    }
+
     XMVECTOR direction = XMVectorZero();
     XMVECTOR velocity = XMLoadFloat3(&g_Velocity);
     XMVECTOR position = XMLoadFloat3(&g_Position);
@@ -120,37 +146,37 @@ void GamePlayer_Update(float delta_time)
     // --- Drag (horizontal only) ---
     velocity -= velocity * XMVECTOR{ 1.0f, 0.0f, 1.0f, 0.0f } * PLAYER_DRAG * delta_time;
 
-    // --- Integrate position ---
-    position += velocity * delta_time;
+    // --- Integrate position (one axis at a time against the map) ---
+    g_IsGrounded = false;   // moved up from the object collision section
 
-    // --- Object collision ---
-    g_IsGrounded = false;
+    XMFLOAT3 pos = g_Position;
+    XMFLOAT3 vel;
+    XMStoreFloat3(&vel, velocity);
+
+    pos.x += vel.x * delta_time;
+    if (HitMap(pos)) { pos.x = g_Position.x; vel.x = 0.0f; }
+
+    pos.z += vel.z * delta_time;
+    if (HitMap(pos)) { pos.z = g_Position.z; vel.z = 0.0f; }
+
+    pos.y += vel.y * delta_time;
+    if (HitMap(pos))
+    {
+        if (vel.y < 0.0f) g_IsGrounded = true;  
+        pos.y = g_Position.y;
+        vel.y = 0.0f;
+    }
+
+    position = XMLoadFloat3(&pos);
+    velocity = XMLoadFloat3(&vel);
 
     for (int i = 0; i < OBJECT_MAX; i++)
     {
         const GameObject* object = GameObject_Get(i);
         if (object == nullptr) continue;
 
-        // Rebuild every iteration: earlier objects may have moved us
         HitData3D hit = MakePlayerAABB(position).IsHit(GameObject_GetAABB(*object));
-        if (!hit.IsHit()) continue;
-
-        XMVECTOR normal = XMLoadFloat3(&hit.GetNormal());
-
-        // Push out of the object
-        position += normal * hit.GetDepth();
-
-        // Remove only the velocity going into the surface (keeps sliding along walls)
-        float intoSurface = XMVectorGetX(XMVector3Dot(velocity, normal));
-        if (intoSurface < 0.0f)
-        {
-            velocity -= normal * intoSurface;
-        }
-
-        if (hit.GetNormal().y > 0.0f)
-        {
-            g_IsGrounded = true;
-        }
+        if (hit.IsHit()) ResolveHit(position, velocity, hit);
     }
 
     // --- Ground collision ---
@@ -195,13 +221,10 @@ static CollisionAABB MakePlayerAABB(FXMVECTOR position)
     // Uses the smaller side (the body), so the arms don't count.
     const float half_xz = std::min(model_aabb.GetHalfWidth(), model_aabb.GetHalfDepth());
 
-    // Model-space center offset, rotated the same way the model is drawn
-    XMVECTOR offset = XMVector3TransformNormal(
-        XMLoadFloat3(&model_aabb.GetCenter()),
-        GetPlayerRotation());
-
+    // Vertical offset only, so turning never moves the box
     XMFLOAT3 center;
-    XMStoreFloat3(&center, position + offset);
+    XMStoreFloat3(&center, position);
+    center.y += model_aabb.GetCenter().y;
 
     return CollisionAABB(half_xz, model_aabb.GetHalfHeight(), half_xz, center);
 }
@@ -211,4 +234,28 @@ CollisionAABB GamePlayer_GetAABB()
     return MakePlayerAABB(XMLoadFloat3(&g_Position));
 }
 
+static void ResolveHit(XMVECTOR& position, XMVECTOR& velocity, const HitData3D& hit)
+{
+    XMVECTOR normal = XMLoadFloat3(&hit.GetNormal());
+
+    // Push out
+    position += normal * hit.GetDepth();
+
+    // Remove only the velocity going into the surface (keeps sliding along walls)
+    float intoSurface = XMVectorGetX(XMVector3Dot(velocity, normal));
+    if (intoSurface < 0.0f)
+    {
+        velocity -= normal * intoSurface;
+    }
+
+    if (hit.GetNormal().y > 0.0f)
+    {
+        g_IsGrounded = true;
+    }
+}
+
+bool HitMap(const XMFLOAT3& p)
+{
+    return GameMap_CheckCollision(MakePlayerAABB(XMLoadFloat3(&p))).IsHit();
+}
 

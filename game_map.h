@@ -18,4 +18,6 @@ void GameMap_Draw();
 
 HitData3D GameMap_CheckCollision(const CollisionAABB& aabb);
 
+DirectX::XMFLOAT3 GameMap_GetFloorMove(const CollisionAABB& aabb);
+
 #endif

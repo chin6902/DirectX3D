@@ -198,29 +198,6 @@ void Game_Update(float delta_time)
 
 	CameraFree_Update(delta_time);
 
-	const CollisionAABB playerAABB = GamePlayer_GetAABB();
-
-	for (int i = 0; i < OBJECT_MAX; i++)
-	{
-		const GameObject* object = GameObject_Get(i);   
-
-		if (object == nullptr)
-		{
-			continue;
-		}
-
-		player_hit = false;
-		if (playerAABB.IsOverlap(GameObject_GetAABB(*object)))
-		{
-			player_hit = true;
-			break;
-		}
-		else
-		{
-			player_hit = false;
-		}
-	}
-
 #ifdef _DEBUG
 #endif
 
@@ -258,7 +235,6 @@ void Game_Update(float delta_time)
 		ShaderConstant_Get3D().SetProjectionMatrix(PlayerCamera_GetProjectionMatrix());
 
 		// --- collision check ---
-		GameMap_CheckCollision(playerAABB);
 
 		// --- UI ---
 
@@ -313,9 +289,6 @@ void Game_Draw()
 #endif 
 
 	// --- text / sprites ---
-	if (player_hit) { GameText_Draw(10.0f, 20.0f, "Player collided with object!", 1.0f, { 1.0f, 0.0f, 0.0f }); }
-	else { GameText_Draw(10.0f, 20.0f, "Player is safe.", 1.0f, { 0.0f, 1.0f, 0.0f }); }
-
 	Sampler_SetFilter(kSamplerFilter_Point);
 	Sprite_Flush();
 }

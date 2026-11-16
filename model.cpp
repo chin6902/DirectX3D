@@ -1,4 +1,4 @@
-/*============================================================================
+ï»¿/*============================================================================
 Contents   :  [model.h]
 
 Author     : Chin Qing You
@@ -17,12 +17,12 @@ LastUpdate : 2026/10/20
 
 using namespace DirectX;
 
-// 3D’¸“_\‘¢‘Ì
+// 3Dé ‚ç‚¹æ§‹é€ ä½“
 struct Vertex3d
 {
-	XMFLOAT3 position; // À•W
-	XMFLOAT3 normal;   // –@ü
-	XMFLOAT4 color;    // F
+	XMFLOAT3 position; // åº§æ¨™
+	XMFLOAT3 normal;   // æ³•ç·š
+	XMFLOAT4 color;    // è‰²
 	XMFLOAT2 texcoord; // UV
 };
 
@@ -45,7 +45,7 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 	{
 		aiMesh* mesh = model->AiScene->mMeshes[m];
 
-		// ’¸“_ƒoƒbƒtƒ@¶¬
+		// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 		{
 			Vertex3d* vertex = new Vertex3d[mesh->mNumVertices];
 
@@ -63,7 +63,7 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 				vertex[v].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 				vertex[v].texcoord = XMFLOAT2( mesh->mTextureCoords[0][v].x, mesh->mTextureCoords[0][v].y);
 
-				// AABB‚ÌŒvZ
+				// AABBã®è¨ˆç®—
 
 				if (first)
 				{
@@ -104,7 +104,7 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 		};
 
 
-		// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@¶¬
+		// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 		{
 			unsigned int* index = new unsigned int[mesh->mNumFaces * 3];
 
@@ -137,7 +137,7 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 
 	g_TextureWhiteId = Texture_Load(L"assets/textures/model_white.png");
 
-	// FBX‚ÉƒeƒNƒXƒ`ƒƒ‚ª“à•ï‚³‚ê‚Ä‚¢‚éê‡
+	// FBXã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒå†…åŒ…ã•ã‚Œã¦ã„ã‚‹å ´åˆ
 	for (unsigned int i = 0; i < model->AiScene->mNumTextures; i++)
 	{
 		aiTexture* aitexture = model->AiScene->mTextures[i];
@@ -160,21 +160,21 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 		model->Texture[aitexture->mFilename.data] = texture;
 	}
 
-	// fbx‚Ìƒtƒ@ƒCƒ‹ƒpƒX‚¾‚¯æ“¾
+	// fbxã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã ã‘å–å¾—
 	const std::string modelPath(FileName);
 
-	// ÅŒã‚Ì '/' ‚Ü‚½‚Í '\\' ‚ÌˆÊ’u‚ğ’T‚·iWindows‘Î‰j
+	// æœ€å¾Œã® '/' ã¾ãŸã¯ '\\' ã®ä½ç½®ã‚’æ¢ã™ï¼ˆWindowså¯¾å¿œï¼‰
 	size_t pos = modelPath.find_last_of("/\\");
 	std::string directory;
 
 	if (pos != std::string::npos) {
-		directory = modelPath.substr(0, pos);  // ƒtƒ@ƒCƒ‹–¼‚ğœ‚¢‚½•”•ª
+		directory = modelPath.substr(0, pos);  // ãƒ•ã‚¡ã‚¤ãƒ«åã‚’é™¤ã„ãŸéƒ¨åˆ†
 	}
 	else {
-		directory = "";  // ƒpƒX‚É‹æØ‚è‚ª‚È‚¢ê‡iƒtƒ@ƒCƒ‹–¼‚Ì‚İj
+		directory = "";  // ãƒ‘ã‚¹ã«åŒºåˆ‡ã‚ŠãŒãªã„å ´åˆï¼ˆãƒ•ã‚¡ã‚¤ãƒ«åã®ã¿ï¼‰
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚ªFBX‚Æ‚Í•Ê‚É—pˆÓ‚³‚ê‚Ä‚¢‚éê‡
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒFBXã¨ã¯åˆ¥ã«ç”¨æ„ã•ã‚Œã¦ã„ã‚‹å ´åˆ
 	for (unsigned int m = 0; m < model->AiScene->mNumMeshes; m++)
 	{
 		aiString filename;
@@ -189,7 +189,7 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 			continue;
 		}
 
-		// ƒeƒNƒXƒ`ƒƒƒpƒX‚É—]Œv‚ÈƒtƒHƒ‹ƒ_–¼‚ª‚ ‚Á‚½‚çƒJƒbƒg
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ã‚¹ã«ä½™è¨ˆãªãƒ•ã‚©ãƒ«ãƒ€åãŒã‚ã£ãŸã‚‰ã‚«ãƒƒãƒˆ
 		std::string str_filename = filename.C_Str();
 		size_t n = str_filename.find_last_of("\\/");
 		str_filename = str_filename.substr(n + 1);
@@ -250,10 +250,10 @@ void ModelRelease(MODEL* model)
 
 void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 {
-	// ƒvƒŠƒ~ƒeƒBƒuƒgƒ|ƒƒWİ’è
+	// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ãƒˆãƒãƒ­ã‚¸è¨­å®š
 	Direct3D_GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// ’¸“_ƒVƒF[ƒ_[‚Éƒ[ƒ‹ƒhÀ•W•ÏŠ·s—ñ‚ğİ’è
+	// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’è¨­å®š
 	ShaderConstant_Get3D().SetWorldMatrix(mtxWorld);
 
 	for (unsigned int m = 0; m < model->AiScene->mNumMeshes; m++)
@@ -274,15 +274,15 @@ void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 			ShaderConstant_Get3D().SetColor({ diffuse.r, diffuse.g, diffuse.b, 1.0f });
 		}
 
-		// ’¸“_ƒoƒbƒtƒ@‚ğ•`‰æƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
+		// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’æç”»ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«è¨­å®š
 		UINT stride = sizeof(Vertex3d);
 		UINT offset = 0;
 		Direct3D_GetDeviceContext()->IASetVertexBuffers(0, 1, &model->VertexBuffer[m], &stride, &offset);
 
-		// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğ•`‰æƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
+		// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’æç”»ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«è¨­å®š
 		Direct3D_GetDeviceContext()->IASetIndexBuffer(model->IndexBuffer[m], DXGI_FORMAT_R32_UINT, 0);
 
-		// ƒ|ƒŠƒSƒ“•`‰æ–½—ß”­s
+		// ãƒãƒªã‚´ãƒ³æç”»å‘½ä»¤ç™ºè¡Œ
 		Direct3D_GetDeviceContext()->DrawIndexed(model->AiScene->mMeshes[m]->mNumFaces * 3, 0, 0);
 	}
 }
