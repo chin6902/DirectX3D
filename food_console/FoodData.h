@@ -26,26 +26,29 @@ enum class FoodSource
 struct FoodData
 {
     string         name;                 // display name
-    string         kind   = "not_food";  // one of FoodKinds()
+    string         kind = "not_food";  // one of FoodKinds()
+    string         reason;               // the AI's short explanation for kind (for testing and feedback)
     bool           isFood = false;       // can it be served? OUR code decides this from kind
-    int            sweet  = 0;           // 0-10  (0 = this taste is absent)
-    int            salty  = 0;           // 0-10
-    int            sour   = 0;           // 0-10
-    int            spicy  = 0;           // 0-10
+    int            sweet = 0;           // 0-10  (0 = this taste is absent)
+    int            salty = 0;           // 0-10
+    int            sour = 0;           // 0-10
+    int            spicy = 0;           // 0-10
     vector<string> ingredients;          // tags from IngredientTags(), e.g. "garlic"
-    string         shape  = "plate";
+    string         shape = "plate";
     string         texturePath;          // empty until an image exists
     FoodSource     source = FoodSource::Rejected;
 };
 
 // The two fixed lists. Each exists in ONE place: the AI request (schema)
 // and SanitizeFood both read them from here, so they can never disagree.
-const vector<string>& FoodKinds();        // dish, drink, ingredient, invented, not_food
+const vector<string>& FoodKinds();        // dish, drink, ingredient, invented, multiple, extra_words, not_food
 const vector<string>& IngredientTags();   // garlic, onion, egg, ...
 
 bool        HasIngredient(const FoodData& f, const string& tag);
+const char* RefusalReason(const FoodData& f);   // text for the player; "" if it can be served
 
 int         ClampInt(int v, int lo, int hi);
+string      CutUtf8(const string& s, size_t maxBytes);  // shorten without splitting a character
 string      NormalizeKey(const string& word);   // "  Ramen " -> "ramen"
 void        SanitizeFood(FoodData& f);          // clamp + fix + decide isFood
 json        FoodToJson(const FoodData& f);

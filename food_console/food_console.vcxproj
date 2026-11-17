@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{82021fa1-958e-4174-9af9-cbb608cb5d98}</ProjectGuid>
+    <ProjectGuid>{c3c5f3c9-43ee-4486-8278-0c666e5cd0e5}</ProjectGuid>
     <RootNamespace>foodconsole</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -143,17 +143,25 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIService.cpp" />
+    <ClCompile Include="FoodCache.cpp" />
     <ClCompile Include="FoodData.cpp" />
-    <ClCompile Include="food_console.cpp" />
+    <ClCompile Include="FoodFallback.cpp" />
     <ClCompile Include="HttpClient.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenAiApi.cpp" />
-    <ClCompile Include="test_openai.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIService.h" />
+    <ClInclude Include="FoodCache.h" />
     <ClInclude Include="FoodData.h" />
+    <ClInclude Include="FoodFallback.h" />
     <ClInclude Include="HttpClient.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="OpenAiApi.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="foods_fallback.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

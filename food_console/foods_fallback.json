@@ -1,7 +1,7 @@
 {
   "version": 3,
   "foods": {
-    "ramen": { "name": "Ramen", "kind": "dish", "sweet": 1, "salty": 8, "sour": 0, "spicy": 2, "ingredients": ["noodles", "pork", "egg"], "shape": "bowl" },
+    "ramen": { "name": "Ramen", "kind": "dish", "sweet": 1, "salty": 7, "sour": 0, "spicy": 2, "ingredients": ["noodles", "pork", "egg"], "shape": "bowl" },
     "sushi": { "name": "Sushi", "kind": "dish", "sweet": 2, "salty": 4, "sour": 4, "spicy": 1, "ingredients": ["rice", "seafood"], "shape": "plate" },
     "curry": { "name": "Curry", "kind": "dish", "sweet": 3, "salty": 5, "sour": 1, "spicy": 7, "ingredients": ["onion", "potato", "rice"], "shape": "bowl" },
     "pizza": { "name": "Pizza", "kind": "dish", "sweet": 2, "salty": 6, "sour": 3, "spicy": 1, "ingredients": ["cheese", "tomato", "bread"], "shape": "plate" },

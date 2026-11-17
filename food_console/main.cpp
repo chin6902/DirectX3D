@@ -2,8 +2,13 @@
 // Console test of the whole food pipeline.
 // The loop below is shaped like your game's Update():
 // it never waits for the AI, it just checks for results each frame.
+//
 // Run it TWICE: the second run shows the cache surviving between sessions.
+// Needs foods_fallback.json and api_key.txt in the working directory.
 // ============================================================
+#ifdef _WIN32
+#include <windows.h>        // first: must come before any "using namespace std"
+#endif
 #include <cstdio>
 #include <vector>
 #include <chrono>
@@ -40,8 +45,12 @@ int CalcDamage(const FoodData& f)
 
 int main()
 {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);    // so the console can show Japanese
+#endif
+
     AIService ai;
-    ai.Start("foods_cache.json", "foods_fallback.json");
+    ai.Start("foods_cache.json", "foods_fallback.json", "api_key.txt");
     printf("Cache has %zu foods from earlier sessions\n\n", ai.Cache().Count());
 
     vector<FoodData> inventory;     // later: your bar UI at the bottom of the screen
@@ -49,37 +58,42 @@ int main()
 
     Enemy boss = { "Chili Golem", 200, 0, 0, 0, 7, "" };    // needs spicy >= 7, any ingredient
 
-    // What the "player" types, and on which frame.
-    struct Input { int frame; string word; bool goOffline; };
+    // What the "player" types, one word after another.
+    struct Input { string word; bool goOffline; };
     vector<Input> inputs =
     {
-        {   0, "Ramen",            false },
-        {   0, "麻婆豆腐",          false },
-        {  10, "chair",            false },
-        {  20, "",                 false },     // rejected: empty
-        { 150, "  RAMEN ",         false },     // same key as "Ramen"
-        { 160, "pizza",            true  },     // offline -> hand-written table
-        { 160, "dragonfruit soda", true  },     // offline -> hash generated
+        { "Ramen",            false },
+        { "麻婆豆腐",          false },
+        { "chair",            false },     // not food
+        { "chili",            false },     // an ingredient, not a dish
+        { "",                 false },     // rejected before sending
+        { "  RAMEN ",         false },     // same key as "Ramen" -> cache
+        { "pizza",            true  },     // offline -> hand-written table
+        { "dragonfruit soda", true  },     // offline -> stats from the hash
     };
 
-    auto startTime = chrono::steady_clock::now();
     size_t nextInput = 0;
+    auto   sentTime  = chrono::steady_clock::now();
 
-    for (int frame = 0; frame < 400; frame++)
+    // 6000 frames = about 100 seconds. Only a safety limit: the loop
+    // normally ends as soon as every word has come back.
+    for (int frame = 0; frame < 6000; frame++)
     {
-        // --- player input ---
-        while (nextInput < inputs.size() && inputs[nextInput].frame == frame)
+        // --- player input: type the next word once the previous one is back ---
+        if (nextInput < inputs.size() && ai.PendingCount() == 0)
         {
             const Input& in = inputs[nextInput++];
             ai.SetOffline(in.goOffline);
+            sentTime = chrono::steady_clock::now();
+
             int id = ai.Request(in.word);
             if (id < 0)
             {
-                printf("[frame %3d] \"%s\" rejected before sending\n", frame, in.word.c_str());
+                printf("[frame %4d] \"%s\" rejected before sending\n", frame, in.word.c_str());
             }
             else
             {
-                printf("[frame %3d] request #%d \"%s\"  (start minigame here)\n", frame, id, in.word.c_str());
+                printf("[frame %4d] request #%d \"%s\"\n", frame, id, in.word.c_str());
             }
         }
 
@@ -88,38 +102,50 @@ int main()
         while (ai.PollResult(res))
         {
             const FoodData& f = res.food;
-            float sec = chrono::duration<float>(chrono::steady_clock::now() - startTime).count();
-            printf("[frame %3d | %.2fs] #%d %-9s %-16s %-10s swe%d sal%d sou%d spi%d  %s",
-                frame, sec, res.id, SourceName(f.source), f.name.c_str(), f.kind.c_str(),
+            int tookMs = (int)chrono::duration_cast<chrono::milliseconds>(
+                chrono::steady_clock::now() - sentTime).count();
+
+            printf("[frame %4d] #%d %-9s %s [%s]  sweet=%d salty=%d sour=%d spicy=%d  %s  with:",
+                frame, res.id, SourceName(f.source), f.name.c_str(), f.kind.c_str(),
                 f.sweet, f.salty, f.sour, f.spicy, f.shape.c_str());
+            for (const string& tag : f.ingredients)
+            {
+                printf(" %s", tag.c_str());
+            }
+            printf("   (%d ms)\n", tookMs);
+
             if (!res.error.empty())
             {
-                printf("   (AI failed: %s)", res.error.c_str());
+                printf("             AI failed: %s\n", res.error.c_str());
             }
-            printf("\n");
 
             if (!f.isFood)
             {
-                printf("            -> refused (%s)\n", f.kind.c_str());
+                printf("             -> refused (%s)\n", f.kind.c_str());
                 continue;
             }
             if (inventory.size() < kMaxSlots)
             {
                 inventory.push_back(f);
             }
-            printf("            -> vs %s: %s\n", boss.name.c_str(),
-                CanDamage(f, boss) ? ("HIT for " + to_string(CalcDamage(f))).c_str() : "no effect (needs spicy 7)");
+            if (CanDamage(f, boss))
+            {
+                printf("             -> vs %s: HIT for %d\n", boss.name.c_str(), CalcDamage(f));
+            }
+            else
+            {
+                printf("             -> vs %s: no effect (needs spicy 7)\n", boss.name.c_str());
+            }
         }
 
-        this_thread::sleep_for(chrono::milliseconds(16));   // ~60 fps
-        if (nextInput == inputs.size() && ai.PendingCount() == 0 && frame > 170)
+        if (nextInput == inputs.size() && ai.PendingCount() == 0)
         {
-            break;
+            break;      // everything was typed and everything came back
         }
+        this_thread::sleep_for(chrono::milliseconds(16));   // ~60 fps
     }
 
-    printf("\nInventory: %zu foods. Cache now has %zu foods (saved to foods_cache.json)\n",
-        inventory.size(), ai.Cache().Count());
+    printf("\nInventory: %zu foods. Cache now has %zu foods (saved to foods_cache.json)\n", inventory.size(), ai.Cache().Count());
     ai.Stop();
     return 0;
 }
