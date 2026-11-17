@@ -169,24 +169,20 @@ bool AIService::CallBackend(const string& word, FoodData& out, string& error)
         return false;
     }
 
-    // ------------------------------------------------------------
-    // YOUR TURN: connect the real AI.
-    //
-    // Delete the three lines under this comment and write the same
-    // four steps that test_openai.cpp does, in the same order:
-    //
-    //   1. string body = BuildOpenAiRequestBody(word);
-    //   2. wstring headers = BuildOpenAiHeaders(m_apiKey);
-    //   3. HttpResult http = HttpPostJson(kOpenAiHost, kOpenAiPath, headers, body, 15000);
-    //        no reply at all (!http.ok)   -> error = http.error;                       return false;
-    //        reply, but not status 200    -> error = "HTTP " + to_string(http.status); return false;
-    //   4. return ParseOpenAiResponse(http.body, out, error);
-    //
-    // Returning false is not a crash: PollResult() then uses the fallback.
-    // Until you write this, EVERY word comes back as FALLBACK or GENERATED.
-    // ------------------------------------------------------------
-    /*(void)word;
-    (void)out;
-    error = "CallBackend is not connected yet";*/
-    return false;
+    string  body = BuildOpenAiRequestBody(word);
+    wstring headers = BuildOpenAiHeaders(m_apiKey);
+
+    HttpResult http = HttpPostJson(kOpenAiHost, kOpenAiPath, headers, body, 15000);
+    if (!http.ok)
+    {
+        error = http.error;                         // no reply at all (no internet, timeout)
+        return false;
+    }
+    if (http.status != 200)
+    {
+        error = "HTTP " + to_string(http.status);   // a reply, but an error (401, 429...)
+        return false;
+    }
+
+    return ParseOpenAiResponse(http.body, out, error);
 }

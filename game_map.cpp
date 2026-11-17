@@ -16,7 +16,7 @@ constexpr unsigned int MAP_OBJECT_MAX{ 1000 };
 static MapObject* g_MapObjects[MAP_OBJECT_MAX]{};
 
 static int g_TextureID_Ground{ -1 };
-//static MODEL* g_pModel_Stone{ nullptr };
+static MODEL* g_pModel_Kirby{ nullptr };
 
 void GameMap_Initialize()
 {
@@ -28,6 +28,7 @@ void GameMap_Initialize()
 
 	// load the resources for the map, such as textures and models
 	g_TextureID_Ground = Texture_Load(L"assets/textures/cube.png", true);
+	g_pModel_Kirby = ModelLoad("assets/models/kirby4.fbx", 0.1f, false);
 
 	// make the map datas
 	g_MapObjects[0] = new MapBlock({ -3.0f, 0.5f, -3.0f }, g_TextureID_Ground);
@@ -36,6 +37,8 @@ void GameMap_Initialize()
 	g_MapObjects[3] = new MapBlock({  3.0f, 3.5f,  3.0f }, g_TextureID_Ground);
 
 	g_MapObjects[4] = new MapMoveBlock({ 1.0f, 0.5f, 1.0f }, g_TextureID_Ground);
+
+	g_MapObjects[5] = new MapModel(g_pModel_Kirby, { -2.0f, 0.0f, 3.0f });
 }
 
 void GameMap_Finalize()
