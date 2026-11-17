@@ -86,6 +86,12 @@ void Game_Initialize()
 	g_PixelShader3D.Load("assets/shaders/shader_pixel_3d.cso");
 	ShaderConstant_Get3D().Initialize();
 
+	//==========  2d ===============
+	D3D11_INPUT_ELEMENT_DESC layout2d[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT	,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT		,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+
 	D3D11_INPUT_ELEMENT_DESC layoutPrimitive[] = {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
@@ -290,6 +296,7 @@ void Game_Draw()
 
 	// --- text / sprites ---
 	Sampler_SetFilter(kSamplerFilter_Point);
+	Sprite_Draw(g_TextureID_Ground, 0.0f, 0.0f, 464.0f, 464.0f);
 	Sprite_Flush();
 }
 

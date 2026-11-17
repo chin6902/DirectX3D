@@ -8,7 +8,6 @@ LastUpdate : 2026/06/15
 ============================================================================*/
 #include "application.h"
 #include "direct3d.h"
-#include "shader.h"
 #include "texture.h"
 #include "sprite.h"
 #include "debug_ui.h"
@@ -41,7 +40,6 @@ bool Application_Initialize(HWND hWnd)
 	InputMouse_Initialize(hWnd);
 	InputXInput_Initialize();
 
-	Shader_Initialize(Direct3D_GetDevice(), Direct3D_GetDeviceContext());
 	Sampler_Initialize();
 
 	if (!DebugUI_Initialize(hWnd))
@@ -68,7 +66,6 @@ void Application_Finalize()
 	Sprite_Finalize();
 	Texture_Finalize();
 	Sampler_Finalize();
-	Shader_Finalize();
 
 	InputMouse_Finalize();
 	Audio_Finalize();

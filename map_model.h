@@ -25,6 +25,7 @@ public:
 	void Draw() const override;
 
 	HitData3D IsHit(const CollisionAABB& aabb) const override;
+	CollisionAABB GetWorldAABB() const;
 
 private:
 	MODEL* m_pModel{ nullptr };

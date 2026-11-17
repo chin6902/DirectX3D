@@ -22,15 +22,23 @@ public:
 	void Initialize();
 	void Finalize();
 
-	void SetWorldMatrix(const DirectX::XMMATRIX& matrix);
-	void SetViewMatrix(const DirectX::XMMATRIX& matrix);
-	void SetProjectionMatrix(const DirectX::XMMATRIX& matrix);
+	void SetWorldMatrix(const DirectX::XMMATRIX& matrix) const;
+	void SetViewMatrix(const DirectX::XMMATRIX& matrix) const;
+	void SetProjectionMatrix(const DirectX::XMMATRIX& matrix) const;
 	void SetColor(const DirectX::XMFLOAT4& color);
+	void SetUVMatrix(const DirectX::XMMATRIX& matrix) const;
 
-	void Bind();
+	void Bind() const;
 
 private:
-	static constexpr unsigned int VS_CONSTANT_BUFFER_COUNT = 3;
+	// 0 -> world + worldIT 
+	// 1 -> view
+	// 2 -> projection
+	// 3 -> uv matrix
+	static constexpr unsigned int VS_CONSTANT_BUFFER_COUNT = 4;
+
+	// 0 -> light
+	// 1 -> color
 	static constexpr unsigned int PS_CONSTANT_BUFFER_COUNT = 1;
 
 	ID3D11Buffer* m_pVSConstantBuffer[VS_CONSTANT_BUFFER_COUNT]{};
@@ -39,5 +47,6 @@ private:
 };
 
 ShaderConstant& ShaderConstant_Get3D();
+ShaderConstant& ShaderConstant_Get2D();
 
 #endif

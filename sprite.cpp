@@ -2,7 +2,7 @@
 Contents   :  [sprite.cpp]
 
 Author     : Chin Qing You
-LastUpdate : 2026/08/20
+LastUpdate : 2026/11/17
 -----------------------------------------------------------------------------
 
 ============================================================================*/
@@ -13,7 +13,9 @@ LastUpdate : 2026/08/20
 #include "debug_ostream.h"
 #include "config.h"
 #include "direct3d.h"
-#include "shader.h"
+#include "shader_vertex.h"
+#include "shader_pixel.h"
+#include "shader_constant.h"
 #include "texture.h"
 #include "sampler.h"
 
@@ -22,11 +24,11 @@ using namespace DirectX;
 // ============================================================================
 // Vertex
 // ============================================================================
+// Must match layout2d below (POSITION + TEXCOORD, 20 bytes)
 struct Vertex
 {
 	XMFLOAT3 position;
 	XMFLOAT2 texcoord;
-	XMFLOAT4 color;
 };
 
 static constexpr int BATCH_MAX_QUADS = 4096;
@@ -39,6 +41,10 @@ static int    g_VertexCount = 0;
 static int g_BatchTexture = TEXTURE_INVALID_ID;
 static SpriteFilter g_BatchFilter = kSpriteFilter_Point;
 static SpriteFilter g_PendingFilter = kSpriteFilter_Point;
+static XMFLOAT4     g_BatchColor{ 1.0f, 1.0f, 1.0f, 1.0f }; // color is a shader constant now, so one color per batch
+
+static VertexShader g_VertexShader2D;
+static PixelShader  g_PixelShader2D;
 
 static ID3D11Buffer* g_pVertexBuffer{ nullptr };
 static ID3D11BlendState* g_pBlendState{ nullptr };
@@ -50,6 +56,21 @@ static ID3D11RasterizerState* g_pRasterizerState{ nullptr };
 // ============================================================================
 bool Sprite_Initialize()
 {
+	// --- 2D shaders ---
+	D3D11_INPUT_ELEMENT_DESC layout2d[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT	,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT		,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+
+	if (!g_VertexShader2D.Load("assets/shaders/shader_vertex_2d.cso", layout2d, ARRAYSIZE(layout2d))) { return false; }
+	if (!g_PixelShader2D.Load("assets/shaders/shader_pixel_2d.cso")) { return false; }
+
+	// --- 2D constants ---
+	// The screen size doesn't change, so the projection is written once here instead of every flush
+	ShaderConstant_Get2D().Initialize();
+	ShaderConstant_Get2D().SetProjectionMatrix(
+		XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
+
 	// --- DYNAMIC vertex buffer, rewritten every frame ---
 	{
 		D3D11_BUFFER_DESC bd{
@@ -94,6 +115,7 @@ bool Sprite_Initialize()
 	g_BatchTexture = TEXTURE_INVALID_ID;
 	g_BatchFilter = kSpriteFilter_Point;
 	g_PendingFilter = kSpriteFilter_Point;
+	g_BatchColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 	return true;
 }
 
@@ -105,6 +127,10 @@ void Sprite_Finalize()
 	SAFE_RELEASE(g_pDepthStencilState);
 	SAFE_RELEASE(g_pBlendState);
 	SAFE_RELEASE(g_pVertexBuffer);
+
+	ShaderConstant_Get2D().Finalize();
+	g_PixelShader2D.Release();
+	g_VertexShader2D.Release();
 }
 
 // ============================================================================
@@ -127,9 +153,11 @@ void Sprite_Flush()
 		ctx->Unmap(g_pVertexBuffer, 0);
 	}
 
-	Shader_Begin();
-
-	Shader_SetMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
+	// The 3D pass binds its own shaders and constant buffers, so rebind ours every flush
+	g_VertexShader2D.Bind();
+	g_PixelShader2D.Bind();
+	ShaderConstant_Get2D().SetColor(g_BatchColor);
+	ShaderConstant_Get2D().Bind();
 
 	Sampler_SetFilter((g_BatchFilter == kSpriteFilter_Linear) ? kSamplerFilter_Linear : kSamplerFilter_Point, kSamplerAddress_Clamp);
 
@@ -143,7 +171,7 @@ void Sprite_Flush()
 	ctx->OMSetBlendState(g_pBlendState, nullptr, 0xffffffff);
 	ctx->OMSetDepthStencilState(g_pDepthStencilState, 0);
 
-	ctx->Draw(g_VertexCount, 0);    
+	ctx->Draw(g_VertexCount, 0);
 
 	g_VertexCount = 0;
 }
@@ -170,14 +198,22 @@ static void Sprite_DrawInternal(
 	const unsigned int tex_h = Texture_GetHeight(texture_id);
 	if (tex_w == 0 || tex_h == 0) { return; }
 
+	const XMFLOAT4 rgba{ params.color.x, params.color.y, params.color.z, params.alpha };
+
+	const bool color_changed =
+		rgba.x != g_BatchColor.x || rgba.y != g_BatchColor.y ||
+		rgba.z != g_BatchColor.z || rgba.w != g_BatchColor.w;
+
 	// --- state change ends the current batch ---
 	if (texture_id != g_BatchTexture
 		|| g_PendingFilter != g_BatchFilter
+		|| color_changed
 		|| g_VertexCount + VERTS_PER_QUAD > BATCH_MAX_VERTICES)
 	{
 		Sprite_Flush();
 		g_BatchTexture = texture_id;
 		g_BatchFilter = g_PendingFilter;
+		g_BatchColor = rgba;
 	}
 
 	// --- geometry ---
@@ -227,8 +263,6 @@ static void Sprite_DrawInternal(
 		{ tx + tw, ty + th },
 	};
 
-	const XMFLOAT4 rgba{ params.color.x, params.color.y, params.color.z, params.alpha };
-
 	static constexpr int order[VERTS_PER_QUAD] = { 0, 1, 2,  1, 3, 2 };
 
 	for (int i = 0; i < VERTS_PER_QUAD; i++)
@@ -238,7 +272,6 @@ static void Sprite_DrawInternal(
 
 		v.position = { corner[cidx].x, corner[cidx].y, 0.0f };
 		v.texcoord = uv[cidx];
-		v.color = rgba;
 	}
 }
 

@@ -53,7 +53,7 @@ void ShaderConstant::Finalize()
 	for (auto& buffer : m_pPSConstantBuffer) { SAFE_RELEASE(buffer); }
 }
 
-void ShaderConstant::SetWorldMatrix(const DirectX::XMMATRIX & matrix)
+void ShaderConstant::SetWorldMatrix(const DirectX::XMMATRIX & matrix) const
 {
 	WorldBuffer wb{};
 
@@ -65,7 +65,7 @@ void ShaderConstant::SetWorldMatrix(const DirectX::XMMATRIX & matrix)
 	Direct3D_GetDeviceContext()->UpdateSubresource(m_pVSConstantBuffer[0], 0, nullptr, &wb, 0, 0);
 }
 
-void ShaderConstant::SetViewMatrix(const DirectX::XMMATRIX & matrix)
+void ShaderConstant::SetViewMatrix(const DirectX::XMMATRIX & matrix) const
 {
 	// 定数バッファ格納用行列の構造体を定義
 	XMFLOAT4X4 transpose;
@@ -77,7 +77,7 @@ void ShaderConstant::SetViewMatrix(const DirectX::XMMATRIX & matrix)
 	Direct3D_GetDeviceContext()->UpdateSubresource(m_pVSConstantBuffer[1], 0, nullptr, &transpose, 0, 0);
 }
 
-void ShaderConstant::SetProjectionMatrix(const DirectX::XMMATRIX & matrix)
+void ShaderConstant::SetProjectionMatrix(const DirectX::XMMATRIX & matrix) const
 {
 	// 定数バッファ格納用行列の構造体を定義
 	XMFLOAT4X4 transpose;
@@ -95,7 +95,19 @@ void ShaderConstant::SetColor(const DirectX::XMFLOAT4 & color)
 	Direct3D_GetDeviceContext()->UpdateSubresource(m_pPSConstantBuffer[0], 0, nullptr, &color, 0, 0);
 }
 
-void ShaderConstant::Bind()
+void ShaderConstant::SetUVMatrix(const DirectX::XMMATRIX& matrix) const
+{
+	// 定数バッファ格納用行列の構造体を定義
+	XMFLOAT4X4 transpose;
+
+	// 行列を転置して定数バッファ格納用行列に変換
+	XMStoreFloat4x4(&transpose, XMMatrixTranspose(matrix));
+
+	// 定数バッファに行列をセット
+	Direct3D_GetDeviceContext()->UpdateSubresource(m_pVSConstantBuffer[3], 0, nullptr, &transpose, 0, 0);
+}
+
+void ShaderConstant::Bind() const
 {
 	// 定数バッファを描画パイプラインに設定
 	Direct3D_GetDeviceContext()->VSSetConstantBuffers(0, VS_CONSTANT_BUFFER_COUNT, m_pVSConstantBuffer);
@@ -108,6 +120,13 @@ static ShaderConstant g_ShaderConstant3D;
 ShaderConstant& ShaderConstant_Get3D()
 {
 	return g_ShaderConstant3D;
+}
+
+static ShaderConstant g_ShaderConstant2D;
+
+ShaderConstant& ShaderConstant_Get2D()
+{
+	return g_ShaderConstant2D;
 }
 
 

@@ -50,6 +50,7 @@ void GameMap_Finalize()
 	}
 
 	Texture_Release(g_TextureID_Ground);
+	ModelRelease(g_pModel_Kirby);
 }
 
 void GameMap_Update(float delta_time)

@@ -18,15 +18,7 @@ void MapModel::Draw() const
 	XMMATRIX t = XMMatrixTranslationFromVector(XMLoadFloat3(&GetPosition()));
 
 #ifdef _DEBUG
-
-	CollisionAABB scaled_aabb{
-		m_pModel->AABB.GetHalfWidth() * m_scale.x,
-		m_pModel->AABB.GetHalfHeight() * m_scale.y,
-		m_pModel->AABB.GetHalfDepth() * m_scale.z,
-		GetPosition()
-	};
-
-	Collision3D_Debug_Add(scaled_aabb);
+	Collision3D_Debug_Add(GetWorldAABB());
 #endif
 
 	ModelDraw(m_pModel, s * r * t);
@@ -34,12 +26,24 @@ void MapModel::Draw() const
 
 HitData3D MapModel::IsHit(const CollisionAABB & aabb) const
 {
-	CollisionAABB scaled_aabb{
-		m_pModel->AABB.GetHalfWidth() * m_scale.x,
-		m_pModel->AABB.GetHalfHeight() * m_scale.y,
-		m_pModel->AABB.GetHalfDepth() * m_scale.z,
-		GetPosition()
-	};
+	return aabb.IsHit(GetWorldAABB());
+}
 
-	return m_pModel->AABB.IsHit(scaled_aabb);
+CollisionAABB MapModel::GetWorldAABB() const
+{
+	const CollisionAABB& model_aabb = m_pModel->AABB;
+
+	// Model-space center offset, scaled and rotated the same way as Draw
+	XMMATRIX s = XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
+	XMMATRIX r = XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z);
+	XMVECTOR offset = XMVector3TransformCoord(XMLoadFloat3(&model_aabb.GetCenter()), s * r);
+
+	XMFLOAT3 center;
+	XMStoreFloat3(&center, XMLoadFloat3(&GetPosition()) + offset);
+
+	return CollisionAABB{
+		model_aabb.GetHalfWidth() * m_scale.x,
+		model_aabb.GetHalfHeight() * m_scale.y,
+		model_aabb.GetHalfDepth() * m_scale.z,
+		center };
 }
