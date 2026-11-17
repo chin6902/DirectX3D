@@ -32,7 +32,7 @@ bool CanDamage(const FoodData& f, const Enemy& e)
     }
     return f.sweet >= e.needSweet
         && f.salty >= e.needSalty
-        && f.sour  >= e.needSour
+        && f.sour >= e.needSour
         && f.spicy >= e.needSpicy;
 }
 
@@ -73,7 +73,7 @@ int main()
     };
 
     size_t nextInput = 0;
-    auto   sentTime  = chrono::steady_clock::now();
+    auto   sentTime = chrono::steady_clock::now();
 
     // 6000 frames = about 100 seconds. Only a safety limit: the loop
     // normally ends as soon as every word has come back.
@@ -114,14 +114,16 @@ int main()
             }
             printf("   (%d ms)\n", tookMs);
 
-            if (!res.error.empty())
+            // FALLBACK or GENERATED means CallBackend returned false. Always say why.
+            if (f.source == FoodSource::Fallback || f.source == FoodSource::Generated)
             {
-                printf("             AI failed: %s\n", res.error.c_str());
+                printf("             AI failed: %s\n",
+                    res.error.empty() ? "(CallBackend returned false but did not set error)" : res.error.c_str());
             }
 
             if (!f.isFood)
             {
-                printf("             -> refused (%s)\n", f.kind.c_str());
+                printf("             -> refused [%s]: %s\n", f.kind.c_str(), RefusalReason(f));
                 continue;
             }
             if (inventory.size() < kMaxSlots)
@@ -145,7 +147,8 @@ int main()
         this_thread::sleep_for(chrono::milliseconds(16));   // ~60 fps
     }
 
-    printf("\nInventory: %zu foods. Cache now has %zu foods (saved to foods_cache.json)\n", inventory.size(), ai.Cache().Count());
+    printf("\nInventory: %zu foods. Cache now has %zu foods (saved to foods_cache.json)\n",
+        inventory.size(), ai.Cache().Count());
     ai.Stop();
     return 0;
 }

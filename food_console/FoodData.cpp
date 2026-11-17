@@ -136,7 +136,10 @@ void SanitizeFood(FoodData& f)
     f.reason = CutUtf8(f.reason, 120);
 
     // Unknown kind -> treat as not food.
-    if (!Contains(FoodKinds(), f.kind))
+    // "offline" is the one extra kind. It is never sent by the AI (it is not in
+    // FoodKinds()): our own code sets it when the AI could not be reached and
+    // the word is not in the hand-written table.
+    if (!Contains(FoodKinds(), f.kind) && f.kind != "offline")
     {
         f.kind = "not_food";
     }
@@ -236,6 +239,7 @@ const char* RefusalReason(const FoodData& f)
     if (f.kind == "multiple")    return "One dish at a time!";
     if (f.kind == "extra_words") return "Just the name of the dish, nothing extra.";
     if (f.kind == "not_food")    return "That's not food!";
+    if (f.kind == "offline")     return "The AI chef can't be reached. Try a famous dish.";
     return "";                   // "dish": not refused
 }
 

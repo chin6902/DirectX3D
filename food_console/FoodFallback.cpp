@@ -52,20 +52,32 @@ bool FoodFallback::Find(const string& key, FoodData& out) const
     return true;
 }
 
+// What to do with a word that the AI could not judge AND the table does not know.
+//   false = refuse it. Without the AI we can't tell "chair" from a real dish.
+//   true  = accept it with low stats made from a hash of the word (the old
+//           behaviour: the player always gets something, but "chair" becomes a dish).
+static const bool kAcceptUnknownOffline = false;
+
 FoodData FoodFallback::Generate(const string& word) const
 {
-    unsigned int h = HashString(NormalizeKey(word));
-
-    // Take different bits of the hash for each stat.
     FoodData f;
-    f.name  = word;
-    f.kind  = "dish";               // offline we can't check, so be generous...
-    f.sweet = (h      ) % 7;        // ...but keep stats LOW (0-6) so typing
-    f.salty = (h >>  8) % 7;        // random words offline is never better
-    f.sour  = (h >> 16) % 7;        // than a real, AI-checked food
+    f.name = word;
+    f.source = FoodSource::Generated;
+
+    if (!kAcceptUnknownOffline)
+    {
+        f.kind = "offline";         // SanitizeFood: not a dish -> refused, stats 0
+        SanitizeFood(f);
+        return f;
+    }
+
+    // Take different bits of the hash for each stat (Lesson 7).
+    unsigned int h = HashString(NormalizeKey(word));
+    f.kind = "dish";
+    f.sweet = (h) % 7;        // low stats (0-6), so a random word offline
+    f.salty = (h >> 8) % 7;        // is never better than a real, AI-checked dish
+    f.sour = (h >> 16) % 7;
     f.spicy = (h >> 24) % 7;
-                                    // no ingredients: offline unknown words
-                                    // can't answer an ingredient order
 
     const char* shapes[] = { "bowl", "plate", "sphere", "stick", "block", "cup" };
     f.shape = shapes[(h >> 4) % 6];
