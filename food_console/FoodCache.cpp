@@ -6,7 +6,9 @@
 // Files with another version are ignored, so old numbers never mix with new ones.
 //   1 = stats 1-10      2 = stats 0-10
 //   3 = savory renamed salty, kind + ingredients added, grade removed
-static const int kCacheVersion = 5;
+//   4-5 = new refusal kinds, reference dishes
+//   6 = cuisine added
+static const int kCacheVersion = 6;
 
 void FoodCache::Load(const string& path)
 {

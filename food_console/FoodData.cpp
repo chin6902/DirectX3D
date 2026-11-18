@@ -34,6 +34,22 @@ const vector<string>& IngredientTags()
     return tags;
 }
 
+// The genres a boss order can ask for. Same pattern as IngredientTags():
+// one list, read by the AI request (schema) and by SanitizeFood.
+// "other" is the place for dishes from anywhere else (tacos, hummus...).
+// Keep it LAST and never use it in an order: it means "no genre".
+// (Changing this list changes what cached foods mean -> bump the cache version.)
+const vector<string>& Cuisines()
+{
+    static const vector<string> cuisines =
+    {
+        "japanese", "chinese", "korean", "southeast_asian",
+        "indian", "italian", "french", "american",
+        "other"
+    };
+    return cuisines;
+}
+
 static bool Contains(const vector<string>& list, const string& s)
 {
     for (const string& item : list)
@@ -122,7 +138,7 @@ void SanitizeFood(FoodData& f)
 {
     f.sweet = ClampInt(f.sweet, 0, 10);
     f.salty = ClampInt(f.salty, 0, 10);
-    f.sour = ClampInt(f.sour, 0, 10);
+    f.sour  = ClampInt(f.sour,  0, 10);
     f.spicy = ClampInt(f.spicy, 0, 10);
 
     // Only allow shapes we actually have meshes for.
@@ -132,7 +148,7 @@ void SanitizeFood(FoodData& f)
         f.shape = "plate";
     }
 
-    f.name = CutUtf8(f.name, 60);
+    f.name   = CutUtf8(f.name, 60);
     f.reason = CutUtf8(f.reason, 120);
 
     // Unknown kind -> treat as not food.
@@ -160,31 +176,39 @@ void SanitizeFood(FoodData& f)
     }
     f.ingredients = clean;
 
+    // Unknown genre -> "other".
+    if (!Contains(Cuisines(), f.cuisine))
+    {
+        f.cuisine = "other";
+    }
+
     // Something that can't be served has no stats at all,
     // so nothing can leak into the battle by accident.
     if (!f.isFood)
     {
         f.sweet = 0;
         f.salty = 0;
-        f.sour = 0;
+        f.sour  = 0;
         f.spicy = 0;
         f.ingredients.clear();
+        f.cuisine = "other";
     }
 }
 
 json FoodToJson(const FoodData& f)
 {
     json j;
-    j["name"] = f.name;
-    j["kind"] = f.kind;
-    j["reason"] = f.reason;
-    j["sweet"] = f.sweet;
-    j["salty"] = f.salty;
-    j["sour"] = f.sour;
-    j["spicy"] = f.spicy;
+    j["name"]        = f.name;
+    j["kind"]        = f.kind;
+    j["reason"]      = f.reason;
+    j["sweet"]       = f.sweet;
+    j["salty"]       = f.salty;
+    j["sour"]        = f.sour;
+    j["spicy"]       = f.spicy;
     j["ingredients"] = f.ingredients;       // vector<string> -> JSON array
-    j["shape"] = f.shape;
-    j["texture"] = f.texturePath;
+    j["cuisine"]     = f.cuisine;
+    j["shape"]       = f.shape;
+    j["texture"]     = f.texturePath;
     return j;
 }
 
@@ -198,15 +222,16 @@ bool FoodFromJson(const json& j, FoodData& out)
         {
             return false;
         }
-        out.name = j.value("name", "");
-        out.kind = j.value("kind", "not_food");
-        out.reason = j.value("reason", "");
-        out.sweet = j.value("sweet", 0);
-        out.salty = j.value("salty", 0);
-        out.sour = j.value("sour", 0);
-        out.spicy = j.value("spicy", 0);
-        out.shape = j.value("shape", "plate");
+        out.name        = j.value("name", "");
+        out.kind        = j.value("kind", "not_food");
+        out.reason      = j.value("reason", "");
+        out.sweet       = j.value("sweet", 0);
+        out.salty       = j.value("salty", 0);
+        out.sour        = j.value("sour", 0);
+        out.spicy       = j.value("spicy", 0);
+        out.shape       = j.value("shape", "plate");
         out.texturePath = j.value("texture", "");
+        out.cuisine     = j.value("cuisine", "other");
 
         out.ingredients.clear();
         if (j.contains("ingredients") && j["ingredients"].is_array())

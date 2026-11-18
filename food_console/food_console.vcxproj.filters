@@ -15,32 +15,32 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FoodCache.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FoodData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FoodFallback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HttpClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OpenAiApi.cpp">
+    <ClCompile Include="AIService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AIService.cpp">
+    <ClCompile Include="test_openai.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FoodCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FoodData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OpenAiApi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FoodData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HttpClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -50,13 +50,16 @@
     <ClInclude Include="json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FoodCache.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FoodFallback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AIService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FoodData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FoodCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

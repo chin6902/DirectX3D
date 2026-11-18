@@ -32,7 +32,7 @@ bool CanDamage(const FoodData& f, const Enemy& e)
     }
     return f.sweet >= e.needSweet
         && f.salty >= e.needSalty
-        && f.sour >= e.needSour
+        && f.sour  >= e.needSour
         && f.spicy >= e.needSpicy;
 }
 
@@ -73,7 +73,7 @@ int main()
     };
 
     size_t nextInput = 0;
-    auto   sentTime = chrono::steady_clock::now();
+    auto   sentTime  = chrono::steady_clock::now();
 
     // 6000 frames = about 100 seconds. Only a safety limit: the loop
     // normally ends as soon as every word has come back.
@@ -105,8 +105,8 @@ int main()
             int tookMs = (int)chrono::duration_cast<chrono::milliseconds>(
                 chrono::steady_clock::now() - sentTime).count();
 
-            printf("[frame %4d] #%d %-9s %s [%s]  sweet=%d salty=%d sour=%d spicy=%d  %s  with:",
-                frame, res.id, SourceName(f.source), f.name.c_str(), f.kind.c_str(),
+            printf("[frame %4d] #%d %-9s %s [%s, %s]  sweet=%d salty=%d sour=%d spicy=%d  %s  with:",
+                frame, res.id, SourceName(f.source), f.name.c_str(), f.kind.c_str(), f.cuisine.c_str(),
                 f.sweet, f.salty, f.sour, f.spicy, f.shape.c_str());
             for (const string& tag : f.ingredients)
             {
