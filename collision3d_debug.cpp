@@ -23,11 +23,6 @@ static unsigned int g_LineCount{ 0 };
 
 void Collision3D_Debug_Initialize()
 {
-    D3D11_DEPTH_STENCIL_DESC dsd{};
-    dsd.DepthEnable = FALSE;                         // ignore depth: always visible
-    dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-    Direct3D_GetDevice()->CreateDepthStencilState(&dsd, &g_pDepthStateOff);
-
 	D3D11_BUFFER_DESC bd{
 			.ByteWidth = sizeof(XMFLOAT3) * LINE_COUNT_MAX * 2,
 			.Usage = D3D11_USAGE_DYNAMIC,
@@ -43,7 +38,6 @@ void Collision3D_Debug_Initialize()
 void Collision3D_Debug_Finalize()
 {
 	SAFE_RELEASE(g_pVertexBuffer);
-	SAFE_RELEASE(g_pDepthStateOff);
 }
 
 static void AddLine(const XMFLOAT3& a, const XMFLOAT3& b)
@@ -103,8 +97,6 @@ void Collision3D_Debug_Draw()
 	Direct3D_GetDeviceContext()->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
 	Direct3D_GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-
-    Direct3D_GetDeviceContext()->OMSetDepthStencilState(g_pDepthStateOff, 0);
 
 	Direct3D_GetDeviceContext()->Draw(g_LineCount * 2, 0);
 

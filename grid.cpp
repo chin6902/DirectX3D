@@ -15,6 +15,7 @@ LastUpdate : 2026/09/16
 #include "debug_ostream.h"
 #include "texture.h"
 #include "shader_constant.h"
+#include "render_state.h"
 
 using namespace DirectX;
 
@@ -77,6 +78,8 @@ void Grid_Finalize()
 
 void Grid_Draw()
 {
+	RenderState_Set3D();
+
 	ShaderConstant_Get3D().SetWorldMatrix(XMMatrixIdentity());
 
 	UINT stride = sizeof(Vertex);

@@ -22,9 +22,6 @@ static ID3D11Buffer* g_pVertexBuffer{ nullptr };
 // index buffer
 static ID3D11Buffer* g_pIndexBuffer{ nullptr };
 
-static ID3D11RasterizerState*	g_pRasterizerState{ nullptr };
-static ID3D11DepthStencilState* g_pDepthStencilState{ nullptr };
-
 struct Vertex
 {
 	XMFLOAT3 position;
@@ -120,28 +117,12 @@ void Cube_Initialize()
 
 	sd.pSysMem = index;
 	Direct3D_GetDevice()->CreateBuffer(&ibd, &sd, &g_pIndexBuffer);
-
-	D3D11_DEPTH_STENCIL_DESC dsd{};
-	dsd.DepthEnable = TRUE;
-	dsd.DepthFunc = D3D11_COMPARISON_LESS;
-	dsd.StencilEnable = FALSE;
-	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	Direct3D_GetDevice()->CreateDepthStencilState(&dsd, &g_pDepthStencilState);
-
-	D3D11_RASTERIZER_DESC rd{};
-	rd.FillMode = D3D11_FILL_SOLID;
-	rd.CullMode = D3D11_CULL_BACK;
-	rd.DepthClipEnable = TRUE;
-	Direct3D_GetDevice()->CreateRasterizerState(&rd, &g_pRasterizerState);
-	Direct3D_GetDeviceContext()->RSSetState(g_pRasterizerState);
 }
 
 void Cube_Finalize()
 {
 	SAFE_RELEASE(g_pVertexBuffer);
 	SAFE_RELEASE(g_pIndexBuffer);
-	SAFE_RELEASE(g_pDepthStencilState);
-	SAFE_RELEASE(g_pRasterizerState);
 	Texture_Release(g_TextureID_Cube);
 }
 
@@ -150,9 +131,6 @@ void Cube_Draw(const XMMATRIX& world)
 	ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
 	Texture_SetTexture(g_TextureID_Cube);
-
-	Direct3D_GetDeviceContext()->OMSetDepthStencilState(g_pDepthStencilState, 0);
-	Direct3D_GetDeviceContext()->RSSetState(g_pRasterizerState);
 
 	// practice (scale * rotation * translation)
 	// XMMATRIX world = XMMatrixScaling(s, s, s) * XMMatrixRotationY(g_Angle) * XMMatrixTranslation(x, y, z);

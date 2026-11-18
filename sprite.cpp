@@ -18,6 +18,7 @@ LastUpdate : 2026/11/17
 #include "shader_constant.h"
 #include "texture.h"
 #include "sampler.h"
+#include "render_state.h"
 
 using namespace DirectX;
 
@@ -47,9 +48,6 @@ static VertexShader g_VertexShader2D;
 static PixelShader  g_PixelShader2D;
 
 static ID3D11Buffer* g_pVertexBuffer{ nullptr };
-static ID3D11BlendState* g_pBlendState{ nullptr };
-static ID3D11DepthStencilState* g_pDepthStencilState{ nullptr };
-static ID3D11RasterizerState* g_pRasterizerState{ nullptr };
 
 // ============================================================================
 // Initialize
@@ -87,30 +85,6 @@ bool Sprite_Initialize()
 		}
 	}
 
-	// --- Blend state ---
-	D3D11_BLEND_DESC blend{};
-	blend.RenderTarget[0].BlendEnable = TRUE;
-	blend.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	blend.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	blend.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blend.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	blend.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-	blend.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blend.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	Direct3D_GetDevice()->CreateBlendState(&blend, &g_pBlendState);
-
-	// --- Depth stencil ---
-	D3D11_DEPTH_STENCIL_DESC dsd{};
-	dsd.DepthEnable = FALSE;
-	Direct3D_GetDevice()->CreateDepthStencilState(&dsd, &g_pDepthStencilState);
-
-	// --- Rasterizer ---
-	D3D11_RASTERIZER_DESC rd{};
-	rd.FillMode = D3D11_FILL_SOLID;
-	rd.CullMode = D3D11_CULL_NONE;
-	Direct3D_GetDevice()->CreateRasterizerState(&rd, &g_pRasterizerState);
-	Direct3D_GetDeviceContext()->RSSetState(g_pRasterizerState);
-
 	g_VertexCount = 0;
 	g_BatchTexture = TEXTURE_INVALID_ID;
 	g_BatchFilter = kSpriteFilter_Point;
@@ -122,10 +96,6 @@ bool Sprite_Initialize()
 void Sprite_Finalize()
 {
 	Texture_AllRelease();
-
-	SAFE_RELEASE(g_pRasterizerState);
-	SAFE_RELEASE(g_pDepthStencilState);
-	SAFE_RELEASE(g_pBlendState);
 	SAFE_RELEASE(g_pVertexBuffer);
 
 	ShaderConstant_Get2D().Finalize();
@@ -168,8 +138,7 @@ void Sprite_Flush()
 
 	Texture_SetTexture(g_BatchTexture);
 
-	ctx->OMSetBlendState(g_pBlendState, nullptr, 0xffffffff);
-	ctx->OMSetDepthStencilState(g_pDepthStencilState, 0);
+	RenderState_Set2D();
 
 	ctx->Draw(g_VertexCount, 0);
 

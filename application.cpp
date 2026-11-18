@@ -12,6 +12,7 @@ LastUpdate : 2026/06/15
 #include "sprite.h"
 #include "debug_ui.h"
 #include "sampler.h"
+#include "render_state.h"
 
 #include "scene.h"
 #include "fade.h"
@@ -41,6 +42,7 @@ bool Application_Initialize(HWND hWnd)
 	InputXInput_Initialize();
 
 	Sampler_Initialize();
+	RenderState_Initialize();
 
 	if (!DebugUI_Initialize(hWnd))
 	{
@@ -65,6 +67,7 @@ void Application_Finalize()
 	Scene_Finalize();
 	Sprite_Finalize();
 	Texture_Finalize();
+	RenderState_Finalize();
 	Sampler_Finalize();
 
 	InputMouse_Finalize();

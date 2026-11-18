@@ -14,6 +14,7 @@ LastUpdate : 2026/06/24
 #include "flipbook_animation.h"
 #include "debug_ui.h"
 #include "sampler.h"
+#include "render_state.h"
 
 #include "shader_vertex.h"
 #include "shader_pixel.h"
@@ -85,12 +86,6 @@ void Game_Initialize()
 	g_VertexShader3D.Load("assets/shaders/shader_vertex_3d.cso", layout, ARRAYSIZE(layout));
 	g_PixelShader3D.Load("assets/shaders/shader_pixel_3d.cso");
 	ShaderConstant_Get3D().Initialize();
-
-	//==========  2d ===============
-	D3D11_INPUT_ELEMENT_DESC layout2d[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT	,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT		,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
 
 	D3D11_INPUT_ELEMENT_DESC layoutPrimitive[] = {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -271,13 +266,14 @@ void Game_Update(float delta_time)
 void Game_Draw()
 {
 	ShaderConstant_Get3D().Bind();
-
 	g_VertexShader3D.Bind();
 	g_PixelShader3D.Bind();
+
 	Light_SetDirectionalLight({ -0.5f, -0.8f, 1.0f }, { 0.8f, 0.8f, 0.8f, 1.0f }, { 0.4f, 0.4f, 0.4f, 1.0f });
 
 	Sampler_SetFilter(kSamplerFilter_Anisotropic);
 	Texture_SetTexture(g_TextureID_Ground);
+
 	MeshField_Draw();
 	GameMap_Draw();
 	GameObject_Draw();
@@ -295,8 +291,7 @@ void Game_Draw()
 #endif 
 
 	// --- text / sprites ---
-	Sampler_SetFilter(kSamplerFilter_Point);
-	Sprite_Draw(g_TextureID_Ground, 0.0f, 0.0f, 464.0f, 464.0f);
+	//Sprite_Draw(g_TextureID_Ground, 0.0f, 0.0f, 464.0f, 464.0f);
 	Sprite_Flush();
 }
 

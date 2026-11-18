@@ -210,6 +210,12 @@
     <ClInclude Include="map_move_block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="render_state.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="billboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="draw_primitives.cpp">
@@ -377,6 +383,12 @@
     <ClCompile Include="map_move_block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="render_state.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="billboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader_vertex_3d.hlsl">
@@ -395,6 +407,12 @@
       <Filter>Shader Files</Filter>
     </FxCompile>
     <FxCompile Include="shader_pixel_2d.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="shader_pixel_billboard.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="shader_vertex_billboard.hlsl">
       <Filter>Shader Files</Filter>
     </FxCompile>
   </ItemGroup>

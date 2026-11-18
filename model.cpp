@@ -14,6 +14,7 @@ LastUpdate : 2026/10/20
 #include "direct3d.h"
 #include "texture.h"
 #include "shader_constant.h"
+#include "render_state.h"
 
 using namespace DirectX;
 
@@ -250,6 +251,8 @@ void ModelRelease(MODEL* model)
 
 void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 {
+	RenderState_Set3D();
+
 	// プリミティブトポロジ設定
 	Direct3D_GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

@@ -21,9 +21,6 @@ using namespace DirectX;
 static ID3D11Buffer* g_pVertexBuffer{ nullptr };
 static ID3D11Buffer* g_pIndexBuffer{ nullptr };
 
-static ID3D11RasterizerState*	g_pRasterizerState{ nullptr };
-static ID3D11DepthStencilState* g_pDepthStencilState{ nullptr };
-
 struct Vertex
 {
 	XMFLOAT3 position;
@@ -109,36 +106,17 @@ void MeshField_Initialize(float grid_width, float grid_depth, int h_count, int v
 	Direct3D_GetDevice()->CreateBuffer(&ibd, &sd, &g_pIndexBuffer);
 
 	delete[] pI;
-
-	D3D11_DEPTH_STENCIL_DESC dsd{};
-	dsd.DepthEnable = TRUE;
-	dsd.DepthFunc = D3D11_COMPARISON_LESS;
-	dsd.StencilEnable = FALSE;
-	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	Direct3D_GetDevice()->CreateDepthStencilState(&dsd, &g_pDepthStencilState);
-
-	D3D11_RASTERIZER_DESC rd{};
-	rd.FillMode = D3D11_FILL_SOLID;
-	rd.CullMode = D3D11_CULL_BACK;
-	rd.DepthClipEnable = TRUE;
-	Direct3D_GetDevice()->CreateRasterizerState(&rd, &g_pRasterizerState);
-	Direct3D_GetDeviceContext()->RSSetState(g_pRasterizerState);
 }
 
 void MeshField_Finalize()
 {
 	SAFE_RELEASE(g_pVertexBuffer);
 	SAFE_RELEASE(g_pIndexBuffer);
-	SAFE_RELEASE(g_pDepthStencilState);
-	SAFE_RELEASE(g_pRasterizerState);
 }
 
 void MeshField_Draw()
 {
 	ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-
-	Direct3D_GetDeviceContext()->OMSetDepthStencilState(g_pDepthStencilState, 0);
-	Direct3D_GetDeviceContext()->RSSetState(g_pRasterizerState);
 
 	ShaderConstant_Get3D().SetWorldMatrix(XMMatrixIdentity());
 
