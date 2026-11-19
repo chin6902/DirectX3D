@@ -24,7 +24,6 @@ using namespace DirectX;
 // ============================================================================
 // Vertex
 // ============================================================================
-// Must match layout2d below (POSITION + TEXCOORD, 20 bytes)
 struct Vertex
 {
 	XMFLOAT3 position;
@@ -82,7 +81,6 @@ bool Sprite_Initialize()
 
 void Sprite_Finalize()
 {
-	Texture_AllRelease();
 	SAFE_RELEASE(g_pVertexBuffer);
 
 	ShaderConstant_Get2D().Finalize();

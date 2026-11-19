@@ -31,6 +31,9 @@ struct MODEL
 
 	std::unordered_map<std::string, ID3D11ShaderResourceView*> Texture;
 
+	ID3D11ShaderResourceView** MeshTexture = nullptr;   // nullptr = no texture (white is used)
+	DirectX::XMFLOAT4* MeshColor = nullptr;     // color sent to the shader
+
 	CollisionAABB AABB{};
 };
 

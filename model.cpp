@@ -224,28 +224,64 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 		model->Texture[filename.C_Str()] = texture;
 	}
 
+	// --- per-mesh texture + color, looked up once here ---
+	const unsigned int mesh_count = model->AiScene->mNumMeshes;
+	model->MeshTexture = new ID3D11ShaderResourceView * [mesh_count];
+	model->MeshColor = new XMFLOAT4[mesh_count];
+
+	for (unsigned int m = 0; m < mesh_count; m++)
+	{
+		aiMaterial* aimaterial = model->AiScene->mMaterials[model->AiScene->mMeshes[m]->mMaterialIndex];
+
+		model->MeshTexture[m] = nullptr;
+		model->MeshColor[m] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+		aiString filename;
+		aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &filename);
+
+		if (filename.length != 0)
+		{
+			auto it = model->Texture.find(filename.C_Str());
+
+			if (it == model->Texture.end())
+			{
+				// the loop above sometimes stores the name without its folders
+				std::string name = filename.C_Str();
+				it = model->Texture.find(name.substr(name.find_last_of("\\/") + 1));
+			}
+
+			if (it != model->Texture.end()) { model->MeshTexture[m] = it->second; }
+		}
+
+		if (!model->MeshTexture[m])
+		{
+			// no texture: white texture tinted with the material's diffuse color
+			aiColor3D diffuse(1.0f, 1.0f, 1.0f);
+			aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+			model->MeshColor[m] = { diffuse.r, diffuse.g, diffuse.b, 1.0f };
+		}
+	}
+
 	return model;
 }
 
 
 void ModelRelease(MODEL* model)
 {
-	for (unsigned int m = 0; m < model->AiScene->mNumMeshes; m++)
-	{
-		model->VertexBuffer[m]->Release();
-		model->IndexBuffer[m]->Release();
-	}
-
 	delete[] model->VertexBuffer;
 	delete[] model->IndexBuffer;
 
+	delete[] model->MeshTexture;
+	delete[] model->MeshColor;
+
 	for (std::pair<const std::string, ID3D11ShaderResourceView*> pair : model->Texture)
 	{
-		pair.second->Release();
+		if (pair.second) { pair.second->Release(); }
 	}
 
-	aiReleaseImport(model->AiScene);
+	Texture_Release(g_TextureWhiteId);   // ModelLoad loads it once per model
 
+	aiReleaseImport(model->AiScene);
 	delete model;
 }
 
@@ -253,40 +289,30 @@ void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 {
 	RenderState_Set3D();
 
-	// プリミティブトポロジ設定
-	Direct3D_GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ID3D11DeviceContext* ctx = Direct3D_GetDeviceContext();
 
-	// 頂点シェーダーにワールド座標変換行列を設定
+	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	ShaderConstant_Get3D().SetWorldMatrix(mtxWorld);
+
+	UINT stride = sizeof(Vertex3d);
+	UINT offset = 0;
 
 	for (unsigned int m = 0; m < model->AiScene->mNumMeshes; m++)
 	{
-		aiString texture;
-		aiMaterial* aimaterial = model->AiScene->mMaterials[model->AiScene->mMeshes[m]->mMaterialIndex];
-		aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texture);
-
-		if( texture.length != 0 ) {
-		// if (texture != aiString("")) {
-			Direct3D_GetDeviceContext()->PSSetShaderResources(0, 1, &model->Texture[texture.data]);
-			ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+		// texture + color were looked up in ModelLoad
+		if (model->MeshTexture[m])
+		{
+			ctx->PSSetShaderResources(0, 1, &model->MeshTexture[m]);
 		}
-		else {
+		else
+		{
 			Texture_SetTexture(g_TextureWhiteId);
-			aiColor3D diffuse;
-			aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-			ShaderConstant_Get3D().SetColor({ diffuse.r, diffuse.g, diffuse.b, 1.0f });
 		}
+		ShaderConstant_Get3D().SetColor(model->MeshColor[m]);
 
-		// 頂点バッファを描画パイプラインに設定
-		UINT stride = sizeof(Vertex3d);
-		UINT offset = 0;
-		Direct3D_GetDeviceContext()->IASetVertexBuffers(0, 1, &model->VertexBuffer[m], &stride, &offset);
-
-		// インデックスバッファを描画パイプラインに設定
-		Direct3D_GetDeviceContext()->IASetIndexBuffer(model->IndexBuffer[m], DXGI_FORMAT_R32_UINT, 0);
-
-		// ポリゴン描画命令発行
-		Direct3D_GetDeviceContext()->DrawIndexed(model->AiScene->mMeshes[m]->mNumFaces * 3, 0, 0);
+		ctx->IASetVertexBuffers(0, 1, &model->VertexBuffer[m], &stride, &offset);
+		ctx->IASetIndexBuffer(model->IndexBuffer[m], DXGI_FORMAT_R32_UINT, 0);
+		ctx->DrawIndexed(model->AiScene->mMeshes[m]->mNumFaces * 3, 0, 0);
 	}
 }
 

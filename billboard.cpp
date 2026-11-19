@@ -33,7 +33,6 @@ struct BillboardEntry
 static constexpr int NUM_VERTEX{ 4 };
 
 static ID3D11Buffer* g_pVertexBuffer{ nullptr };
-static XMFLOAT4X4 g_FaceCamera{};  
 
 static constexpr int BILLBOARD_MAX{ 256 };
 static BillboardEntry g_Entries[BILLBOARD_MAX];

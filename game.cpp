@@ -79,6 +79,7 @@ void Game_Initialize()
 
 	g_TextureID_Ground = Texture_Load(L"assets/textures/stone.png", true);
 
+	ShaderConstant_Get3D().Initialize();
 	GameText_Initialize();
 	FlipBookAnimation_Initialize();
 
