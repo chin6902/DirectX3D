@@ -11,6 +11,7 @@ LastUpdate : 2026/06/15
 #include "texture.h"
 #include "sprite.h"
 #include "debug_ui.h"
+#include "shader_manager.h"
 #include "sampler.h"
 #include "render_state.h"
 
@@ -41,6 +42,7 @@ bool Application_Initialize(HWND hWnd)
 	InputMouse_Initialize(hWnd);
 	InputXInput_Initialize();
 
+	if (!ShaderManager_Initialize()) { return false; }
 	Sampler_Initialize();
 	RenderState_Initialize();
 
@@ -69,6 +71,7 @@ void Application_Finalize()
 	Texture_Finalize();
 	RenderState_Finalize();
 	Sampler_Finalize();
+	ShaderManager_Finalize();
 
 	InputMouse_Finalize();
 	Audio_Finalize();

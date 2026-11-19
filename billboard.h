@@ -12,9 +12,10 @@ LastUpdate : 2026/11/17
 #include <DirectXMath.h>
 #include "shader_constant.h"
 
-void Billboard_Initialize(ShaderConstant* pShaderConstant);
+void Billboard_Initialize();
 void Billboard_Finalize();
 void Billboard_SetViewMatrix(const DirectX::XMMATRIX& view);
-void Billboard_Draw(const DirectX::XMMATRIX& world);
+void Billboard_Draw(int texture_id, const DirectX::XMFLOAT3& position);
+void Billboard_Flush();
 
 #endif

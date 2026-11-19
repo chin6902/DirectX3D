@@ -15,6 +15,7 @@ LastUpdate : 2026/09/14
 #include "debug_ostream.h"
 #include "texture.h"
 #include "shader_constant.h"
+#include "render_state.h"
 
 using namespace DirectX;
 
@@ -34,7 +35,6 @@ static constexpr int NUM_VERTEX{ 4 * 6 };
 static constexpr int NUM_INDEX { 6 * 6 };
 
 static int g_TextureID_Cube{ -1 };
-static int g_TextureID_Stone{ -1 };
 
 void Cube_Initialize()
 {
@@ -128,6 +128,8 @@ void Cube_Finalize()
 
 void Cube_Draw(const XMMATRIX& world)
 {
+	RenderState_Set3D();
+
 	ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
 	Texture_SetTexture(g_TextureID_Cube);

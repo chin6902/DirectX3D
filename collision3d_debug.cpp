@@ -11,6 +11,7 @@ LastUpdate : 2026/11/10
 
 #include "collision3d_debug.h"
 #include "direct3d.h"
+#include "render_state.h"
 
 using namespace DirectX;
 
@@ -84,6 +85,8 @@ void Collision3D_Debug_Add(const CollisionAABB& aabb)
 
 void Collision3D_Debug_Draw()
 {
+    RenderState_SetDepth(kDepth_Off);
+
     if (g_LineCount == 0) { return; }
 
     // copy this frame's lines into the GPU buffer

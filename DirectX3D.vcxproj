@@ -211,6 +211,7 @@
     <ClInclude Include="sampler.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="shader_constant.h" />
+    <ClInclude Include="shader_manager.h" />
     <ClInclude Include="shader_pixel.h" />
     <ClInclude Include="shader_vertex.h" />
     <ClInclude Include="spatial_grid.h" />
@@ -272,6 +273,7 @@
     <ClCompile Include="sampler.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="shader_constant.cpp" />
+    <ClCompile Include="shader_manager.cpp" />
     <ClCompile Include="shader_pixel.cpp" />
     <ClCompile Include="shader_vertex.cpp" />
     <ClCompile Include="sprite.cpp" />

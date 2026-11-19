@@ -15,6 +15,7 @@ LastUpdate : 2026/10/20
 #include "shader_constant.h"
 #include "debug_ostream.h"
 #include "texture.h"
+#include "render_state.h"
 
 using namespace DirectX;
 
@@ -116,6 +117,8 @@ void MeshField_Finalize()
 
 void MeshField_Draw()
 {
+	RenderState_Set3D();
+
 	ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
 	ShaderConstant_Get3D().SetWorldMatrix(XMMatrixIdentity());

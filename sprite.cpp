@@ -13,12 +13,11 @@ LastUpdate : 2026/11/17
 #include "debug_ostream.h"
 #include "config.h"
 #include "direct3d.h"
-#include "shader_vertex.h"
-#include "shader_pixel.h"
 #include "shader_constant.h"
 #include "texture.h"
 #include "sampler.h"
 #include "render_state.h"
+#include "shader_manager.h"
 
 using namespace DirectX;
 
@@ -44,9 +43,6 @@ static SpriteFilter g_BatchFilter = kSpriteFilter_Point;
 static SpriteFilter g_PendingFilter = kSpriteFilter_Point;
 static XMFLOAT4     g_BatchColor{ 1.0f, 1.0f, 1.0f, 1.0f }; // color is a shader constant now, so one color per batch
 
-static VertexShader g_VertexShader2D;
-static PixelShader  g_PixelShader2D;
-
 static ID3D11Buffer* g_pVertexBuffer{ nullptr };
 
 // ============================================================================
@@ -54,15 +50,6 @@ static ID3D11Buffer* g_pVertexBuffer{ nullptr };
 // ============================================================================
 bool Sprite_Initialize()
 {
-	// --- 2D shaders ---
-	D3D11_INPUT_ELEMENT_DESC layout2d[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT	,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT		,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	if (!g_VertexShader2D.Load("assets/shaders/shader_vertex_2d.cso", layout2d, ARRAYSIZE(layout2d))) { return false; }
-	if (!g_PixelShader2D.Load("assets/shaders/shader_pixel_2d.cso")) { return false; }
-
 	// --- 2D constants ---
 	// The screen size doesn't change, so the projection is written once here instead of every flush
 	ShaderConstant_Get2D().Initialize();
@@ -99,8 +86,6 @@ void Sprite_Finalize()
 	SAFE_RELEASE(g_pVertexBuffer);
 
 	ShaderConstant_Get2D().Finalize();
-	g_PixelShader2D.Release();
-	g_VertexShader2D.Release();
 }
 
 // ============================================================================
@@ -123,9 +108,7 @@ void Sprite_Flush()
 		ctx->Unmap(g_pVertexBuffer, 0);
 	}
 
-	// The 3D pass binds its own shaders and constant buffers, so rebind ours every flush
-	g_VertexShader2D.Bind();
-	g_PixelShader2D.Bind();
+	ShaderManager_Bind(kShader_2D);
 	ShaderConstant_Get2D().SetColor(g_BatchColor);
 	ShaderConstant_Get2D().Bind();
 

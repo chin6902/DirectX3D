@@ -16,8 +16,7 @@ LastUpdate : 2026/06/24
 #include "sampler.h"
 #include "render_state.h"
 
-#include "shader_vertex.h"
-#include "shader_pixel.h"
+#include "shader_manager.h"
 #include "shader_constant.h"
 
 #include "result.h"
@@ -38,6 +37,8 @@ LastUpdate : 2026/06/24
 #include "game_object.h"
 #include "game_map.h"
 #include "cube.h"
+
+#include "billboard.h"
 
 #include "game_player.h"
 
@@ -66,34 +67,10 @@ static int g_TextureID_Ground{ -1 };
 
 bool player_hit = false;
 
-static VertexShader g_VertexShader3D;
-static PixelShader g_PixelShader3D;
-static VertexShader g_VertexShaderPrimitive3D;
-static PixelShader g_PixelShaderPrimitive3D;
-
 //void Collision_CheckPlayerVsEnemies();
 
 void Game_Initialize()
 {
-	//==========  later make a manager for the layout ===============
-	D3D11_INPUT_ELEMENT_DESC layout[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT	,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL"	, 0, DXGI_FORMAT_R32G32B32_FLOAT	,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR"	, 0, DXGI_FORMAT_R32G32B32A32_FLOAT	,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT		,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	g_VertexShader3D.Load("assets/shaders/shader_vertex_3d.cso", layout, ARRAYSIZE(layout));
-	g_PixelShader3D.Load("assets/shaders/shader_pixel_3d.cso");
-	ShaderConstant_Get3D().Initialize();
-
-	D3D11_INPUT_ELEMENT_DESC layoutPrimitive[] = {
-	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	g_VertexShaderPrimitive3D.Load("assets/shaders/shader_vertex_primitive3d.cso", layoutPrimitive, ARRAYSIZE(layoutPrimitive));
-	g_PixelShaderPrimitive3D.Load("assets/shaders/shader_pixel_primitive3d.cso");
-	//==============================================================
-
 	g_GameState = STATE_PLAYING;
 	g_IsChangeScene = false;  
 	g_EndTimer = 0.0f;
@@ -116,6 +93,9 @@ void Game_Initialize()
 	GameObject_Spawn("Cube", { 0.0f, 0.5f, 0.0f });
 	MeshField_Initialize(1.0f, 1.0f, 50, 50);
 	Grid_Initialize();
+
+	Billboard_Initialize();
+
 
 	Light_Initialize();
 
@@ -140,6 +120,7 @@ void Game_Finalize()
 	MouseUI_Finalize();
 	
 	Light_Finalize();
+	Billboard_Finalize();
 	Grid_Finalize();	
 	MeshField_Finalize();
 	GameMap_Finalize();
@@ -152,10 +133,6 @@ void Game_Finalize()
 	GameText_Finalize();
 
 	ShaderConstant_Get3D().Finalize();
-	g_PixelShader3D.Release();
-	g_VertexShader3D.Release();
-	g_VertexShaderPrimitive3D.Release();
-	g_PixelShaderPrimitive3D.Release();
 }
 
 static void EnterEndState(bool cleared)
@@ -235,6 +212,8 @@ void Game_Update(float delta_time)
 		ShaderConstant_Get3D().SetViewMatrix(PlayerCamera_GetViewMatrix());
 		ShaderConstant_Get3D().SetProjectionMatrix(PlayerCamera_GetProjectionMatrix());
 
+		Billboard_SetViewMatrix(PlayerCamera_GetViewMatrix());
+
 		// --- collision check ---
 
 		// --- UI ---
@@ -265,10 +244,9 @@ void Game_Update(float delta_time)
 
 void Game_Draw()
 {
+	// --- 3D ---
 	ShaderConstant_Get3D().Bind();
-	g_VertexShader3D.Bind();
-	g_PixelShader3D.Bind();
-
+	ShaderManager_Bind(kShader_3D);
 	Light_SetDirectionalLight({ -0.5f, -0.8f, 1.0f }, { 0.8f, 0.8f, 0.8f, 1.0f }, { 0.4f, 0.4f, 0.4f, 1.0f });
 
 	Sampler_SetFilter(kSamplerFilter_Anisotropic);
@@ -280,18 +258,24 @@ void Game_Draw()
 	GamePlayer_Draw();
 
 	// --- primitives (world-space lines) ---
-	g_VertexShaderPrimitive3D.Bind();
-	g_PixelShaderPrimitive3D.Bind();
+	ShaderManager_Bind(kShader_Primitive3D);
 	ShaderConstant_Get3D().SetColor({ 0.5f, 1.0f, 0.1f, 1.0f });
 	Grid_Draw();
 
+	// --- transparent 3D (after all opaque) ---
+	Billboard_Draw(g_TextureID_Ground, { 2.0f, 3.0f, 0.0f });
+	Billboard_Draw(g_TextureID_Ground, { 2.0f, 5.0f, 3.0f });
+
+	ShaderManager_Bind(kShader_Billboard);
+	Billboard_Flush();
+
 #ifdef _DEBUG
+	ShaderManager_Bind(kShader_Primitive3D);
 	ShaderConstant_Get3D().SetColor({ 1.0f, 0.2f, 0.2f, 1.0f });
 	Collision3D_Debug_Draw();
-#endif 
+#endif
 
 	// --- text / sprites ---
-	//Sprite_Draw(g_TextureID_Ground, 0.0f, 0.0f, 464.0f, 464.0f);
 	Sprite_Flush();
 }
 

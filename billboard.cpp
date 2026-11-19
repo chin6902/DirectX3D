@@ -1,16 +1,21 @@
+/*============================================================================
+Contents   :  [billboard.cpp]
+
+Author     : Chin Qing You
+LastUpdate : 2026/11/17
+-----------------------------------------------------------------------------
+
+============================================================================*/
+#include <algorithm>
+
 #include "billboard.h"
-#include "cube.h"
-#include "config.h"
 #include "direct3d.h"
-#include "debug_ostream.h"
 #include "texture.h"
+#include "sampler.h"
 #include "shader_constant.h"
+#include "render_state.h"
 
 using namespace DirectX;
-
-static ID3D11Buffer* g_pVertexBuffer{ nullptr };
-// index buffer
-static ID3D11Buffer* g_pIndexBuffer{ nullptr };
 
 struct Vertex
 {
@@ -18,61 +23,109 @@ struct Vertex
 	XMFLOAT2 uv;
 };
 
+struct BillboardEntry
+{
+	int texture_id;
+	XMFLOAT3 position;
+	float depth;      // how far in front of the camera, filled in at flush
+};
+
 static constexpr int NUM_VERTEX{ 4 };
 
-static ShaderConstant* g_pShaderConstant{ nullptr };
+static ID3D11Buffer* g_pVertexBuffer{ nullptr };
+static XMFLOAT4X4 g_FaceCamera{};  
 
-void Billboard_Initialize(ShaderConstant* pShaderConstant)
+static constexpr int BILLBOARD_MAX{ 256 };
+static BillboardEntry g_Entries[BILLBOARD_MAX];
+static int g_EntryCount{ 0 };
+
+static XMFLOAT4X4 g_View{};
+
+void Billboard_Initialize()
 {
-	g_pShaderConstant = pShaderConstant;
+	// Centered on the origin (z = 0), zig-zag order for a triangle strip
+	Vertex v[NUM_VERTEX]{
+		{ { -0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f } },  // bottom-left
+		{ { -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f } },  // top-left
+		{ {  0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f } },  // bottom-right
+		{ {  0.5f,  0.5f, 0.0f }, { 1.0f, 0.0f } },  // top-right
+	};
 
 	D3D11_BUFFER_DESC bd{
 		.ByteWidth = sizeof(Vertex) * NUM_VERTEX,
 		.Usage = D3D11_USAGE_IMMUTABLE,
 		.BindFlags = D3D11_BIND_VERTEX_BUFFER,
-		.CPUAccessFlags = 0
 	};
-
-	Vertex v[NUM_VERTEX]{
-		// Front face  (col 1, row 0)
-		{ { -0.5f, -0.5f, -0.5f}, {0.0f, 1.0f} },  
-		{ { -0.5f,  0.5f, -0.5f}, {0.0f, 0.0f} },  
-		{ {  0.5f,  0.5f, -0.5f}, {1.0f, 0.0f} },  
-		{ {  0.5f, -0.5f, -0.5f}, {1.0f, 1.0f} },  
-	};
-
-	D3D11_SUBRESOURCE_DATA sd{
-	.pSysMem = v
-	};
+	D3D11_SUBRESOURCE_DATA sd{ .pSysMem = v };
 
 	Direct3D_GetDevice()->CreateBuffer(&bd, &sd, &g_pVertexBuffer);
+
+	g_EntryCount = 0;
+
+	XMStoreFloat4x4(&g_View, XMMatrixIdentity());
 }
 
 void Billboard_Finalize()
 {
 	SAFE_RELEASE(g_pVertexBuffer);
-	SAFE_RELEASE(g_pIndexBuffer);
 }
 
-void Billboard_SetViewMatrix(const DirectX::XMMATRIX& view)
+void Billboard_SetViewMatrix(const XMMATRIX& view)
 {
-
+	XMStoreFloat4x4(&g_View, view);
 }
 
-void Billboard_Draw(const DirectX::XMMATRIX& world)
+void Billboard_Draw(int texture_id, const XMFLOAT3& position)
 {
+	if (g_EntryCount >= BILLBOARD_MAX) { return; }
+	g_Entries[g_EntryCount++] = { texture_id, position, 0.0f };
+}
+
+void Billboard_Flush()
+{
+	if (g_EntryCount == 0) { return; }
+
+	const XMMATRIX view = XMLoadFloat4x4(&g_View);
+
+	// 1. depth = z in view space (how far in front of the camera)
+	for (int i = 0; i < g_EntryCount; i++)
+	{
+		XMVECTOR pos_view = XMVector3TransformCoord(XMLoadFloat3(&g_Entries[i].position), view);
+		g_Entries[i].depth = XMVectorGetZ(pos_view);
+	}
+
+	// 2. sort far -> near
+	std::sort(g_Entries, g_Entries + g_EntryCount, [](const BillboardEntry& a, const BillboardEntry& b) { return a.depth > b.depth; });
+
+	// 3. rotation that faces the camera (transpose of the view rotation)
+	XMMATRIX face = view;
+	face.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	face = XMMatrixTranspose(face);
+
+	// 4. states and vertex buffer, once for all billboards
+	RenderState_SetDepth(kDepth_ReadOnly);
+	RenderState_SetBlend(kBlend_Alpha);
+	RenderState_SetCull(kCull_None);
+	Sampler_SetFilter(kSamplerFilter_Linear, kSamplerAddress_Clamp);
 	ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
-	ShaderConstant_Get3D().SetWorldMatrix(world);
-
+	ID3D11DeviceContext* ctx = Direct3D_GetDeviceContext();
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
-	Direct3D_GetDeviceContext()->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+	ctx->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	Direct3D_GetDeviceContext()->IASetIndexBuffer(g_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-	// unsinged int -> DXGI_FORMAT_R32_UINT
+	// 5. draw each one, far first
+	for (int i = 0; i < g_EntryCount; i++)
+	{
+		const BillboardEntry& e = g_Entries[i];
 
-	Direct3D_GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		XMMATRIX world = face * XMMatrixTranslation(e.position.x, e.position.y, e.position.z);
+		ShaderConstant_Get3D().SetWorldMatrix(world);
+		Texture_SetTexture(e.texture_id);
 
-	Direct3D_GetDeviceContext()->Draw(NUM_VERTEX, 0);
+		ctx->Draw(NUM_VERTEX, 0);
+	}
+	
+	g_EntryCount = 0;
 }
