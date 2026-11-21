@@ -80,10 +80,10 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstanc
 		do
 		{
 			// Window message loop
-			if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+			if (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				DispatchMessageW(&msg);
 			}
 			// Game loop
 			else
@@ -157,6 +157,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return true;
 	}
 
+	if (message == WM_CHAR)
+	{
+		char buf[64];
+		sprintf_s(buf, "WM_CHAR %04X unicode=%d\n", (unsigned)wParam, IsWindowUnicode(hWnd));
+		OutputDebugStringA(buf);
+	}
+
 	switch (message)
 	{
 	case WM_CLOSE: // ウィンドウを閉じるメッセージ
@@ -200,7 +207,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break; 
 	default:
 		// 通常のメッセージ処理はこの関数に任せる
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		return DefWindowProcW(hWnd, message, wParam, lParam);
 	}
 	return 0;
 }

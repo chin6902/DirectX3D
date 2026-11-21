@@ -42,7 +42,7 @@ static void LoadFonts()
 
 	if (!std::filesystem::exists(japanese))
 	{
-		return;		// keep the built-in font; Japanese shows as "?"
+		return;		
 	}
 	io.Fonts->AddFontFromFileTTF(japanese, size);
 

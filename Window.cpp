@@ -14,8 +14,8 @@ LastUpdate : 2026/06/01
 
 namespace
 {
-	static constexpr char WINDOW_CLASS[] = "GameWindow";
-	static constexpr char TITLE[] = "3D Game";
+	static constexpr wchar_t WINDOW_CLASS[] = L"GameWindow";
+	static constexpr wchar_t TITLE[] = L"3D Game";
 
 	constexpr DWORD WINDOW_STYLE
 	{
@@ -24,9 +24,9 @@ namespace
 
 	bool RegisterGameWindowClass(HINSTANCE hInstance, WNDPROC wndProc)
 	{
-		WNDCLASSEX wcex
+		WNDCLASSEXW wcex
 		{
-			.cbSize = sizeof(WNDCLASSEX),
+			.cbSize = sizeof(WNDCLASSEXW),
 			.style = CS_HREDRAW | CS_VREDRAW,
 			.lpfnWndProc = wndProc,
 			.hInstance = hInstance,
@@ -37,7 +37,7 @@ namespace
 			.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GAME_ICON)),
 		};
 
-		if (RegisterClassEx(&wcex) == 0)
+		if (RegisterClassExW(&wcex) == 0)
 		{
 			return false;
 		}
@@ -75,7 +75,7 @@ HWND CreateGameWindow(HINSTANCE hInstance, WNDPROC wndProc)
 	const int window_x{ std::max((desktop_width - WINDOW_WIDTH) / 2, 0) };
 	const int window_y{ std::max((desktop_height - WINDOW_HEIGHT) / 2, 0) };
 
-	HWND hWnd{ CreateWindow(
+	HWND hWnd{ CreateWindowW(
 		WINDOW_CLASS,
 		TITLE,
 		WINDOW_STYLE,
