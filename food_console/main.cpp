@@ -50,7 +50,7 @@ int main()
 #endif
 
     AIService ai;
-    ai.Start("foods_cache.json", "foods_fallback.json", "api_key.txt");
+    ai.Start("foods_cache.json", "../food/foods_fallback.json", "api_key.txt");
     printf("Cache has %zu foods from earlier sessions\n\n", ai.Cache().Count());
 
     vector<FoodData> inventory;     // later: your bar UI at the bottom of the screen

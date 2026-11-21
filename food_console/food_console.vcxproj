@@ -78,6 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\food</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -97,6 +98,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\food</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,6 +116,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\food</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,6 +136,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\food</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,18 +147,18 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AIService.cpp" />
-    <ClCompile Include="FoodCache.cpp" />
-    <ClCompile Include="FoodData.cpp" />
-    <ClCompile Include="FoodFallback.cpp" />
-    <ClCompile Include="HttpClient.cpp" />
+    <ClCompile Include="..\food\AIService.cpp" />
+    <ClCompile Include="..\food\FoodCache.cpp" />
+    <ClCompile Include="..\food\FoodData.cpp" />
+    <ClCompile Include="..\food\FoodFallback.cpp" />
+    <ClCompile Include="..\food\HttpClient.cpp" />
+    <ClCompile Include="..\food\OpenAiApi.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="OpenAiApi.cpp" />
     <ClCompile Include="test_openai.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -163,16 +167,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIService.h" />
-    <ClInclude Include="FoodCache.h" />
-    <ClInclude Include="FoodData.h" />
-    <ClInclude Include="FoodFallback.h" />
-    <ClInclude Include="HttpClient.h" />
-    <ClInclude Include="json.hpp" />
-    <ClInclude Include="OpenAiApi.h" />
+    <ClInclude Include="..\food\AIService.h" />
+    <ClInclude Include="..\food\FoodCache.h" />
+    <ClInclude Include="..\food\FoodData.h" />
+    <ClInclude Include="..\food\FoodFallback.h" />
+    <ClInclude Include="..\food\HttpClient.h" />
+    <ClInclude Include="..\food\json.hpp" />
+    <ClInclude Include="..\food\OpenAiApi.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="foods_fallback.json" />
+    <None Include="..\food\foods_fallback.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
