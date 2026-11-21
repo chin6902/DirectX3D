@@ -219,6 +219,30 @@
     <ClInclude Include="shader_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="food\AIService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="food\FoodCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="food\FoodData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="food\FoodFallback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="food\HttpClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="food\json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="food\OpenAiApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="food_system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="draw_primitives.cpp">
@@ -395,6 +419,27 @@
     <ClCompile Include="shader_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="food\AIService.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="food\FoodCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="food\FoodData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="food\FoodFallback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="food\HttpClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="food\OpenAiApi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="food_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader_vertex_3d.hlsl">
@@ -421,5 +466,8 @@
     <FxCompile Include="shader_vertex_billboard.hlsl">
       <Filter>Shader Files</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="food\foods_fallback.json" />
   </ItemGroup>
 </Project>

@@ -23,6 +23,7 @@ LastUpdate : 2026/06/15
 #include "input_xinput.h"
 #include "Audio.h"
 #include "game_audio.h"
+#include "food_system.h"
 
 static int g_mouseX = 0;
 static int g_mouseY = 0;
@@ -54,6 +55,8 @@ bool Application_Initialize(HWND hWnd)
 	Sprite_Initialize();
 	Texture_Initialize();
 
+	FoodSystem_Initialize();
+
 	Scene_Initialize();
 	Fade_Initialize();
 
@@ -62,6 +65,8 @@ bool Application_Initialize(HWND hWnd)
 
 void Application_Finalize()
 {
+	FoodSystem_Finalize();
+
 	DebugUI_Finalize();
 
 	// 各システムの終了処理
@@ -92,6 +97,8 @@ void Application_Update(float delta_time)
 		g_mouseX = InputMouse_GetX();
 		g_mouseY = InputMouse_GetY();
 	*/
+
+	FoodSystem_Update();
 
 	Scene_Update(delta_time);
 	Fade_Update(delta_time);
