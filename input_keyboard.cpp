@@ -3,9 +3,10 @@
    キーボード入力ラッパー [input_keyboard.cpp]
                                                          Author : Youhei Sato
 --------------------------------------------------------------------------------
-
+modified for food system with debug_ui
 ==============================================================================*/
 #include "input_keyboard.h"
+#include "debug_ui.h"
 #include <cstring>
 
 // キーリピート管理用の最大キー数
@@ -42,6 +43,18 @@ void InputKeyboard_Update(float delta_time)
 
     // 現在の状態を取得
     gCurrKeyState = *Keyboard_GetState();
+
+    static bool wasTyping = false;
+    if (DebugUI_WantsTextInput())
+    {
+        std::memset(&gCurrKeyState, 0, sizeof(gCurrKeyState));
+        wasTyping = true;
+    }
+    else if (wasTyping)
+    {
+        gPrevKeyState = gCurrKeyState;
+        wasTyping = false;
+    }
 
     // --- キーリピートタイマーの更新 ---
     for (int i = 0; i < KEY_MAX; ++i)

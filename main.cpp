@@ -174,7 +174,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		Mouse_ProcessMessage(message, wParam, lParam);
 		break;
     case WM_KEYDOWN:
-		if (wParam == VK_ESCAPE)
+		if (wParam == VK_ESCAPE && !DebugUI_WantsTextInput())
 		{
 			SendMessage(hWnd, WM_CLOSE, 0, 0); // WM_CLOSEメッセージの送信
 		}

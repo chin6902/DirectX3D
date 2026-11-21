@@ -19,10 +19,40 @@ LastUpdate : 2026/09/21
 #include "camera_free.h"
 #include "game_object.h"
 
+#include <filesystem>		// FOOD: to check that a font file exists
+#include "food_ui.h"	
+
 // Declared inside #if 0 in imgui_impl_win32.h, so declare it ourselves
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 static bool g_Initialized = false;
+
+// FOOD: ImGui's built-in font has English letters only, so Japanese food
+// names would show as "?". Load a Japanese font, then merge a Chinese one
+// into it for the characters the Japanese font lacks.
+// This ImGui version loads each character the first time it is drawn,
+// so no character list is needed.
+static void LoadFonts()
+{
+	const char* japanese = "C:\\Windows\\Fonts\\meiryo.ttc";	// Meiryo
+	const char* chinese = "C:\\Windows\\Fonts\\msyh.ttc";		// Microsoft YaHei
+	const float size = 18.0f;
+
+	ImGuiIO& io = ImGui::GetIO();
+
+	if (!std::filesystem::exists(japanese))
+	{
+		return;		// keep the built-in font; Japanese shows as "?"
+	}
+	io.Fonts->AddFontFromFileTTF(japanese, size);
+
+	if (std::filesystem::exists(chinese))
+	{
+		ImFontConfig merge;
+		merge.MergeMode = true;		// add to the font above instead of making a second font
+		io.Fonts->AddFontFromFileTTF(chinese, size, &merge);
+	}
+}
 
 bool DebugUI_Initialize(HWND hWnd)
 {
@@ -35,6 +65,8 @@ bool DebugUI_Initialize(HWND hWnd)
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.ScaleAllSizes(dpi_scale);
 	style.FontScaleDpi = dpi_scale;
+
+	LoadFonts();
 
 	if (!ImGui_ImplWin32_Init(hWnd))
 	{
@@ -85,6 +117,7 @@ void DebugUI_Begin()
 void DebugUI_Draw()
 {
 	Game_DrawDebugUI();
+	FoodUI_Draw();
 	CameraFree_DrawDebugUI();
 	GameObject_DrawDebugUI();
 }
@@ -101,6 +134,16 @@ bool DebugUI_WantsInput()
 	return io.WantCaptureMouse || io.WantCaptureKeyboard;
 }
 
+bool DebugUI_WantsTextInput()
+{
+	if (!g_Initialized)
+	{
+		return false;
+	}
+
+	return ImGui::GetIO().WantTextInput;
+}
+
 #else // Release: stubs
 
 bool DebugUI_Initialize(HWND) { return true; }
@@ -110,5 +153,6 @@ void DebugUI_Begin() {}
 void DebugUI_Draw() {}
 void DebugUI_End() {}
 bool DebugUI_WantsInput() { return false; }
+bool DebugUI_WantsTextInput() { return false; }
 
 #endif

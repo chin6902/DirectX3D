@@ -23,5 +23,6 @@ void DebugUI_End();
 
 // true while the mouse is over an ImGui window or a widget has keyboard focus
 bool DebugUI_WantsInput();
+bool DebugUI_WantsTextInput();
 
 #endif

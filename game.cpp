@@ -41,6 +41,7 @@ LastUpdate : 2026/06/24
 #include "billboard.h"
 
 #include "game_player.h"
+#include "food_ui.h"	
 
 using namespace DirectX;
 
@@ -102,6 +103,7 @@ void Game_Initialize()
 
 	// --- UI ---
 	MouseUI_Initialize();
+	FoodUI_SetVisible(true);
 
 #ifdef _DEBUG
 	//Collision_Debug_Initialize();
@@ -118,6 +120,7 @@ void Game_Finalize()
 	//Collision_Debug_Finalize();
 #endif
 	// ---UI ---
+	FoodUI_SetVisible(false);
 	MouseUI_Finalize();
 	
 	Light_Finalize();

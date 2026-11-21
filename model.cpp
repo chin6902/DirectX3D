@@ -268,6 +268,12 @@ MODEL* ModelLoad( const char *FileName, float scale, bool bBlender)
 
 void ModelRelease(MODEL* model)
 {
+	for (unsigned int m = 0; m < model->AiScene->mNumMeshes; m++)
+	{
+		model->VertexBuffer[m]->Release();
+		model->IndexBuffer[m]->Release();
+	}
+
 	delete[] model->VertexBuffer;
 	delete[] model->IndexBuffer;
 

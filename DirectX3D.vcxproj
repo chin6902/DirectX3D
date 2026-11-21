@@ -190,6 +190,7 @@
     <ClInclude Include="food\json.hpp" />
     <ClInclude Include="food\OpenAiApi.h" />
     <ClInclude Include="food_system.h" />
+    <ClInclude Include="food_ui.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_audio.h" />
     <ClInclude Include="game_map.h" />
@@ -261,6 +262,7 @@
     <ClCompile Include="food\HttpClient.cpp" />
     <ClCompile Include="food\OpenAiApi.cpp" />
     <ClCompile Include="food_system.cpp" />
+    <ClCompile Include="food_ui.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_audio.cpp" />
     <ClCompile Include="game_map.cpp" />

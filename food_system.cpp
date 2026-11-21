@@ -16,8 +16,6 @@ LastUpdate : 2026/11/21
 #include "food_system.h"
 #include "AIService.h"		
 
-// Paths are relative to the working directory.
-// From Visual Studio (F5) that is the folder of DirectX3D.vcxproj.
 static const char* kCachePath = "foods_cache.json";
 static const char* kFallbackPath = "food/foods_fallback.json";
 static const char* kApiKeyPath = "api_key.txt";
@@ -29,7 +27,7 @@ struct PendingWord
 {
 	int    id;
 	string word;	// as the player typed it
-	string key;	// NormalizeKey(word), to spot the same word sent twice
+	string key;		// NormalizeKey(word), to spot the same word sent twice
 };
 
 static AIService           g_AI;
@@ -63,12 +61,6 @@ void FoodSystem_Initialize()
 
 	g_AI.Start(kCachePath, kFallbackPath, kApiKeyPath);
 	g_Started = true;
-
-	// ---- TEMPORARY TEST for step 2 ----
-	// Remove the "//" below, run the game, and look at the Output window:
-	// after 2-3 seconds a line starting with "[food] #1 AI" should appear.
-	// Delete this block when the text box works.
-	FoodSystem_Request("ramen");
 }
 
 void FoodSystem_Finalize()
@@ -133,7 +125,7 @@ int FoodSystem_Request(const char* word)
 		return FOOD_REQUEST_REJECTED;
 	}
 
-	// The same word is already being judged: don't pay for it twice.
+	// The same word is already being judged
 	for (const PendingWord& p : g_Pending)
 	{
 		if (p.key == key)
