@@ -4,7 +4,7 @@ Contents   :  [billboard.cpp]
 Author     : Chin Qing You
 LastUpdate : 2026/11/17
 -----------------------------------------------------------------------------
-
+set offset function for root as base or center  of the billboard
 ============================================================================*/
 #include <algorithm>
 
@@ -14,6 +14,7 @@ LastUpdate : 2026/11/17
 #include "sampler.h"
 #include "shader_constant.h"
 #include "render_state.h"
+#include "shader_manager.h"
 
 using namespace DirectX;
 
@@ -27,6 +28,8 @@ struct BillboardEntry
 {
 	int texture_id;
 	XMFLOAT3 position;
+	XMFLOAT2 size;
+	XMFLOAT4 uv_rect;
 	float depth;      // how far in front of the camera, filled in at flush
 };
 
@@ -74,10 +77,10 @@ void Billboard_SetViewMatrix(const XMMATRIX& view)
 	XMStoreFloat4x4(&g_View, view);
 }
 
-void Billboard_Draw(int texture_id, const XMFLOAT3& position)
+void Billboard_Draw(int texture_id, const XMFLOAT3& position, const XMFLOAT2& size, const XMFLOAT4& uv_rect)
 {
 	if (g_EntryCount >= BILLBOARD_MAX) { return; }
-	g_Entries[g_EntryCount++] = { texture_id, position, 0.0f };
+	g_Entries[g_EntryCount++] = { texture_id, position, size, uv_rect, 0.0f };
 }
 
 void Billboard_Flush()
@@ -107,6 +110,8 @@ void Billboard_Flush()
 	RenderState_SetCull(kCull_None);
 	Sampler_SetFilter(kSamplerFilter_Linear, kSamplerAddress_Clamp);
 	ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	ShaderManager_Bind(kShader_3D);       // whatever your 3D / unlit shader enum is
+	ShaderConstant_Get3D().Bind();
 
 	ID3D11DeviceContext* ctx = Direct3D_GetDeviceContext();
 	UINT stride = sizeof(Vertex);
@@ -119,8 +124,17 @@ void Billboard_Flush()
 	{
 		const BillboardEntry& e = g_Entries[i];
 
-		XMMATRIX world = face * XMMatrixTranslation(e.position.x, e.position.y, e.position.z);
+		XMMATRIX world =
+			XMMatrixScaling(e.size.x, e.size.y, 1.0f) * face *
+			XMMatrixTranslation(e.position.x, e.position.y, e.position.z);
+
+		// uv' = uv * (w, h) + (u, v)
+		XMMATRIX uv =
+			XMMatrixScaling(e.uv_rect.z, e.uv_rect.w, 1.0f) *
+			XMMatrixTranslation(e.uv_rect.x, e.uv_rect.y, 0.0f);
+
 		ShaderConstant_Get3D().SetWorldMatrix(world);
+		ShaderConstant_Get3D().SetUVMatrix(XMMatrixIdentity());
 		Texture_SetTexture(e.texture_id);
 
 		ctx->Draw(NUM_VERTEX, 0);

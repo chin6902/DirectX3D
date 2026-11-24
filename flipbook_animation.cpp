@@ -4,12 +4,16 @@ Contents   :  [flipbook_animation.cpp]
 Author     : Chin Qing You
 LastUpdate : 2026/06/22
 -----------------------------------------------------------------------------
-
+class it
 ============================================================================*/
 #include <algorithm>  
 
 #include "flipbook_animation.h"
 #include "sprite.h"
+#include "billboard.h"
+#include "texture.h"
+
+using namespace DirectX;
 
 struct FlipBookAnimation
 {
@@ -161,52 +165,38 @@ void FlipBookAnimation_Update(float delta_time)
     for (int i = 0; i < ANIMATION_MAX; i++)
     {
         FlipBookAnimation& a = g_Animations[i];
-        if (a.pattern_count_max == 0)
-        { 
-            continue; 
-        }
 
-        if (a.mode == AnimPlayMode::FREEZE) 
-        { 
-            continue;
-        }
-
-        if (a.is_finished)            
-        { 
-            continue; 
-        }
+        if (a.pattern_count_max == 0) { continue; } // unused slot
+        if (a.mode == AnimPlayMode::FREEZE) { continue; }
+        if (a.is_finished) { continue; }
+        if (a.pattern_update_time <= 0.0f) { continue; } // would loop forever
 
         a.pattern_accumulated_time += delta_time;
 
-        if (a.pattern_accumulated_time < a.pattern_update_time) 
-        { 
-            continue; 
-        }
-
-        a.pattern_accumulated_time -= a.pattern_update_time;
-        a.pattern_current_count++;
-
-        switch (a.mode)
+        // while, not if: catches up several frames after a lag spike
+        while (a.pattern_accumulated_time >= a.pattern_update_time)
         {
-        case AnimPlayMode::LOOP:
-            // Wrap back to the start of the range
-            if (a.pattern_current_count > a.frame_end)
+            a.pattern_accumulated_time -= a.pattern_update_time;
+            a.pattern_current_count++;
+
+            if (a.pattern_current_count <= a.frame_end)
             {
+                continue; // still inside the range
+            }
+
+            if (a.mode == AnimPlayMode::LOOP)
+            {
+                // wrap back to the start of the range
                 a.pattern_current_count = a.frame_start;
             }
-            break;
-
-        case AnimPlayMode::ONE_SHOT:
-            // Clamp to last frame and mark done
-            if (a.pattern_current_count > a.frame_end)
+            else // ONE_SHOT
             {
+                // stay on the last frame and mark done
                 a.pattern_current_count = a.frame_end;
+                a.pattern_accumulated_time = 0.0f;
                 a.is_finished = true;
+                break;
             }
-            break;
-
-        default:
-            break;
         }
     }
 }
@@ -248,3 +238,39 @@ void FlipBookAnimation_Draw(int animation_id, float x, float y, float width, flo
         params
     );
 }
+
+// shared by the 2D and billboard draws: pixel position of the current frame
+static void GetFramePixel(const FlipBookAnimation& anim, float& texture_x, float& texture_y)
+{
+    const int col = anim.pattern_current_count % anim.pattern_column_count_max;
+    const int row = anim.pattern_current_count / anim.pattern_column_count_max;
+
+    texture_x = static_cast<float>(col * anim.pattern_width);
+    texture_y = static_cast<float>(row * anim.pattern_height);
+}
+
+void FlipBookAnimation_DrawBillboard(int animation_id, const XMFLOAT3& position, const XMFLOAT2& size)
+{
+    if (animation_id < 0 || animation_id >= ANIMATION_MAX) { return; }
+
+    const FlipBookAnimation& anim = g_Animations[animation_id];
+    if (anim.pattern_count_max == 0) { return; }
+
+    const float tex_w = static_cast<float>(Texture_GetWidth(anim.texture_id));
+    const float tex_h = static_cast<float>(Texture_GetHeight(anim.texture_id));
+    if (tex_w == 0.0f || tex_h == 0.0f) { return; }
+
+    float px, py;
+    GetFramePixel(anim, px, py);
+
+    // pixels -> 0..1 UV
+    const XMFLOAT4 uv_rect{
+        px / tex_w,
+        py / tex_h,
+        anim.pattern_width / tex_w,
+        anim.pattern_height / tex_h,
+    };
+
+    Billboard_Draw(anim.texture_id, position, size, uv_rect);
+}
+

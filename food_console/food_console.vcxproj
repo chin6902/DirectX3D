@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\food\AIService.cpp" />
+    <ClCompile Include="..\food\BattleRules.cpp" />
     <ClCompile Include="..\food\FoodCache.cpp" />
     <ClCompile Include="..\food\FoodData.cpp" />
     <ClCompile Include="..\food\FoodFallback.cpp" />
@@ -159,6 +160,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="test_battle.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="test_openai.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -168,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\food\AIService.h" />
+    <ClInclude Include="..\food\BattleRules.h" />
     <ClInclude Include="..\food\FoodCache.h" />
     <ClInclude Include="..\food\FoodData.h" />
     <ClInclude Include="..\food\FoodFallback.h" />

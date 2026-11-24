@@ -15,7 +15,9 @@ LastUpdate : 2026/11/17
 void Billboard_Initialize();
 void Billboard_Finalize();
 void Billboard_SetViewMatrix(const DirectX::XMMATRIX& view);
-void Billboard_Draw(int texture_id, const DirectX::XMFLOAT3& position);
+void Billboard_Draw(int texture_id, const DirectX::XMFLOAT3& position,
+    const DirectX::XMFLOAT2& size = { 1.0f, 1.0f },
+    const DirectX::XMFLOAT4& uv_rect = { 0.0f, 0.0f, 1.0f, 1.0f }); // u, v, width, height
 void Billboard_Flush();
 
 #endif

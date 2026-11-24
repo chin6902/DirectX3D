@@ -2,12 +2,6 @@
 #include <fstream>
 #include <filesystem>
 
-// Bump this whenever the rules for the stats change (range, new fields...).
-// Files with another version are ignored, so old numbers never mix with new ones.
-//   1 = stats 1-10      2 = stats 0-10
-//   3 = savory renamed salty, kind + ingredients added, grade removed
-//   4-5 = new refusal kinds, reference dishes
-//   6 = cuisine added
 static const int kCacheVersion = 6;
 
 void FoodCache::Load(const string& path)
@@ -18,7 +12,7 @@ void FoodCache::Load(const string& path)
     ifstream file(path);
     if (!file)
     {
-        return;     // first run: no file yet, that's fine
+        return;     
     }
 
     try
@@ -73,12 +67,20 @@ void FoodCache::Save() const
         root["foods"][key] = FoodToJson(food);
     }
 
-    // Write to a temp file first, then rename over the real one.
-    // If the game crashes during the write, the old cache is still intact.
+    string text;
+    try
+    {
+        text = root.dump(2);
+    }
+    catch (const json::exception&)
+    {
+        return;
+    };
+
     string tempPath = m_path + ".tmp";
     {
         ofstream file(tempPath);
-        file << root.dump(2);   // dump(2) = pretty print, easy to read and edit
+        file << text;
     }
     std::error_code ec;
     filesystem::rename(tempPath, m_path, ec);

@@ -157,13 +157,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return true;
 	}
 
-	if (message == WM_CHAR)
-	{
-		char buf[64];
-		sprintf_s(buf, "WM_CHAR %04X unicode=%d\n", (unsigned)wParam, IsWindowUnicode(hWnd));
-		OutputDebugStringA(buf);
-	}
-
 	switch (message)
 	{
 	case WM_CLOSE: // ウィンドウを閉じるメッセージ

@@ -13,7 +13,7 @@ LastUpdate : 2026/11/21
 
 #include "imgui.h"
 #include "food_system.h"
-#include "AIService.h"		.
+#include "AIService.h"		
 
 static bool g_Visible = false;
 static bool g_FocusRequest = false;	

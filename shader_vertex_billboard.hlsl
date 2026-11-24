@@ -14,6 +14,11 @@ cbuffer ProjectionBuffer : register(b2)
     float4x4 projection;
 };
 
+cbuffer UVBuffer : register(b3)
+{
+    float4x4 uvMatrix;
+};
+
 struct VS_IN
 {
     float4 position : POSITION0;
@@ -36,7 +41,7 @@ VS_OUT main(VS_IN input)
     
     // output = mul(input.posL, mul(world, mul(view, proj)))
 
-    output.uv = input.uv;
+    output.uv = mul(float4(input.uv, 0.0f, 1.0f), uvMatrix).xy;
 
     return output;
 }

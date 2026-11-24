@@ -17,6 +17,6 @@ float4 main(PS_IN input) : SV_TARGET
     float4 c = major_texture.Sample(major_sampler, input.uv) * color;
 
     clip(c.a - 0.01f);
-
+    
     return c;
 }

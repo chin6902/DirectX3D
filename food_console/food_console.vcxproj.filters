@@ -39,6 +39,12 @@
     <ClCompile Include="..\food\OpenAiApi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_battle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\food\BattleRules.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\food\AIService.h">
@@ -60,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\food\OpenAiApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\food\BattleRules.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

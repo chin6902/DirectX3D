@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="application.h" />
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="battle_ui.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="camera_free.h" />
@@ -183,6 +184,7 @@
     <ClInclude Include="fade.h" />
     <ClInclude Include="flipbook_animation.h" />
     <ClInclude Include="food\AIService.h" />
+    <ClInclude Include="food\BattleRules.h" />
     <ClInclude Include="food\FoodCache.h" />
     <ClInclude Include="food\FoodData.h" />
     <ClInclude Include="food\FoodFallback.h" />
@@ -193,6 +195,7 @@
     <ClInclude Include="food_ui.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_audio.h" />
+    <ClInclude Include="game_battle.h" />
     <ClInclude Include="game_map.h" />
     <ClInclude Include="game_object.h" />
     <ClInclude Include="game_player.h" />
@@ -256,6 +259,7 @@
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="flipbook_animation.cpp" />
     <ClCompile Include="food\AIService.cpp" />
+    <ClCompile Include="food\BattleRules.cpp" />
     <ClCompile Include="food\FoodCache.cpp" />
     <ClCompile Include="food\FoodData.cpp" />
     <ClCompile Include="food\FoodFallback.cpp" />

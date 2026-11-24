@@ -43,6 +43,8 @@ void ShaderConstant::Initialize()
 	}
 
 	// PS b1 : color (b0 is used for light)
+	SetUVMatrix(XMMatrixIdentity());
+	SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 	buffer_desc.ByteWidth = sizeof(XMFLOAT4);             // 16 bytes
 	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &m_pPSConstantBuffer[0]);
 }
@@ -57,7 +59,6 @@ void ShaderConstant::SetWorldMatrix(const DirectX::XMMATRIX & matrix) const
 {
 	WorldBuffer wb{};
 
-	// both transposed for HLSL
 	XMStoreFloat4x4(&wb.world, XMMatrixTranspose(matrix));
 	XMStoreFloat4x4(&wb.worldIT, XMMatrixInverse(nullptr, matrix));
 

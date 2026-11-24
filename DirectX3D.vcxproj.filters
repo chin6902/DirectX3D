@@ -246,6 +246,15 @@
     <ClInclude Include="food_ui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="food\BattleRules.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game_battle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="battle_ui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="draw_primitives.cpp">
@@ -444,6 +453,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="food_ui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="food\BattleRules.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
