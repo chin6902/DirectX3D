@@ -84,8 +84,6 @@ void Game_Initialize()
 	g_TextureID_Ground = Texture_Load(L"assets/textures/stone.png", true);
 	g_TextureID_Potion = Texture_Load(L"assets/textures/potion.png", true);
 	g_TextureExplosion = Texture_Load(L"assets/textures/explosion.png", true);
-	g_FlipBookAnimationId = FlipBookAnimation_Create(
-		g_TextureID_Potion, 32, 32, 4, 2, 0.25f);
 
 	ShaderConstant_Get3D().Initialize();
 	GameText_Initialize();
@@ -104,6 +102,13 @@ void Game_Initialize()
 	Grid_Initialize();
 
 	Billboard_Initialize();
+
+	g_FlipBookAnimationId = FlipBookAnimation_Create(
+		g_TextureExplosion,
+		128, 128,   // frame size
+		8,          // total frames
+		4,          // columns
+		0.1f);
 
 
 	Light_Initialize();
@@ -274,10 +279,10 @@ void Game_Draw()
 	Grid_Draw();
 
 	// --- transparent 3D (after all opaque) ---
-	Billboard_Draw(g_TextureID_Potion, { 2.0f, 3.0f, 0.0f }, { 1.0f, 1.0f });
+	Billboard_Draw(g_TextureID_Potion, { 2.0f, 3.0f, 0.0f });
 	Billboard_Draw(g_TextureID_Potion, { 2.5f, 3.0f, 0.0f }, { 1.0f, 1.0f });
 	Billboard_Draw(g_TextureID_Potion, { 3.0f, 3.0f, 0.0f }, { 1.0f, 1.0f });
-	FlipBookAnimation_DrawBillboard(g_FlipBookAnimationId, { 4.0f, 3.0f, 0.0f }, { 1.0f, 1.0f });
+	FlipBookAnimation_DrawBillboard(g_FlipBookAnimationId, {4.0f, 3.0f, 0.0f}, { .size = {2.0f, 2.0f} });
 
 	ShaderManager_Bind(kShader_Billboard);
 	Billboard_Flush();

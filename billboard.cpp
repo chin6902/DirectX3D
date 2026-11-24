@@ -28,8 +28,7 @@ struct BillboardEntry
 {
 	int texture_id;
 	XMFLOAT3 position;
-	XMFLOAT2 size;
-	XMFLOAT4 uv_rect;
+	BillboardDrawParams params;
 	float depth;      // how far in front of the camera, filled in at flush
 };
 
@@ -77,10 +76,20 @@ void Billboard_SetViewMatrix(const XMMATRIX& view)
 	XMStoreFloat4x4(&g_View, view);
 }
 
-void Billboard_Draw(int texture_id, const XMFLOAT3& position, const XMFLOAT2& size, const XMFLOAT4& uv_rect)
+void Billboard_Draw(int texture_id, const XMFLOAT3& position)
+{
+	Billboard_Draw(texture_id, position, BillboardDrawParams{});
+}
+
+void Billboard_Draw(int texture_id, const XMFLOAT3& position, const XMFLOAT2& size)
+{
+	Billboard_Draw(texture_id, position, BillboardDrawParams{ .size = size });
+}
+
+void Billboard_Draw(int texture_id, const XMFLOAT3& position, const BillboardDrawParams& params)
 {
 	if (g_EntryCount >= BILLBOARD_MAX) { return; }
-	g_Entries[g_EntryCount++] = { texture_id, position, size, uv_rect, 0.0f };
+	g_Entries[g_EntryCount++] = { texture_id, position, params, 0.0f };
 }
 
 void Billboard_Flush()
@@ -109,8 +118,8 @@ void Billboard_Flush()
 	RenderState_SetBlend(kBlend_Alpha);
 	RenderState_SetCull(kCull_None);
 	Sampler_SetFilter(kSamplerFilter_Linear, kSamplerAddress_Clamp);
+	ShaderManager_Bind(kShader_Billboard);              // ← was kShader_3D
 	ShaderConstant_Get3D().SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-	ShaderManager_Bind(kShader_3D);       // whatever your 3D / unlit shader enum is
 	ShaderConstant_Get3D().Bind();
 
 	ID3D11DeviceContext* ctx = Direct3D_GetDeviceContext();
@@ -123,22 +132,29 @@ void Billboard_Flush()
 	for (int i = 0; i < g_EntryCount; i++)
 	{
 		const BillboardEntry& e = g_Entries[i];
+		const BillboardDrawParams& p = e.params;
+
+		const float offset_x = 0.5f - p.pivot.x;
+		const float offset_y = p.pivot.y - 0.5f;
 
 		XMMATRIX world =
-			XMMatrixScaling(e.size.x, e.size.y, 1.0f) * face *
-			XMMatrixTranslation(e.position.x, e.position.y, e.position.z);
+			XMMatrixTranslation(offset_x, offset_y, 0.0f) *				   // 1. pivot
+			XMMatrixScaling(p.size.x, p.size.y, 1.0f) *                    // 2. size
+			face *                                                         // 3. face camera
+			XMMatrixTranslation(e.position.x, e.position.y, e.position.z); // 4. place
 
-		// uv' = uv * (w, h) + (u, v)
 		XMMATRIX uv =
-			XMMatrixScaling(e.uv_rect.z, e.uv_rect.w, 1.0f) *
-			XMMatrixTranslation(e.uv_rect.x, e.uv_rect.y, 0.0f);
+			XMMatrixScaling(p.uv_rect.z, p.uv_rect.w, 1.0f) *
+			XMMatrixTranslation(p.uv_rect.x, p.uv_rect.y, 0.0f);
 
 		ShaderConstant_Get3D().SetWorldMatrix(world);
-		ShaderConstant_Get3D().SetUVMatrix(XMMatrixIdentity());
+		ShaderConstant_Get3D().SetUVMatrix(uv);
 		Texture_SetTexture(e.texture_id);
 
 		ctx->Draw(NUM_VERTEX, 0);
 	}
+
+	ShaderConstant_Get3D().SetUVMatrix(XMMatrixIdentity());
 	
 	g_EntryCount = 0;
 }

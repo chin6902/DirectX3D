@@ -10,7 +10,6 @@ class it
 
 #include "flipbook_animation.h"
 #include "sprite.h"
-#include "billboard.h"
 #include "texture.h"
 
 using namespace DirectX;
@@ -204,6 +203,15 @@ void FlipBookAnimation_Update(float delta_time)
 // ============================================================================
 // Draw
 // ============================================================================
+static void GetFramePixel(const FlipBookAnimation& anim, float& texture_x, float& texture_y)
+{
+    const int col = anim.pattern_current_count % anim.pattern_column_count_max;
+    const int row = anim.pattern_current_count / anim.pattern_column_count_max;
+
+    texture_x = static_cast<float>(col * anim.pattern_width);
+    texture_y = static_cast<float>(row * anim.pattern_height);
+}
+
 void FlipBookAnimation_Draw(int animation_id, float x, float y, float width, float height)
 {
     FlipBookAnimation_Draw(animation_id, x, y, width, height, SpriteDrawParams{});
@@ -239,17 +247,7 @@ void FlipBookAnimation_Draw(int animation_id, float x, float y, float width, flo
     );
 }
 
-// shared by the 2D and billboard draws: pixel position of the current frame
-static void GetFramePixel(const FlipBookAnimation& anim, float& texture_x, float& texture_y)
-{
-    const int col = anim.pattern_current_count % anim.pattern_column_count_max;
-    const int row = anim.pattern_current_count / anim.pattern_column_count_max;
-
-    texture_x = static_cast<float>(col * anim.pattern_width);
-    texture_y = static_cast<float>(row * anim.pattern_height);
-}
-
-void FlipBookAnimation_DrawBillboard(int animation_id, const XMFLOAT3& position, const XMFLOAT2& size)
+void FlipBookAnimation_DrawBillboard(int animation_id, const DirectX::XMFLOAT3& position, const BillboardDrawParams& params)
 {
     if (animation_id < 0 || animation_id >= ANIMATION_MAX) { return; }
 
@@ -271,6 +269,8 @@ void FlipBookAnimation_DrawBillboard(int animation_id, const XMFLOAT3& position,
         anim.pattern_height / tex_h,
     };
 
-    Billboard_Draw(anim.texture_id, position, size, uv_rect);
+    BillboardDrawParams p = params;
+    p.uv_rect = uv_rect;
+    Billboard_Draw(anim.texture_id, position, p);
 }
 
