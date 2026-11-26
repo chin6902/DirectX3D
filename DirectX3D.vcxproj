@@ -196,9 +196,11 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="game_audio.h" />
     <ClInclude Include="game_battle.h" />
+    <ClInclude Include="game_explosion.h" />
     <ClInclude Include="game_map.h" />
     <ClInclude Include="game_object.h" />
     <ClInclude Include="game_player.h" />
+    <ClInclude Include="game_playerBullet.h" />
     <ClInclude Include="game_text.h" />
     <ClInclude Include="game_time.h" />
     <ClInclude Include="grid.h" />
@@ -269,9 +271,11 @@
     <ClCompile Include="food_ui.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_audio.cpp" />
+    <ClCompile Include="game_explosion.cpp" />
     <ClCompile Include="game_map.cpp" />
     <ClCompile Include="game_object.cpp" />
     <ClCompile Include="game_player.cpp" />
+    <ClCompile Include="game_playerBullet.cpp" />
     <ClCompile Include="game_text.cpp" />
     <ClCompile Include="game_time.cpp" />
     <ClCompile Include="grid.cpp" />

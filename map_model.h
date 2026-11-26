@@ -26,6 +26,7 @@ public:
 
 	HitData3D IsHit(const CollisionAABB& aabb) const override;
 	CollisionAABB GetWorldAABB() const;
+	CollisionAABB GetAABB() const override { return GetWorldAABB(); };
 
 private:
 	MODEL* m_pModel{ nullptr };

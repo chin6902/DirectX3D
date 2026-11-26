@@ -31,8 +31,6 @@ void GameObject_Destroy(int index);
 
 void GameObject_Draw();
 
-// nullptr when the index is out of range or the slot is inactive.
-// The panel edits the object through this pointer.
 GameObject* GameObject_Get(int index);
 
 DirectX::XMMATRIX GameObject_GetWorldMatrix(const GameObject& object);

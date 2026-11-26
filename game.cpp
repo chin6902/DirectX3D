@@ -43,6 +43,9 @@ LastUpdate : 2026/06/24
 #include "game_player.h"
 #include "food_ui.h"	
 
+#include "game_playerBullet.h"
+#include "game_explosion.h"
+
 using namespace DirectX;
 
 enum State
@@ -66,12 +69,10 @@ static int   g_BgmId = -1;
 
 static int g_TextureID_Ground{ -1 };
 static int g_TextureID_Potion{ -1 };
-static int g_TextureExplosion{ -1 };
-static int g_FlipBookAnimationId{ -1 };
-
 bool player_hit = false;
 
-//void Collision_CheckPlayerVsEnemies();
+void Collision_BulletsVsObjects();
+void Collision_BulletsVsMapObject();
 
 void Game_Initialize()
 {
@@ -83,7 +84,6 @@ void Game_Initialize()
 
 	g_TextureID_Ground = Texture_Load(L"assets/textures/stone.png", true);
 	g_TextureID_Potion = Texture_Load(L"assets/textures/potion.png", true);
-	g_TextureExplosion = Texture_Load(L"assets/textures/explosion.png", true);
 
 	ShaderConstant_Get3D().Initialize();
 	GameText_Initialize();
@@ -102,14 +102,8 @@ void Game_Initialize()
 	Grid_Initialize();
 
 	Billboard_Initialize();
-
-	g_FlipBookAnimationId = FlipBookAnimation_Create(
-		g_TextureExplosion,
-		128, 128,   // frame size
-		8,          // total frames
-		4,          // columns
-		0.1f);
-
+	GamePlayerBullet_Initialize();
+	GameExplosion_Initialize();
 
 	Light_Initialize();
 
@@ -134,6 +128,8 @@ void Game_Finalize()
 	// ---UI ---
 	FoodUI_SetVisible(false);
 	MouseUI_Finalize();
+	GameExplosion_Finalize();
+	GamePlayerBullet_Finalize();
 	
 	Light_Finalize();
 	Billboard_Finalize();
@@ -144,6 +140,9 @@ void Game_Finalize()
 	CameraFree_Finalize();
 	PlayerCamera_Finalize();
 	GamePlayer_Finalize();
+
+	Texture_Release(g_TextureID_Ground);
+	Texture_Release(g_TextureID_Potion);
 
 	FlipBookAnimation_Finalize();
 	GameText_Finalize();
@@ -206,7 +205,8 @@ void Game_Update(float delta_time)
 		// --- Game Update ---
 		FlipBookAnimation_Update(delta_time);
 		GameMap_Update(delta_time);
-
+		GamePlayerBullet_Update(delta_time);
+		
 		// --- Player Update ---
 		if (!InputKeyboard_IsPress(KK_LEFTSHIFT))
 		{ 
@@ -221,6 +221,18 @@ void Game_Update(float delta_time)
 		{
 			PlayerCamera_Orbit(XM_PI * delta_time);
 		}
+		if (InputKeyboard_IsTrigger(KK_H))
+		{
+			XMVECTOR front = XMLoadFloat3(&GamePlayer_GetFrontVector());
+			XMVECTOR spawn = XMLoadFloat3(&GamePlayer_GetAABB().GetCenter());
+			spawn += front * 0.8f;   // start just in front of the player so it isn't hidden inside the model
+
+			XMFLOAT3 spawnPos, dir;
+			XMStoreFloat3(&spawnPos, spawn);
+			XMStoreFloat3(&dir, front);
+
+			GamePlayerBullet_Fire(spawnPos, dir);
+		}
 
 		PlayerCamera_SetTargetPosition(GamePlayer_GetPosition());
 		PlayerCamera_Update(delta_time);
@@ -231,6 +243,10 @@ void Game_Update(float delta_time)
 		Billboard_SetViewMatrix(PlayerCamera_GetViewMatrix());
 
 		// --- collision check ---
+		Collision_BulletsVsObjects();
+		Collision_BulletsVsMapObject();
+		GamePlayerBullet_CleanUp();
+		GameExplosion_Update(delta_time);
 
 		// --- UI ---
 
@@ -282,7 +298,10 @@ void Game_Draw()
 	Billboard_Draw(g_TextureID_Potion, { 2.0f, 3.0f, 0.0f });
 	Billboard_Draw(g_TextureID_Potion, { 2.5f, 3.0f, 0.0f }, { 1.0f, 1.0f });
 	Billboard_Draw(g_TextureID_Potion, { 3.0f, 3.0f, 0.0f }, { 1.0f, 1.0f });
-	FlipBookAnimation_DrawBillboard(g_FlipBookAnimationId, {4.0f, 3.0f, 0.0f}, { .size = {2.0f, 2.0f} });
+	
+
+	GamePlayerBullet_Draw();
+	GameExplosion_Draw();	
 
 	ShaderManager_Bind(kShader_Billboard);
 	Billboard_Flush();
@@ -304,3 +323,40 @@ void Game_DrawDebugUI()
 {
 }
 #endif
+
+// ===== rewrite game object with class ======
+void Collision_BulletsVsObjects()
+{
+	for (int i = 0; i < GamePlayerBullet_GetActiveCount(); i++)
+	{
+		const CollisionAABB bullet = GamePlayerBullet_GetCollision(i);
+
+		for (int j = 0; j < OBJECT_MAX; j++)
+		{
+			const GameObject* object = GameObject_Get(j);
+			if (object == nullptr) continue;
+
+			if (bullet.IsOverlap(GameObject_GetAABB(*object)))
+			{
+				GameExplosion_Spawn(bullet.GetCenter());
+				GamePlayerBullet_Destroy(i);
+				break;
+			}
+		}
+	}
+}
+
+void Collision_BulletsVsMapObject()
+{
+	for (int i = GamePlayerBullet_GetActiveCount() - 1; i >= 0; i--)
+	{
+		const CollisionAABB bullet = GamePlayerBullet_GetCollision(i);
+
+		if (GameMap_CheckCollision(bullet).IsHit())
+		{
+			GameExplosion_Spawn(bullet.GetCenter());
+			GamePlayerBullet_Destroy(i);
+		}
+	}
+}
+

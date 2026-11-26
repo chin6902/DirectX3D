@@ -22,6 +22,7 @@ public:
 	virtual void Draw() const {};
 
     virtual HitData3D IsHit(const CollisionAABB&) const { return {}; }
+    virtual CollisionAABB GetAABB() const { return {}; };
 
 protected :
 	const DirectX::XMFLOAT3& GetPosition() const { return m_position; };

@@ -20,6 +20,8 @@ void GamePlayer_Update(float delta_time);
 void GamePlayer_Draw();
 
 const DirectX::XMFLOAT3& GamePlayer_GetPosition();
+const DirectX::XMFLOAT3& GamePlayer_GetFrontVector();
+
 CollisionAABB GamePlayer_GetAABB();
 
 #endif

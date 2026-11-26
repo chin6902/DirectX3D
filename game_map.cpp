@@ -87,6 +87,22 @@ HitData3D GameMap_CheckCollision(const CollisionAABB& aabb)
 	return {};
 }
 
+int GameMap_GetActiveCount()
+{
+	int count = 0;
+	for (const MapObject* p : g_MapObjects)
+	{
+		if (p) count++;
+	}
+	return count;
+}
+
+const MapObject* GameMap_GetObject(int index)
+{
+	if (index < 0 || index >= static_cast<int>(MAP_OBJECT_MAX)) { return nullptr; }
+	return g_MapObjects[index];
+}
+
 DirectX::XMFLOAT3 GameMap_GetFloorMove(const CollisionAABB& aabb)
 {
 	for (const MapObject* p : g_MapObjects)

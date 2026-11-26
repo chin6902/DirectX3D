@@ -211,6 +211,11 @@ const DirectX::XMFLOAT3& GamePlayer_GetPosition()
 	return g_Position;
 }
 
+const DirectX::XMFLOAT3& GamePlayer_GetFrontVector()
+{
+    return g_FrontVector;
+}
+
 static CollisionAABB MakePlayerAABB(FXMVECTOR position)
 {
     if (!g_pModel) return {};

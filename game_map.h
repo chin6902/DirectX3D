@@ -10,6 +10,7 @@ todo: refactor with class later
 #define GAME_MAP_H
 
 #include "collision.h"
+#include "map_object.h"
 
 void GameMap_Initialize();
 void GameMap_Finalize();
@@ -18,6 +19,8 @@ void GameMap_Draw();
 
 HitData3D GameMap_CheckCollision(const CollisionAABB& aabb);
 
+int GameMap_GetActiveCount();
+const MapObject* GameMap_GetObject(int index);
 DirectX::XMFLOAT3 GameMap_GetFloorMove(const CollisionAABB& aabb);
 
 #endif

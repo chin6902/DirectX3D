@@ -12,7 +12,10 @@ LastUpdate : 2026/11/09
 #include <fstream>
 #include <string>
 
-VertexShader::~VertexShader() { Release(); }
+VertexShader::~VertexShader() 
+{
+	Release();
+}
 
 void VertexShader::Release()
 {

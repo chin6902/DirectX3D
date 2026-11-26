@@ -20,6 +20,7 @@ public:
 	void Draw() const override;
 
 	HitData3D IsHit(const CollisionAABB& aabb) const override;
+	CollisionAABB GetAABB() const override { return CollisionAABB{ 0.5f, 0.5f, 0.5f, GetPosition() }; };
 	//CollisionAABB GetAABB() const { return CollisionAABB{ 0.5f, 0.5f, 0.5f, GetPosition() }; };
 
 private:

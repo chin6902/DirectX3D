@@ -15,6 +15,8 @@ class PixelShader
 {
 public:
 	PixelShader() = default;
+	PixelShader(const PixelShader&) = delete;              
+	PixelShader& operator=(const PixelShader&) = delete;
 	~PixelShader();
 
 	bool Load(const char* filename);

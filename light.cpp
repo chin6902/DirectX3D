@@ -16,8 +16,8 @@ static ID3D11Buffer* g_pPSConstantBuffer0 = nullptr;
 struct Light
 {
 	XMFLOAT4 directionW;
-	XMFLOAT4 ambientColor;
 	XMFLOAT4 diffuseColor;
+	XMFLOAT4 ambientColor;
 };
 
 void Light_Initialize()

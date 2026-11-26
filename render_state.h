@@ -11,9 +11,9 @@ LastUpdate : 2026/11/17
 
 enum DepthMode
 {
-	kDepth_Off,        // no test, no write: 2D sprites, debug lines on top
-	kDepth_On,         // test + write: normal 3D objects
-	kDepth_ReadOnly,   // test, no write: transparent things, particles
+	kDepth_Off,        // 2D sprites, debug lines on top
+	kDepth_On,         // normal 3D objects
+	kDepth_ReadOnly,   // transparent things, particles
 	kDepth_Max,
 };
 
