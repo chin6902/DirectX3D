@@ -35,7 +35,7 @@ static float g_InvincibleTimer = 0.0f;
 static constexpr float PLAYER_INVINCIBLE_TIME = 1.0f;
 static constexpr float PLAYER_KNOCKBACK_SPEED = 8.0f;
 static constexpr float PLAYER_BLINK_INTERVAL = 0.1f;
-static constexpr float PLAYER_INVINCIBLE_ALPHA = 0.4f;
+static constexpr float PLAYER_INVINCIBLE_ALPHA = 0.3f;
 
 static bool g_IsGrounded = true;
 
@@ -210,7 +210,12 @@ void GamePlayer_Draw()
     Collision3D_Debug_Add(GamePlayer_GetAABB());  
 #endif
 
-    const float alpha = (g_InvincibleTimer > 0.0f) ? PLAYER_INVINCIBLE_ALPHA : 1.0f;
+    float alpha = 1.0f;
+    if (g_InvincibleTimer > 0.0f)
+    {
+        const float wave = 0.5f + 0.5f * cosf(g_InvincibleTimer * XM_2PI * 4.0f);
+        alpha = PLAYER_INVINCIBLE_ALPHA + (1.0f - PLAYER_INVINCIBLE_ALPHA) * wave;
+    }
 
     XMMATRIX t = XMMatrixTranslationFromVector(XMLoadFloat3(&g_Position));
     ModelDraw(g_pModel, GetPlayerRotation() * t, alpha);

@@ -318,7 +318,9 @@ void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld, float alpha)
 		{
 			Texture_SetTexture(g_TextureWhiteId);
 		}
-		ShaderConstant_Get3D().SetColor(model->MeshColor[m]);
+		XMFLOAT4 mesh_color = model->MeshColor[m];
+		mesh_color.w *= alpha;                    
+		ShaderConstant_Get3D().SetColor(mesh_color);
 
 		ctx->IASetVertexBuffers(0, 1, &model->VertexBuffer[m], &stride, &offset);
 		ctx->IASetIndexBuffer(model->IndexBuffer[m], DXGI_FORMAT_R32_UINT, 0);
