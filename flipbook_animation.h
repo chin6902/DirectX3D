@@ -11,7 +11,7 @@ LastUpdate : 2026/06/22
 
 #include <DirectXMath.h>
 
-#include "sprite.h"
+#include "texture.h"
 #include "billboard.h"
 
 enum class AnimPlayMode
@@ -42,7 +42,6 @@ bool FlipBookAnimation_IsFinished(int animation_id);
 
 void FlipBookAnimation_Update(float delta_time);
 
-void FlipBookAnimation_Draw(int animation_id, float x, float y , float width, float height);
-void FlipBookAnimation_Draw(int animation_id, float x, float y, float width, float height, const SpriteDrawParams& params);
-void FlipBookAnimation_DrawBillboard(int animation_id, const DirectX::XMFLOAT3& position, const BillboardDrawParams& params = {});
+//void FlipBookAnimation_Draw(int animation_id, float x, float y , float width, float height);
+//void FlipBookAnimation_Draw(int animation_id, float x, float y, float width, float height, const SpriteDrawParams& params);
 #endif

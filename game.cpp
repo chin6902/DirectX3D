@@ -11,7 +11,6 @@ LastUpdate : 2026/06/24
 #include "texture.h"
 #include "sprite.h"
 #include "config.h"
-#include "flipbook_animation.h"
 #include "debug_ui.h"
 #include "sampler.h"
 #include "render_state.h"
@@ -87,7 +86,6 @@ void Game_Initialize()
 
 	ShaderConstant_Get3D().Initialize();
 	GameText_Initialize();
-	FlipBookAnimation_Initialize();
 
 	GamePlayer_Initialize({ 0.0f, 0.0f, 0.0f }, 0.0f);
 
@@ -144,7 +142,6 @@ void Game_Finalize()
 	Texture_Release(g_TextureID_Ground);
 	Texture_Release(g_TextureID_Potion);
 
-	FlipBookAnimation_Finalize();
 	GameText_Finalize();
 
 	ShaderConstant_Get3D().Finalize();
@@ -166,8 +163,6 @@ static bool IsRunCleared()
 
 static void UpdateEndHold(float delta_time)
 {
-	FlipBookAnimation_Update(delta_time);
-
 	if (g_EndTimer > 0.0f)
 	{
 		g_EndTimer -= delta_time;
@@ -203,7 +198,6 @@ void Game_Update(float delta_time)
 		GameAudio_UpdateMusic(delta_time);
 
 		// --- Game Update ---
-		FlipBookAnimation_Update(delta_time);
 		GameMap_Update(delta_time);
 		GamePlayerBullet_Update(delta_time);
 		

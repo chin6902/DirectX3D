@@ -212,10 +212,10 @@ static void GetFramePixel(const FlipBookAnimation& anim, float& texture_x, float
     texture_y = static_cast<float>(row * anim.pattern_height);
 }
 
-void FlipBookAnimation_Draw(int animation_id, float x, float y, float width, float height)
+/*void FlipBookAnimation_Draw(int animation_id, float x, float y, float width, float height)
 {
     FlipBookAnimation_Draw(animation_id, x, y, width, height, SpriteDrawParams{});
-}
+}*/
 
 void FlipBookAnimation_Draw(int animation_id, float x, float y, float width, float height,const SpriteDrawParams& params)
 {
@@ -223,7 +223,6 @@ void FlipBookAnimation_Draw(int animation_id, float x, float y, float width, flo
     {
         return;
     }
-
     const FlipBookAnimation& anim = g_Animations[animation_id];
     if (anim.pattern_count_max == 0)
     {
@@ -246,31 +245,3 @@ void FlipBookAnimation_Draw(int animation_id, float x, float y, float width, flo
         params
     );
 }
-
-void FlipBookAnimation_DrawBillboard(int animation_id, const DirectX::XMFLOAT3& position, const BillboardDrawParams& params)
-{
-    if (animation_id < 0 || animation_id >= ANIMATION_MAX) { return; }
-
-    const FlipBookAnimation& anim = g_Animations[animation_id];
-    if (anim.pattern_count_max == 0) { return; }
-
-    const float tex_w = static_cast<float>(Texture_GetWidth(anim.texture_id));
-    const float tex_h = static_cast<float>(Texture_GetHeight(anim.texture_id));
-    if (tex_w == 0.0f || tex_h == 0.0f) { return; }
-
-    float px, py;
-    GetFramePixel(anim, px, py);
-
-    // pixels -> 0..1 UV
-    const XMFLOAT4 uv_rect{
-        px / tex_w,
-        py / tex_h,
-        anim.pattern_width / tex_w,
-        anim.pattern_height / tex_h,
-    };
-
-    BillboardDrawParams p = params;
-    p.uv_rect = uv_rect;
-    Billboard_Draw(anim.texture_id, position, p);
-}
-

@@ -173,6 +173,7 @@
     <ClInclude Include="debug_ui.h" />
     <ClInclude Include="direct3d.h" />
     <ClInclude Include="draw_primitives.h" />
+    <ClInclude Include="enemy_manager.h" />
     <ClInclude Include="external\imgui\backends\imgui_impl_dx11.h" />
     <ClInclude Include="external\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="external\imgui\imconfig.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="external\imgui\imstb_textedit.h" />
     <ClInclude Include="external\imgui\imstb_truetype.h" />
     <ClInclude Include="fade.h" />
+    <ClInclude Include="flipbook.h" />
     <ClInclude Include="flipbook_animation.h" />
     <ClInclude Include="food\AIService.h" />
     <ClInclude Include="food\BattleRules.h" />
@@ -196,6 +198,7 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="game_audio.h" />
     <ClInclude Include="game_battle.h" />
+    <ClInclude Include="game_enemy.h" />
     <ClInclude Include="game_explosion.h" />
     <ClInclude Include="game_map.h" />
     <ClInclude Include="game_object.h" />
@@ -259,6 +262,7 @@
     <ClCompile Include="external\imgui\imgui_tables.cpp" />
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="fade.cpp" />
+    <ClCompile Include="flipbook.cpp" />
     <ClCompile Include="flipbook_animation.cpp" />
     <ClCompile Include="food\AIService.cpp" />
     <ClCompile Include="food\BattleRules.cpp" />
@@ -271,6 +275,7 @@
     <ClCompile Include="food_ui.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_audio.cpp" />
+    <ClCompile Include="game_enemy.cpp" />
     <ClCompile Include="game_explosion.cpp" />
     <ClCompile Include="game_map.cpp" />
     <ClCompile Include="game_object.cpp" />

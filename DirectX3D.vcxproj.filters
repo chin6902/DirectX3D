@@ -261,6 +261,15 @@
     <ClInclude Include="game_explosion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="game_enemy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="flipbook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="draw_primitives.cpp">
@@ -468,6 +477,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="game_explosion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game_enemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="flipbook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
