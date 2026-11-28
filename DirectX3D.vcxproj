@@ -174,6 +174,7 @@
     <ClInclude Include="direct3d.h" />
     <ClInclude Include="draw_primitives.h" />
     <ClInclude Include="enemy_manager.h" />
+    <ClInclude Include="enemy_slime.h" />
     <ClInclude Include="external\imgui\backends\imgui_impl_dx11.h" />
     <ClInclude Include="external\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="external\imgui\imconfig.h" />
@@ -254,6 +255,8 @@
     <ClCompile Include="debug_ui.cpp" />
     <ClCompile Include="direct3d.cpp" />
     <ClCompile Include="draw_primitives.cpp" />
+    <ClCompile Include="enemy_manager.cpp" />
+    <ClCompile Include="enemy_slime.cpp" />
     <ClCompile Include="external\imgui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="external\imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="external\imgui\imgui.cpp" />

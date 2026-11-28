@@ -10,7 +10,8 @@ LastUpdate : 2026/11/26
 #define ENEMY_MANAGER_H
 
 #include <DirectXMath.h>
-#include "collision.h"
+
+class GameEnemy;
 
 enum EnemyType
 {
@@ -18,27 +19,16 @@ enum EnemyType
 	kEnemyType_Max,
 };
 
-class GameEnemy
-{
-public:
-	virtual ~GameEnemy() = default;
+void EnemyManager_Initialize();
+void EnemyManager_Finalize();
 
-	virtual void Update(float delta_time) = 0;
-	virtual void Draw() const = 0;
+void EnemyManager_Update(float delta_time);
+void EnemyManager_Draw();
+void EnemyManager_CleanUp();
 
-	void Destroy() { m_is_destroy = true; };
-	virtual bool IsDestroy() const { return m_is_destroy; };
+GameEnemy* EnemyManager_Spawn(EnemyType type, const DirectX::XMFLOAT3& position);
 
-	void GameEnemy_Create(EnemyType type, const DirectX::XMFLOAT3& position);
-	void GameEnemy_GetActiveCount();
-	void GameEnemy_Destroy(int index);
-	void GameEnemy_CleanUp();
-
-	virtual CollisionAABB GetAABB() const { return {}; };
-
-private:
-	bool m_is_destroy{ false };
-
-};
+int EnemyManager_GetCount();
+GameEnemy* EnemyManager_Get(int index);
 
 #endif

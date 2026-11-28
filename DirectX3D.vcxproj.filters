@@ -270,6 +270,9 @@
     <ClInclude Include="flipbook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="enemy_slime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="draw_primitives.cpp">
@@ -483,6 +486,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="flipbook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_slime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

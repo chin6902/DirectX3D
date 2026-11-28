@@ -30,7 +30,13 @@ static float g_AccumulatedTime{};
 
 static const float GRAVITY_Y = -200.0f;
 static const float JUMP_HEIGHT = 2.0f;
-//static const float MAX_FALL_SPEED = 500.0f;
+
+static float g_InvincibleTimer = 0.0f;
+static constexpr float PLAYER_INVINCIBLE_TIME = 1.0f;
+static constexpr float PLAYER_KNOCKBACK_SPEED = 8.0f;
+static constexpr float PLAYER_BLINK_INTERVAL = 0.1f;
+static constexpr float PLAYER_INVINCIBLE_ALPHA = 0.4f;
+
 static bool g_IsGrounded = true;
 
 static XMFLOAT3 g_FrontVector{};
@@ -71,6 +77,8 @@ void GamePlayer_Finalize()
 
 void GamePlayer_Update(float delta_time)
 {
+    if (g_InvincibleTimer > 0.0f) { g_InvincibleTimer -= delta_time; }
+
     HitData3D push_hit = GameMap_CheckCollision(MakePlayerAABB(XMLoadFloat3(&g_Position)));
 
     if (g_IsGrounded)
@@ -198,12 +206,14 @@ static XMMATRIX GetPlayerRotation()
 
 void GamePlayer_Draw()
 {
-    XMMATRIX t = XMMatrixTranslationFromVector(XMLoadFloat3(&g_Position));
-    ModelDraw(g_pModel, GetPlayerRotation() * t);
-
 #ifdef _DEBUG
-    Collision3D_Debug_Add(GamePlayer_GetAABB());
+    Collision3D_Debug_Add(GamePlayer_GetAABB());  
 #endif
+
+    const float alpha = (g_InvincibleTimer > 0.0f) ? PLAYER_INVINCIBLE_ALPHA : 1.0f;
+
+    XMMATRIX t = XMMatrixTranslationFromVector(XMLoadFloat3(&g_Position));
+    ModelDraw(g_pModel, GetPlayerRotation() * t, alpha);
 }
 
 const DirectX::XMFLOAT3& GamePlayer_GetPosition()
@@ -264,3 +274,21 @@ bool HitMap(const XMFLOAT3& p)
     return GameMap_CheckCollision(MakePlayerAABB(XMLoadFloat3(&p))).IsHit();
 }
 
+bool GamePlayer_TakeHit(const XMFLOAT3& from_position)
+{
+    if (g_InvincibleTimer > 0.0f) { return false; }   
+
+    // push away from the enemy, on the ground plane
+    XMVECTOR away = XMLoadFloat3(&g_Position) - XMLoadFloat3(&from_position);
+    away = XMVectorSetY(away, 0.0f);
+    if (XMVectorGetX(XMVector3LengthSq(away)) < 1e-6f) { away = XMLoadFloat3(&g_FrontVector) * -1.0f; }
+    away = XMVector3Normalize(away);
+
+    XMVECTOR vel = away * PLAYER_KNOCKBACK_SPEED;
+    vel = XMVectorSetY(vel, 10.0f); 
+    XMStoreFloat3(&g_Velocity, vel);
+    g_IsGrounded = false;
+
+    g_InvincibleTimer = PLAYER_INVINCIBLE_TIME;
+    return true;
+}

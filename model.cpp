@@ -291,9 +291,13 @@ void ModelRelease(MODEL* model)
 	delete model;
 }
 
-void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
+void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld, float alpha)
 {
 	RenderState_Set3D();
+	if (alpha < 1.0f)
+	{
+		RenderState_SetBlend(kBlend_Alpha);   
+	}
 
 	ID3D11DeviceContext* ctx = Direct3D_GetDeviceContext();
 

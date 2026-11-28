@@ -7,92 +7,58 @@ LastUpdate : 2026/11/26
 
 ============================================================================*/
 #include "game_enemy.h"
-
-#ifdef _DEBUG
-#include "collision3d_debug.h"
-#endif
+#include "game_map.h"
+#include "game_object.h"
 
 using namespace DirectX;
 
-static constexpr int ENEMY_MAX = 128;
-//static Enemy* g_Enemies[ENEMY_MAX]{};
-static int g_EnemyCount{};
+static constexpr float ENEMY_GRAVITY_Y = -200.0f;
 
-struct Enemy
+void GameEnemy::TakeDamage(int damage)
 {
-	EnemyType type;
-	DirectX::XMFLOAT3 position;
-	bool is_destroy;
-};
+	if (m_HP <= 0) { return; }
 
-static float speed = 1.0f;
+	m_HP -= damage;
 
-void GameEnemy_Initialize()
-{
-	/*for (GameEnemy*& p : g_Enemies)
+	if (m_HP <= 0)
 	{
-		if (p) delete p;
-		p = nullptr;
+		m_IsDestroy = true;
+		OnDeath();
 	}
-	g_EnemyCount = 0;*/
 }
 
-void GameEnemy_Finalize()
+void GameEnemy::MoveWithCollision(float delta_time)
 {
-	/*for (GameEnemy*& p : g_Enemies)
+	m_Velocity.y += ENEMY_GRAVITY_Y * delta_time;   
+
+	XMFLOAT3 pos = m_Position;                      
+
+	pos.x += m_Velocity.x * delta_time;            
+	if (HitMap(pos)) { pos.x = m_Position.x; m_Velocity.x = 0.0f; }   
+
+	pos.z += m_Velocity.z * delta_time;            
+	if (HitMap(pos)) { pos.z = m_Position.z; m_Velocity.z = 0.0f; }   
+
+	m_IsGrounded = false;                           
+	pos.y += m_Velocity.y * delta_time;             
+	if (HitMap(pos))
 	{
-		if (p) delete p;
-		p = nullptr;
+		if (m_Velocity.y < 0.0f) { m_IsGrounded = true; }   
+		pos.y = m_Position.y;
+		m_Velocity.y = 0.0f;
 	}
-	g_EnemyCount = 0;*/
-}
 
-void GameEnemy_Register(GameEnemy* enemy)
-{
-	/*if (g_EnemyCount >= ENEMY_MAX) return;
-	
-	g_Enemies[g_EnemyCount] = enemy;
-	g_EnemyCount++;*/
-}
-
-void GameEnemy_Update(float delta_time)
-{
-	/*for (int i = 0; i < g_EnemyCount; i++)
+	if (pos.y < 0.0f)                               
 	{
-		g_Enemies[i]->Update(delta_time);
-	}*/
+		pos.y = 0.0f;
+		m_Velocity.y = 0.0f;
+		m_IsGrounded = true;
+	}
+
+	m_Position = pos;                               
 }
 
-void GameEnemy_Draw()
+bool GameEnemy::HitMap(const XMFLOAT3& position) const
 {
-	/*for (int i = 0; i < g_EnemyCount; i++)
-	{
-		g_Enemies[i]->Draw();
-	}*/
+	return GameMap_CheckCollision(GetAABBAt(position)).IsHit();
 }
-
-void GameEnemy_Destroy(int index)
-{
-	//g_Enemies[index]->Destroy();
-}
-
-void GameEnemy_CleanUp()
-{
-	/*for (int i = g_EnemyCount - 1; i >= 0; i--)
-	{
-		if (g_Enemies[i]->IsDestroy())
-		{
-			delete g_Enemies[i];
-			g_Enemies[i] = g_Enemies[--g_EnemyCount];
-			g_Enemies[g_EnemyCount] = nullptr;
-		}
-	}*/
-}
-
-CollisionAABB GameEnemy_GetCollision(int index)
-{
-	/*if (index < 0 || index >= g_EnemyCount) { return {}; }
-	return g_Enemies[index]->GetAABB();*/
-	return {};
-}
-

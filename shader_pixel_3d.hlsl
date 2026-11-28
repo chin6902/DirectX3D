@@ -27,9 +27,12 @@ float4 main(PS_IN input) : SV_TARGET
     //float L = (dot(normalize(input.normalW), -light_directionW) + 1.0f) * 0.5f;
     float3 light_color = diffuse_color.rgb * max(dot(normalize(input.normalW.xyz), -light_directionW.xyz), 0.0f);
     
-    float3 diffuse = major_texture.Sample(major_sampler, input.uv).rgb * input.color.rgb * color.rgb * light_color;
-    float3 ambient = major_texture.Sample(major_sampler, input.uv).rgb * color.rgb *  ambient_color.rgb;
-    float alpha = input.color.a;
-    
+    float4 tex = major_texture.Sample(major_sampler, input.uv); 
+    float3 albedo = tex.rgb * color.rgb;
+
+    float3 diffuse = albedo * input.color.rgb * light_color;
+    float3 ambient = albedo * ambient_color.rgb;
+    float alpha = tex.a * input.color.a * color.a; // texture * vertex * constant
+
     return float4(diffuse + ambient, alpha);
 }

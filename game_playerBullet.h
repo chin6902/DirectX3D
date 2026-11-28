@@ -24,6 +24,7 @@ int GamePlayerBullet_GetActiveCount();
 void GamePlayerBullet_Destroy(int bulletIndex);
 void GamePlayerBullet_CleanUp();
 void GamePlayerBullet_Fire(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction);
+bool GamePlayerBullet_IsDestroyed(int index);
 
 CollisionAABB GamePlayerBullet_GetCollision(int bulletIndex);
 

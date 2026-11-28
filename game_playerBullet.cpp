@@ -110,6 +110,8 @@ void GamePlayerBullet_Destroy(int bulletIndex)
 		return;
 	}
 
+
+
 	g_Bullets[bulletIndex].isDestroy = true;
 }
 
@@ -148,4 +150,9 @@ CollisionAABB GamePlayerBullet_GetCollision(int bulletIndex)
 	return CollisionAABB(half, half, half, b.position);
 }
 
+bool GamePlayerBullet_IsDestroyed(int index)
+{
+	if (index < 0 || index >= g_BulletFireCount) { return true; }
+	return g_Bullets[index].isDestroy;
+}
 

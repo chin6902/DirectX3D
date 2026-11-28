@@ -23,5 +23,6 @@ const DirectX::XMFLOAT3& GamePlayer_GetPosition();
 const DirectX::XMFLOAT3& GamePlayer_GetFrontVector();
 
 CollisionAABB GamePlayer_GetAABB();
+bool GamePlayer_TakeHit(const DirectX::XMFLOAT3& from_position);
 
 #endif

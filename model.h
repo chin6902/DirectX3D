@@ -40,7 +40,7 @@ struct MODEL
 MODEL* ModelLoad(const char* FileName, float scale = 1.0f, bool bBlender = false);
 void ModelRelease(MODEL* model);
 
-void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld);
+void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld, float alpha = 1.0f);
 
 
 #endif

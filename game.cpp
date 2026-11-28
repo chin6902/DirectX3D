@@ -42,6 +42,8 @@ LastUpdate : 2026/06/24
 #include "game_player.h"
 #include "food_ui.h"	
 
+#include "enemy_manager.h"
+#include "game_enemy.h"
 #include "game_playerBullet.h"
 #include "game_explosion.h"
 
@@ -72,6 +74,8 @@ bool player_hit = false;
 
 void Collision_BulletsVsObjects();
 void Collision_BulletsVsMapObject();
+void Collision_BulletsVsEnemies();
+void Collision_PlayerVsEnemies();
 
 void Game_Initialize()
 {
@@ -102,6 +106,10 @@ void Game_Initialize()
 	Billboard_Initialize();
 	GamePlayerBullet_Initialize();
 	GameExplosion_Initialize();
+	EnemyManager_Initialize();
+	EnemyManager_Spawn(kEnemyType_Slime, { 6.0f, 2.0f, 4.0f });   // y = 2: spawns in the air to test gravity
+	EnemyManager_Spawn(kEnemyType_Slime, { -6.0f, 0.0f, 5.0f });
+	EnemyManager_Spawn(kEnemyType_Slime, { 0.0f, 0.0f, 8.0f });
 
 	Light_Initialize();
 
@@ -126,6 +134,8 @@ void Game_Finalize()
 	// ---UI ---
 	FoodUI_SetVisible(false);
 	MouseUI_Finalize();
+
+	EnemyManager_Finalize();
 	GameExplosion_Finalize();
 	GamePlayerBullet_Finalize();
 	
@@ -207,6 +217,9 @@ void Game_Update(float delta_time)
 			GamePlayer_Update(delta_time);
 		}
 
+		// --- Enemy Update ---
+		EnemyManager_Update(delta_time);
+
 		if (InputKeyboard_IsPress(KK_Q))
 		{
 			PlayerCamera_Orbit(-XM_PI * delta_time);
@@ -219,7 +232,7 @@ void Game_Update(float delta_time)
 		{
 			XMVECTOR front = XMLoadFloat3(&GamePlayer_GetFrontVector());
 			XMVECTOR spawn = XMLoadFloat3(&GamePlayer_GetAABB().GetCenter());
-			spawn += front * 0.8f;   // start just in front of the player so it isn't hidden inside the model
+			spawn += front * 0.8f;   
 
 			XMFLOAT3 spawnPos, dir;
 			XMStoreFloat3(&spawnPos, spawn);
@@ -237,9 +250,13 @@ void Game_Update(float delta_time)
 		Billboard_SetViewMatrix(PlayerCamera_GetViewMatrix());
 
 		// --- collision check ---
+		Collision_BulletsVsEnemies();    
 		Collision_BulletsVsObjects();
 		Collision_BulletsVsMapObject();
+		Collision_PlayerVsEnemies();
+
 		GamePlayerBullet_CleanUp();
+		EnemyManager_CleanUp();
 		GameExplosion_Update(delta_time);
 
 		// --- UI ---
@@ -281,6 +298,7 @@ void Game_Draw()
 	MeshField_Draw();
 	GameMap_Draw();
 	GameObject_Draw();
+	EnemyManager_Draw();
 	GamePlayer_Draw();
 
 	// --- primitives (world-space lines) ---
@@ -291,7 +309,7 @@ void Game_Draw()
 	// --- transparent 3D (after all opaque) ---
 	Billboard_Draw(g_TextureID_Potion, { 2.0f, 3.0f, 0.0f });
 	Billboard_Draw(g_TextureID_Potion, { 2.5f, 3.0f, 0.0f }, { 1.0f, 1.0f });
-	Billboard_Draw(g_TextureID_Potion, { 3.0f, 3.0f, 0.0f }, { 1.0f, 1.0f });
+	Billboard_Draw(g_TextureID_Ground, { 3.0f, 3.0f, -3.0f }, { 1.0f, 1.0f });
 	
 
 	GamePlayerBullet_Draw();
@@ -324,6 +342,7 @@ void Collision_BulletsVsObjects()
 	for (int i = 0; i < GamePlayerBullet_GetActiveCount(); i++)
 	{
 		const CollisionAABB bullet = GamePlayerBullet_GetCollision(i);
+		if (GamePlayerBullet_IsDestroyed(i)) continue;	
 
 		for (int j = 0; j < OBJECT_MAX; j++)
 		{
@@ -345,11 +364,55 @@ void Collision_BulletsVsMapObject()
 	for (int i = GamePlayerBullet_GetActiveCount() - 1; i >= 0; i--)
 	{
 		const CollisionAABB bullet = GamePlayerBullet_GetCollision(i);
+		if (GamePlayerBullet_IsDestroyed(i)) continue;
 
 		if (GameMap_CheckCollision(bullet).IsHit())
 		{
 			GameExplosion_Spawn(bullet.GetCenter());
 			GamePlayerBullet_Destroy(i);
+		}
+	}
+}
+
+void Collision_BulletsVsEnemies()
+{
+	for (int i = GamePlayerBullet_GetActiveCount() - 1; i >= 0; i--)
+	{
+		const CollisionAABB bullet = GamePlayerBullet_GetCollision(i);
+		if (GamePlayerBullet_IsDestroyed(i)) continue;
+
+		for (int j = 0; j < EnemyManager_GetCount(); j++)
+		{
+			GameEnemy* enemy = EnemyManager_Get(j);
+			if (enemy->IsDestroy()) continue;
+
+			if (bullet.IsOverlap(enemy->GetAABB()))
+			{
+				enemy->TakeDamage(1);
+				GameExplosion_Spawn(bullet.GetCenter());
+				GamePlayerBullet_Destroy(i);
+				break;   // one bullet hits one enemy
+			}
+		}
+	}
+}
+
+void Collision_PlayerVsEnemies()
+{
+	const CollisionAABB player = GamePlayer_GetAABB();
+
+	for (int i = 0; i < EnemyManager_GetCount(); i++)
+	{
+		GameEnemy* enemy = EnemyManager_Get(i);
+		if (enemy->IsDestroy()) continue;
+
+		if (player.IsOverlap(enemy->GetAABB()))
+		{
+			if (GamePlayer_TakeHit(enemy->GetPosition()))
+			{
+				player_hit = true;   
+			}
+			break;   
 		}
 	}
 }
